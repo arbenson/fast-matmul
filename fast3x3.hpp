@@ -2,34 +2,40 @@
 #define FAST_3x3_
 
 #include <assert.h>
+#include <iostream>
 
 extern "C" {
     void dgemm_(char *transa, char *transb, int *m, int *n, int *k,
-		double *alpha, double *a, int *lda, double *b, int *ldb,
-		double *beta, double *c, int *ldc);
+                double *alpha, double *a, int *lda, double *b, int *ldb,
+                double *beta, double *c, int *ldc);
     void sgemm_(char *transa, char *transb, int *m, int *n, int *k,
-	        float *alpha, float *a, int *lda, float *b, int *ldb,
-	        float *beta, float *c, int *ldc);
+                float *alpha, float *a, int *lda, float *b, int *ldb,
+                float *beta, float *c, int *ldc);
 }
 
 
 // This is a basic templated matrix class.
 // It stores the matrix data, the stride, and the dimensions.
+// The variable is_view indicates whether or not the data is owned
+// by this instance.
 template <typename Scalar>
 class Matrix {
 public:
     Matrix(Scalar *data, int stride, int m, int n):
-	data_(data), stride_(stride), m_(m), n_(n) {}
+        data_(data), stride_(stride), m_(m), n_(n), is_view_(true) {}
 
     Matrix(int n) {
-	stride_ = n;
-	m_ = n;
-	n_ = n;
-	allocate();
+        stride_ = n;
+        m_ = n;
+        n_ = n;
+        is_view_ = false;
+        allocate();
     }
 
     ~Matrix() {
-	deallocate();
+        if (data_ != NULL && !is_view_) {
+            deallocate();
+        }
     }
 
     Scalar *data() { return data_; }
@@ -38,13 +44,15 @@ public:
     int n() { return n_; }
 
     void allocate() {
-	data_ = new Scalar[m_ * n_];
-	assert(data_ != NULL);
+        data_ = new Scalar[m_ * n_];
+        assert(data_ != NULL);
     }
 
     void deallocate() {
-	assert(data_ != NULL);
-	delete data_;
+        if (data_ != NULL) {
+	    delete data_;
+	    data_ = NULL;
+	}
     }
 
 private:
@@ -52,26 +60,28 @@ private:
     int stride_;
     int m_;
     int n_;
+    bool is_view_;
 };
 
 void gemm_wrap(int dim, double *A, int lda, double *B, int ldb, double *C,
-	       int ldc) {
+               int ldc) {
     char transa = 'n';
     char transb = 'n';
     double alpha = 1;
     double beta = 0;
+    
     dgemm_(&transa, &transb, &dim, &dim, &dim, &alpha, A, &lda, B, &ldb, &beta,
            C, &ldc);
 }
 
 void gemm_wrap(int dim, float *A, int lda, float *B, int ldb, float *C,
-	       int ldc) {
+               int ldc) {
     char transa = 'n';
     char transb = 'n';
     float alpha = 1;
     float beta = 0;
     sgemm_(&transa, &transb, &dim, &dim, &dim, &alpha, A, &lda, B, &ldb, &beta,
-	   C, &ldc);
+           C, &ldc);
 }
 
 // C <-- A * B
@@ -79,12 +89,12 @@ void gemm_wrap(int dim, float *A, int lda, float *B, int ldb, float *C,
 template <typename Scalar>
 void gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     assert(A.m() == A.n() &&
-	   A.n() == B.m() &&
-	   B.m() == B.n() &&
-	   B.n() == C.m() &&
-	   C.m() == C.n());
+           A.n() == B.m() &&
+           B.m() == B.n() &&
+           B.n() == C.m() &&
+           C.m() == C.n());
     gemm_wrap(A.n(), A.data(), A.stride(), B.data(), B.stride(), C.data(),
-	      C.stride());
+              C.stride());
 }
 
 // C <-- alpha1 * A1 + alpha2 * A2
@@ -93,16 +103,16 @@ template <typename Scalar>
 void add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Scalar alpha1, Scalar alpha2,
          Matrix<Scalar> &C) {
     assert(A1.m() == A1.n() &&
-	   A1.n() == A2.m() &&
-	   A2.m() == A2.n() &&
-	   A2.n() == C.m() &&
-	   C.m() == C.n());
+           A1.n() == A2.m() &&
+           A2.m() == A2.n() &&
+           A2.n() == C.m() &&
+           C.m() == C.n());
     for (int j = 0; j < C.m(); ++j) {
-	for (int i = 0; i < C.m(); ++i) {
-	    Scalar a = alpha1 * A1.data()[i + j * A1.stride()];
-	    Scalar b = alpha2 * A2.data()[i + j * A2.stride()];
-	    C.data()[i + j * C.stride()] = a + b;
-	}
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a = alpha1 * A1.data()[i + j * A1.stride()];
+            Scalar b = alpha2 * A2.data()[i + j * A2.stride()];
+            C.data()[i + j * C.stride()] = a + b;
+        }
     }
 }
 
@@ -113,31 +123,33 @@ template <typename Scalar>
 void add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
          Scalar alpha1, Scalar alpha2, Scalar alpha3, Matrix<Scalar>& C) {
     assert(A1.m() == A1.n() &&
-	   A1.n() == A2.m() &&
-	   A2.m() == A2.n() &&
-	   A2.n() == A3.m() &&
-	   A3.m() == A3.n() &&
-	   A3.n() == C.m() &&
-	   C.m() == C.n());
+           A1.n() == A2.m() &&
+           A2.m() == A2.n() &&
+           A2.n() == A3.m() &&
+           A3.m() == A3.n() &&
+           A3.n() == C.m() &&
+           C.m() == C.n());
     for (int j = 0; j < C.m(); ++j) {
-	for (int i = 0; i < C.m(); ++i) {
-	    Scalar a = alpha1 * A1.data()[i + j * A1.stride()];
-	    Scalar b = alpha2 * A2.data()[i + j * A2.stride()];
-	    Scalar c = alpha3 * A3.data()[i + j * A3.stride()];
-	    C.data()[i + j * C.stride()] = a + b + c;
-	}
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a = alpha1 * A1.data()[i + j * A1.stride()];
+            Scalar b = alpha2 * A2.data()[i + j * A2.stride()];
+            Scalar c = alpha3 * A3.data()[i + j * A3.stride()];
+            C.data()[i + j * C.stride()] = a + b + c;
+        }
     }
 }
 
 // C <-- A * B with fast 3x3 matrix multiplication
 // all matrices are assumed to be square with dimension a power of 3
 template <typename Scalar>
-void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
+void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
+                   int base) {
     int n = A.n();
     int step = n / 3;
 
-    if (n <= 27) {
-	gemm(A, B, C);
+    if (n <= base) {
+        gemm(A, B, C);
+        return;
     }
 
     // Sub-blocks of A
@@ -204,7 +216,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M1(step);
     Matrix<Scalar> M1B(step);
     add(B11, B21, B31, NegOne, NegOne, One, M1B);
-    FastMatmul3x3(A33, M1B, M1);
+    FastMatmul3x3(A33, M1B, M1, base);
     M1B.deallocate();
     
     // M2 =  (A22 + A33)              * (-B21 + B32);
@@ -213,7 +225,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M2B(step);
     add(A22, A33, One, One, M2A);
     add(B21, B32, NegOne, One, M2B);
-    FastMatmul3x3(M2A, M2B, M2);
+    FastMatmul3x3(M2A, M2B, M2, base);
     M2A.deallocate();
     M2B.deallocate();
 
@@ -223,7 +235,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M3tmp(step);
     add(A11, A12, A31, One, One, One, M3tmp);
     add(M3tmp, A32, One, One, M3A);
-    FastMatmul3x3(M3A, B23, M3);
+    FastMatmul3x3(M3A, B23, M3, base);
     M3tmp.deallocate();
     M3A.deallocate();
 
@@ -233,38 +245,38 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M4B(step);
     add(A11, A21, NegOne, One, M4A);
     add(B12, B12, One, One, M4B);
-    FastMatmul3x3(M4A, M4B, M4);
+    FastMatmul3x3(M4A, M4B, M4, base);
     M4A.deallocate();
     M4B.deallocate();
 
     // M5 =  (S1)                     * (-B12);
     Matrix<Scalar> M5(step);
     // TODO: need to negate B12
-    FastMatmul3x3(S1, B12, M4);
+    FastMatmul3x3(S1, B12, M5, base);
 
     // M6 =  (S2)                     * (B32);
     Matrix<Scalar> M6(step);
-    FastMatmul3x3(S2, B32, M6);
+    FastMatmul3x3(S2, B32, M6, base);
 
     // M7 =  (-A21 - A33)             * (B11);
     Matrix<Scalar> M7(step);
     Matrix<Scalar> M7A(step);
     add(A21, A33, NegOne, NegOne, M7A);
-    FastMatmul3x3(M7A, B11, M7);
+    FastMatmul3x3(M7A, B11, M7, base);
     M7A.deallocate();
 
     // M8 =  (A31 + A33)              * (B11);
     Matrix<Scalar> M8(step);
     Matrix<Scalar> M8A(step);
     add(A31, A33, One, One, M8A);
-    FastMatmul3x3(M8A, B11, M8);
+    FastMatmul3x3(M8A, B11, M8, base);
     M8A.deallocate();
 
     // M9 =  (A22)                    * (-B12 + S5);
     Matrix<Scalar> M9(step);
     Matrix<Scalar> M9B(step);    
     add(B12, S5, NegOne, One, M9B);
-    FastMatmul3x3(A22, M9B, M9);
+    FastMatmul3x3(A22, M9B, M9, base);
     M9B.deallocate();
 
     // M10 = (A22 - A32)              * (B12 + B21 - B22);
@@ -273,7 +285,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M10B(step);
     add(A22, A32, One, NegOne, M10A);
     add(B12, B21, B22, One, One, NegOne, M10B);
-    FastMatmul3x3(M10A, M10B, M10);
+    FastMatmul3x3(M10A, M10B, M10, base);
     M10A.deallocate();
     M10B.deallocate();
 
@@ -281,14 +293,14 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M11(step);
     Matrix<Scalar> M11A(step);
     add(A32, A33, NegOne, NegOne, M11A);
-    FastMatmul3x3(M11A, B21, M11);
+    FastMatmul3x3(M11A, B21, M11, base);
     M11A.deallocate();
 
     // M12 = (S3)                     * (S5 + B23);
     Matrix<Scalar> M12(step);
     Matrix<Scalar> M12B(step);
     add(S5, B23, One, One, M12B);
-    FastMatmul3x3(S3, M12B, M12);    
+    FastMatmul3x3(S3, M12B, M12, base);
     M12B.deallocate();
     
     // M13 = (A13 + A33)              * (B31 + B33);
@@ -297,7 +309,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M13B(step);
     add(A12, A33, One, One, M13A);
     add(B32, B33, One, One, M13B);
-    FastMatmul3x3(M13A, M13B, M13);
+    FastMatmul3x3(M13A, M13B, M13, base);
     M13A.deallocate();
     M13B.deallocate();
 
@@ -307,7 +319,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M14B(step);
     add(A11, A31, One, One, M14A);
     add(B11, B13, B23, One, One, NegOne, M14B);
-    FastMatmul3x3(M14A, M14B, M14);
+    FastMatmul3x3(M14A, M14B, M14, base);
     M14A.deallocate();
     M14B.deallocate();
 
@@ -318,7 +330,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M15B(step);
     add(A11, A33, NegOne, One, M15A);
     add(B11, B33, One, One, M15B);
-    FastMatmul3x3(M15A, M15B, M15);
+    FastMatmul3x3(M15A, M15B, M15, base);
     M15A.deallocate();
     M15B.deallocate();
     
@@ -328,7 +340,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M16B(step);
     add(A13, A23, One, NegOne, M16A);
     add(S4, B32, B33, One, One, One, M16B);
-    FastMatmul3x3(M16A, M16B, M16);
+    FastMatmul3x3(M16A, M16B, M16, base);
     M16A.deallocate();
     M16B.deallocate();
 
@@ -336,7 +348,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M17(step);
     Matrix<Scalar> M17A(step);
     add(A12, S3, NegOne, One, M17A);
-    FastMatmul3x3(M17A, S4, M17);
+    FastMatmul3x3(M17A, S4, M17, base);
     M16A.deallocate();
 
     // M18 = (-A23 + A33)             * (-B31 + B32);
@@ -345,7 +357,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M18B(step);
     add(A23, A33, NegOne, One, M18A);
     add(B31, B32, NegOne, One, M18B);
-    FastMatmul3x3(M18A, M18B, M18);
+    FastMatmul3x3(M18A, M18B, M18, base);
     M18A.deallocate();
     M18B.deallocate();
 
@@ -355,7 +367,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M19B(step);
     add(A11, S1, NegOne, One, M19A);
     add(B12, B23, NegOne, NegOne, M19B);
-    FastMatmul3x3(M19A, M19B, M19);
+    FastMatmul3x3(M19A, M19B, M19, base);
     M19A.deallocate();
     M19B.deallocate();
 
@@ -363,28 +375,28 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     Matrix<Scalar> M20(step);
     Matrix<Scalar> M20A(step);
     add(A11, A13, NegOne, NegOne, M20A);
-    FastMatmul3x3(M20A, B33, M20);
+    FastMatmul3x3(M20A, B33, M20, base);
     M20A.deallocate();
 
     // M21 = (A11)                    * (-B12 - B13 + B33);
     Matrix<Scalar> M21(step);
     Matrix<Scalar> M21B(step);
     add(B12, B13, B33, NegOne, NegOne, One, M21B);
-    FastMatmul3x3(A11, M21B, M21);
+    FastMatmul3x3(A11, M21B, M21, base);
     M21B.deallocate();
 
     // M22 = (-A21 - A22)             * (B12);
     Matrix<Scalar> M22(step);
     Matrix<Scalar> M22A(step);
     add(A21, A22, NegOne, NegOne, M22A);
-    FastMatmul3x3(M22A, B12, M22);
+    FastMatmul3x3(M22A, B12, M22, base);
     M22A.deallocate();
 
     // M23 = (-A12 + A33)             * (B21);
     Matrix<Scalar> M23(step);
     Matrix<Scalar> M23A(step);
     add(A12, A33, NegOne, One, M23A);
-    FastMatmul3x3(M23A, B21, M22);
+    FastMatmul3x3(M23A, B21, M23, base);
     M23A.deallocate();
 
 
@@ -401,7 +413,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     // C11 = -M1 + M13 - M15 + M20 - M23;
     add(M1, M13, M15, NegOne, One, NegOne, tmp1);
     add(tmp1, M20, M23, One, One, NegOne, C11);
-	
+        
     // C12 = -M3 - M5 + M6 + M12 + M17 + M19;
     add(M3, M5, M6, NegOne, NegOne, One, tmp1);
     add(M12, M17, M19, One, One, One, tmp2);
@@ -434,11 +446,12 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     add(M5, M8, M14, NegOne, NegOne, One, tmp1);
     add(M15, M19, M21, One, One, One, tmp2);
     add(tmp1, tmp2, One, One, C33);
+    
+    tmp1.deallocate();
+    tmp2.deallocate();
 }
 
 // Template declarations
-// template Matrix<double>;
-// template Matrix<float>;
 
 template void gemm(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C);
 template void gemm(Matrix<float>& A, Matrix<float>& B, Matrix<float>& C);
@@ -456,8 +469,8 @@ template void add(Matrix<float>& A1, Matrix<float>& A2, Matrix<float>& A3,
                   float alpha1, float alpha2, float alpha3, Matrix<float>& C);
 
 template void FastMatmul3x3(Matrix<double>& A, Matrix<double>& B,
-                            Matrix<double>& C);
+                            Matrix<double>& C, int base);
 template void FastMatmul3x3(Matrix<float>& A, Matrix<float>& B,
-                            Matrix<float>& C);
+                            Matrix<float>& C, int base);
 
 #endif  // FAST_3x3_
