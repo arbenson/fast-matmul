@@ -2,6 +2,8 @@
 #define FAST_3x3_
 
 #include <assert.h>
+#include <math.h>
+
 #include <iostream>
 
 extern "C" {
@@ -49,9 +51,9 @@ public:
 
     void deallocate() {
         if (data_ != NULL) {
-	    delete data_;
-	    data_ = NULL;
-	}
+            delete data_;
+            data_ = NULL;
+        }
     }
 
 private:
@@ -83,6 +85,22 @@ void GemmWrap(int dim, float *A, int lda, float *B, int ldb, float *C,
     float beta = 0;
     sgemm_(&transa, &transb, &dim, &dim, &dim, &alpha, A, &lda, B, &ldb, &beta,
            C, &ldc);
+}
+
+// Frobenius norm difference: \| A - B \|_F
+template<typename Scalar>
+double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
+    assert(A.m() == B.m() &&
+           A.n() == B.n());
+    double diff = 0.0;
+    for (int j = 0; j < A.m(); ++j) {
+        for (int i = 0; i < A.n(); ++i) {
+            Scalar a = A.data()[i + j * A.stride()];
+            Scalar b = B.data()[i + j * B.stride()];
+            diff += (a - b) * (a - b);
+        }
+    }
+    return sqrt(diff);
 }
 
 // C <-- -A
@@ -213,7 +231,71 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Scalar NegOne = Scalar(-1);
     Scalar One = Scalar(1);
 
-    // S* variables are summations that lower the number of additions needed
+    // Number of additions/subtractions:
+    // Pre-compute:
+    //
+    // S1 = -A31 - A32; [1]
+    // S2 = A22 + A23;  [1]
+    // S3 = -A13 + S2;  [1]
+    // S4 = -B22 - B23; [1]
+    // S5 = B22 - B32;  [1]
+    // S6 = A11 + A31;  [1]
+    // 6 in total
+    //
+    //  M1 =  (A33)                    * (-B11 - B21 + B31); [3]
+    //  M2 =  (A22 + A33)              * (-B21 + B32);       [2]
+    //  M3 =  (S6 + A12 + A32)         * (B23);              [2]
+    //  M4 =  (-A11 + A21)             * (B12 + B13);        [2]
+    //  M5 =  (S1)                     * (-B12);             [0/1]
+    //  M6 =  (S2)                     * (B32);              [0]
+    //  M7 =  (-A21 - A33)             * (B11);              [1]
+    //  M8 =  (A31 + A33)              * (B11);              [1]
+    //  M9 =  (A22)                    * (-B12 + S5);        [1]
+    //  M10 = (A22 - A32)              * (B12 + B21 - B22);  [3]
+    //  M11 = (-A32 - A33)             * (B21);              [1]
+    //  M12 = (S3)                     * (S5 + B23);         [1]
+    //  M13 = (A13 + A33)              * (B31 + B33);        [2]
+    //  M14 = (S6)                     * (B11 + B13 - B23);  [2]
+    //  M15 = (-A11 + A33)             * (B11 + B33);        [2]
+    //  M16 = (-A13 + A23)             * (S4 + B32 + B33);   [3]
+    //  M17 = (-A12 + S3)              * (S4);               [1]
+    //  M18 = (-A23 + A33)             * (-B31 + B32);       [2]
+    //  M19 = (-A11 + S1)              * (-B12 - B23);       [2]
+    //  M20 = (-A11 - A13)             * (B33);              [1]
+    //  M21 = (A11)                    * (-B12 - B13 + B33); [2]
+    //  M22 = (-A21 - A22)             * (B12);              [1]
+    //  M23 = (-A12 + A33)             * (B21);              [1]
+    //
+    // For M5, we don't need one addition, but it requires some extra code.
+    // We need to negate B12 but it needs to be done in the matrix multiply.
+    // With recursion, this is a little tricky.  For now, we just negate
+    // and suffer from one more "subtraction".
+    // In total, 37 additions/subtractions for the intermediate multiplications.
+    //
+    // Pre-compute for formulation of C blocks:
+    // 
+    // R1 = -M20 - M21;                         [1]
+    // R2 = M3 + M5;                            [1]
+    // R3 = M9 - M22;                           [1]
+    // 
+    // In total, 3 additions/subtractions
+    // 
+    // C11 = -M1 + M13 - M15 + M20 - M23;       [4]
+    // C12 = -R2 + M6 + M12 + M17 + M19;        [4]
+    // C13 = R2 - M19 + R1;                     [2]
+    // C21 = M1 - M2 + M6 - M7 + M18;           [4]
+    // C22 = M6 + R3;                           [1]
+    // C23 = M4 - R3 + M12 + M16 + R1;          [4]
+    // C31 = M1 + M8 - M11;                     [2]
+    // C32 = M2 + M5 + M9 + M10 - M11;          [4]
+    // C33 = -M5 - M8 + M14 + M15 + M19 + M21;  [5]
+    // 
+    // In total, 30 additions/subtractions
+    //
+    // Overall: 6 + 37 + 3 + 30 = 76 additions/subtractions
+
+    // S1, ..., S5 variables are pre-computations of summations
+    // that are used multiple times in the multiplications.
     // S1 = -A31 - A32;
     Matrix<Scalar> S1(step);
     Add(A31, A32, NegOne, NegOne, S1);
@@ -233,6 +315,10 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // S5 = B22 - B32;
     Matrix<Scalar> S5(step);
     Add(B22, B32, One, NegOne, S5);
+
+    // S6 = A11 + A31;
+    Matrix<Scalar> S6(step);
+    Add(A11, A31, One, One, S6);
 
 
     // M1, M2, ..., M23 are the intermediate matrix multiplications
@@ -254,14 +340,11 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     M2A.deallocate();
     M2B.deallocate();
 
-    // M3 =  (A11 + A12 + A31 + A32)  * (B23);
+    // M3 =  (S6 + A12 + A32)  * (B23);
     Matrix<Scalar> M3(step);
     Matrix<Scalar> M3A(step);
-    Matrix<Scalar> M3tmp(step);
-    Add(A11, A12, A31, One, One, One, M3tmp);
-    Add(M3tmp, A32, One, One, M3A);
+    Add(S6, A12, A32, One, One, One, M3A);
     FastMatmul3x3(M3A, B23, M3, base);
-    M3tmp.deallocate();
     M3A.deallocate();
 
     // M4 =  (-A11 + A21)             * (B12 + B13);    
@@ -269,7 +352,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M4A(step);
     Matrix<Scalar> M4B(step);
     Add(A11, A21, NegOne, One, M4A);
-    Add(B12, B12, One, One, M4B);
+    Add(B12, B13, One, One, M4B);
     FastMatmul3x3(M4A, M4B, M4, base);
     M4A.deallocate();
     M4B.deallocate();
@@ -278,7 +361,6 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M5(step);
     Matrix<Scalar> M5B(step);
     Negate(B12, M5B);
-    // TODO: need to negate B12
     FastMatmul3x3(S1, M5B, M5, base);
 
     // M6 =  (S2)                     * (B32);
@@ -334,22 +416,18 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M13(step);
     Matrix<Scalar> M13A(step);
     Matrix<Scalar> M13B(step);
-    Add(A12, A33, One, One, M13A);
-    Add(B32, B33, One, One, M13B);
+    Add(A13, A33, One, One, M13A);
+    Add(B31, B33, One, One, M13B);
     FastMatmul3x3(M13A, M13B, M13, base);
     M13A.deallocate();
     M13B.deallocate();
 
-    // M14 = (A11 + A31)              * (B11 + B13 - B23);
+    // M14 = (S6)                     * (B11 + B13 - B23);
     Matrix<Scalar> M14(step);
-    Matrix<Scalar> M14A(step);
     Matrix<Scalar> M14B(step);
-    Add(A11, A31, One, One, M14A);
     Add(B11, B13, B23, One, One, NegOne, M14B);
-    FastMatmul3x3(M14A, M14B, M14, base);
-    M14A.deallocate();
+    FastMatmul3x3(S6, M14B, M14, base);
     M14B.deallocate();
-
     
     // M15 = (-A11 + A33)             * (B11 + B33);
     Matrix<Scalar> M15(step);
@@ -365,7 +443,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M16(step);
     Matrix<Scalar> M16A(step);
     Matrix<Scalar> M16B(step);
-    Add(A13, A23, One, NegOne, M16A);
+    Add(A13, A23, NegOne, One, M16A);
     Add(S4, B32, B33, One, One, One, M16B);
     FastMatmul3x3(M16A, M16B, M16, base);
     M16A.deallocate();
@@ -429,10 +507,15 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 
     // Fill in the matrix C
 
-    // R1 saves one addition.
     // R1 = -M20 - M21;
     Matrix<Scalar> R1(step);
     Add(M20, M21, NegOne, NegOne, R1);
+    // R2 = M3 + M5;
+    Matrix<Scalar> R2(step);
+    Add(M3, M5, One, One, R2);
+    // R3 = M9 - M22;
+    Matrix<Scalar> R3(step);
+    Add(M9, M22, One, NegOne, R3);
 
     Matrix<Scalar> tmp1(step);
     Matrix<Scalar> tmp2(step);
@@ -441,25 +524,24 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Add(M1, M13, M15, NegOne, One, NegOne, tmp1);
     Add(tmp1, M20, M23, One, One, NegOne, C11);
         
-    // C12 = -M3 - M5 + M6 + M12 + M17 + M19;
-    Add(M3, M5, M6, NegOne, NegOne, One, tmp1);
+    // C12 = -R2 + M6 + M12 + M17 + M19;
+    Add(R2, M6, NegOne, One, tmp1);
     Add(M12, M17, M19, One, One, One, tmp2);
     Add(tmp1, tmp2, One, One, C12);
 
-    // C13 = M3 + M5 - M19 + R1;
-    Add(M3, M5, M19, One, One, NegOne, tmp1);
-    Add(tmp1, R1, One, One, C13);
+    // C13 = R2 - M19 + R1;
+    Add(R2, M19, R1, One, NegOne, One, C13);
 
     // C21 = M1 - M2 + M6 - M7 + M18;
     Add(M1, M2, M6, One, NegOne, One, tmp1);
     Add(tmp1, M7, M18, One, NegOne, One, C21);
 
-    // C22 = M6 + M9 - M22;
-    Add(M6, M9, M22, One, One, NegOne, C22);
+    // C22 = M6 + R3;
+    Add(M6, R3, One, One, C22);
 
-    // C23 = M4 - M9 + M12 + M16 + R1 + M22;
-    Add(M4, M9, M12, One, NegOne, One, tmp1);
-    Add(M16, R1, M22, One, One, One, tmp2);
+    // C23 = M4 - R3 + M12 + M16 + R1;
+    Add(M4, R3, M12, One, NegOne, One, tmp1);
+    Add(M16, R1, One, One, tmp2);
     Add(tmp1, tmp2, One, One, C23);
 
     // C31 = M1 + M8 - M11;
@@ -497,6 +579,9 @@ template void Add(Matrix<double>& A1, Matrix<double>& A2, Matrix<double>& A3,
                   Matrix<double>& C);
 template void Add(Matrix<float>& A1, Matrix<float>& A2, Matrix<float>& A3,
                   float alpha1, float alpha2, float alpha3, Matrix<float>& C);
+
+template double FrobeniusDiff(Matrix<double>& A, Matrix<double>& B);
+template double FrobeniusDiff(Matrix<float>& A, Matrix<float>& B);
 
 template void FastMatmul3x3(Matrix<double>& A, Matrix<double>& B,
                             Matrix<double>& C, int base);
