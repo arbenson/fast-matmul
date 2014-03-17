@@ -1,7 +1,16 @@
 #include "fast3x3.hpp"
 
+#include <math.h>
 #include <stdlib.h>
+
 #include <chrono>  // note: C++11
+#include <random>
+
+// Build with: g++ main.cpp -std=c++0x -O3 -lblas -o test
+// Use with:
+//    ./test n base
+// n is the size of the matrix (default 2187)
+// base is the cutoff for recursion (default 729)
 
 int main(int argc, char **argv) {
     int n = 2187;
@@ -16,39 +25,46 @@ int main(int argc, char **argv) {
     std::cout << "n is: " << n << std::endl;
     std::cout << "base case is: " << base << std::endl;
 
-    Matrix<double> A1(n);
-    Matrix<double> B1(n);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dist(0, 1e5);
+
+    Matrix<double> A(n);
+    Matrix<double> B(n);
     Matrix<double> C1(n);
     for (int j = 0; j < n; ++j) {
 	for (int i = 0; i < n; ++i) {
-	    A1.data()[i + j * A1.stride()] = 0.25;
-	    B1.data()[i + j * B1.stride()] = 0.125;
-	    C1.data()[i + j * C1.stride()] = 1.0;
+	    A.data()[i + j * A.stride()] = dist(gen);
+	    B.data()[i + j * B.stride()] = dist(gen);
 	}
     }
     auto t1 = std::chrono::high_resolution_clock::now();
-    gemm(A1, B1, C1);
+    Gemm(A, B, C1);
     auto t2 = std::chrono::high_resolution_clock::now();
     std::cout << "Normal gemm took "
               << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
               << " milliseconds"
 	      << std::endl;
 
-    Matrix<double> A2(n);
-    Matrix<double> B2(n);
     Matrix<double> C2(n);
-    for (int j = 0; j < n; ++j) {
-	for (int i = 0; i < n; ++i) {
-	    A2.data()[i + j * A2.stride()] = 0.25;
-	    B2.data()[i + j * B2.stride()] = 0.125;
-	    C2.data()[i + j * C2.stride()] = 1.0;
-	}
-    }
     t1 = std::chrono::high_resolution_clock::now();
-    FastMatmul3x3(A2, B2, C2, base);
+    FastMatmul3x3(A, B, C2, base);
     t2 = std::chrono::high_resolution_clock::now();
     std::cout << "Fast matmul took "
               << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
               << " milliseconds"
+	      << std::endl;
+
+    // Test for correctness
+    double diff = 0.0;
+    for (int j = 0; j < n; ++j) {
+	for (int i = 0; i < n; ++i) {
+	    double c1 = C1.data()[i + j * C1.stride()];
+	    double c2 = C2.data()[i + j * C2.stride()];
+	    diff += (c1 - c2) * (c1 - c2);
+	}
+    }
+    std::cout << "Frobenius norm solution difference: "
+	      << sqrt(diff)
 	      << std::endl;
 }
