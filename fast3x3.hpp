@@ -141,14 +141,20 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Scalar alpha1, Scalar alpha2,
            A2.m() == A2.n() &&
            A2.n() == C.m() &&
            C.m() == C.n());
+
     int strideA1 = A1.stride();
     int strideA2 = A2.stride();
     int strideC = C.stride();
+
+    Scalar *dataA1 = A1.data();
+    Scalar *dataA2 = A2.data();
+    Scalar *dataC = C.data();
+
     for (int j = 0; j < C.m(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            Scalar a = alpha1 * A1.data()[i + j * strideA1];
-            Scalar b = alpha2 * A2.data()[i + j * strideA2];
-            C.data()[i + j * strideC] = a + b;
+            Scalar a = alpha1 * dataA1[i + j * strideA1];
+            Scalar b = alpha2 * dataA2[i + j * strideA2];
+            dataC[i + j * strideC] = a + b;
         }
     }
 }
@@ -165,16 +171,23 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
            A3.m() == A3.n() &&
            A3.n() == C.m() &&
            C.m() == C.n());
+
     int strideA1 = A1.stride();
     int strideA2 = A2.stride();
     int strideA3 = A3.stride();
     int strideC = C.stride();
+
+    Scalar *dataA1 = A1.data();
+    Scalar *dataA2 = A2.data();
+    Scalar *dataA3 = A3.data();
+    Scalar *dataC = C.data();
+
     for (int j = 0; j < C.m(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            Scalar a = alpha1 * A1.data()[i + j * strideA1];
-            Scalar b = alpha2 * A2.data()[i + j * strideA2];
-            Scalar c = alpha3 * A3.data()[i + j * strideA3];
-            C.data()[i + j * strideC] = a + b + c;
+            Scalar a = alpha1 * dataA1[i + j * strideA1];
+            Scalar b = alpha2 * dataA2[i + j * strideA2];
+            Scalar c = alpha3 * dataA3[i + j * strideA3];
+            dataC[i + j * strideC] = a + b + c;
         }
     }
 }
