@@ -13,16 +13,24 @@
 
 int main(int argc, char **argv) {
     int n = 2187;
-    int base = 729;
+    int numsteps = 3;
+    int run_classical = 0;
+    int run_fast = 1;
     if (argc > 1) {
         n = atoi(argv[1]);
     }
     if (argc > 2) {
-        base = atoi(argv[2]);
+        numsteps = atoi(argv[2]);
+    }
+    if (argc > 3) {
+	run_classical = atoi(argv[3]);
+    }
+    if (argc > 4) {
+	run_fast = atoi(argv[4]);
     }
 
     std::cout << "n is: " << n << std::endl;
-    std::cout << "base case is: " << base << std::endl;
+    std::cout << "number of recursive steps is: " << numsteps << std::endl;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -37,25 +45,30 @@ int main(int argc, char **argv) {
             B.data()[i + j * B.stride()] = dist(gen);
         }
     }
-#if 0
-    auto t1 = std::chrono::high_resolution_clock::now();
-    Gemm(A, B, C1);
-    auto t2 = std::chrono::high_resolution_clock::now();
-    std::cout << "Normal gemm took "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
-              << " milliseconds"
-              << std::endl;
-#endif
 
+    if (run_classical) {
+	std::cout << "Running classical gemm..." << std::endl;
+	auto t1 = std::chrono::high_resolution_clock::now();
+	Gemm(A, B, C1);
+	auto t2 = std::chrono::high_resolution_clock::now();
+	std::cout << "Classical gemm took "
+		  << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
+		  << " milliseconds"
+		  << std::endl;
+	C1.deallocate();
+    }
 
-    Matrix<double> C2(n);
-    auto t3 = std::chrono::high_resolution_clock::now();
-    FastMatmul3x3(A, B, C2, base);
-    auto t4 = std::chrono::high_resolution_clock::now();
-    std::cout << "Fast matmul took "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()
-              << " milliseconds"
-              << std::endl;
+    if (run_fast) {
+	std::cout << "Running fast matmul..." << std::endl;
+	Matrix<double> C2(n);
+	auto t3 = std::chrono::high_resolution_clock::now();
+	FastMatmul3x3(A, B, C2, numsteps);
+	auto t4 = std::chrono::high_resolution_clock::now();
+	std::cout << "Fast matmul took "
+		  << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()
+		  << " milliseconds"
+		  << std::endl;
+    }
 
 #if 0
     // Test for correctness.

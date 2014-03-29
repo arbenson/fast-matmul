@@ -194,18 +194,19 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
 
 // C <-- A * B with fast 3x3 matrix multiplication
 // All matrices are assumed to be square with dimension a power of 3
-// base is the cutoff for the base case of using regular matrix multiplication
+// numsteps is the number of recursive steps to take before using
+// classical matrix multiplication
 template <typename Scalar>
 void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
-                   int base) {
-    int n = A.n();
-    int step = n / 3;
-
+                   int numsteps) {
     // Base case for recursion
-    if (n <= base) {
+    if (numsteps == 0) {
         Gemm(A, B, C);
         return;
     }
+
+    int n = A.n();
+    int step = n / 3;
 
     // Get a view of all sub-blocks in 3 x 3 partitioning of the matrices.
     // Sub-blocks of A
@@ -340,7 +341,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M1(step);
     Matrix<Scalar> M1B(step);
     Add(B11, B21, B31, NegOne, NegOne, One, M1B);
-    FastMatmul3x3(A33, M1B, M1, base);
+    FastMatmul3x3(A33, M1B, M1, numsteps - 1);
     M1B.deallocate();
     
     // M2 =  (A22 + A33)              * (-B21 + B32);
@@ -349,7 +350,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M2B(step);
     Add(A22, A33, One, One, M2A);
     Add(B21, B32, NegOne, One, M2B);
-    FastMatmul3x3(M2A, M2B, M2, base);
+    FastMatmul3x3(M2A, M2B, M2, numsteps - 1);
     M2A.deallocate();
     M2B.deallocate();
 
@@ -357,7 +358,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M3(step);
     Matrix<Scalar> M3A(step);
     Add(S6, A12, A32, One, One, One, M3A);
-    FastMatmul3x3(M3A, B23, M3, base);
+    FastMatmul3x3(M3A, B23, M3, numsteps - 1);
     M3A.deallocate();
 
     // M4 =  (-A11 + A21)             * (B12 + B13);    
@@ -366,7 +367,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M4B(step);
     Add(A11, A21, NegOne, One, M4A);
     Add(B12, B13, One, One, M4B);
-    FastMatmul3x3(M4A, M4B, M4, base);
+    FastMatmul3x3(M4A, M4B, M4, numsteps - 1);
     M4A.deallocate();
     M4B.deallocate();
 
@@ -374,31 +375,31 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M5(step);
     Matrix<Scalar> M5B(step);
     Negate(B12, M5B);
-    FastMatmul3x3(S1, M5B, M5, base);
+    FastMatmul3x3(S1, M5B, M5, numsteps - 1);
 
     // M6 =  (S2)                     * (B32);
     Matrix<Scalar> M6(step);
-    FastMatmul3x3(S2, B32, M6, base);
+    FastMatmul3x3(S2, B32, M6, numsteps - 1);
 
     // M7 =  (-A21 - A33)             * (B11);
     Matrix<Scalar> M7(step);
     Matrix<Scalar> M7A(step);
     Add(A21, A33, NegOne, NegOne, M7A);
-    FastMatmul3x3(M7A, B11, M7, base);
+    FastMatmul3x3(M7A, B11, M7, numsteps - 1);
     M7A.deallocate();
 
     // M8 =  (A31 + A33)              * (B11);
     Matrix<Scalar> M8(step);
     Matrix<Scalar> M8A(step);
     Add(A31, A33, One, One, M8A);
-    FastMatmul3x3(M8A, B11, M8, base);
+    FastMatmul3x3(M8A, B11, M8, numsteps - 1);
     M8A.deallocate();
 
     // M9 =  (A22)                    * (-B12 + S5);
     Matrix<Scalar> M9(step);
     Matrix<Scalar> M9B(step);    
     Add(B12, S5, NegOne, One, M9B);
-    FastMatmul3x3(A22, M9B, M9, base);
+    FastMatmul3x3(A22, M9B, M9, numsteps - 1);
     M9B.deallocate();
 
     // M10 = (A22 - A32)              * (B12 + B21 - B22);
@@ -407,7 +408,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M10B(step);
     Add(A22, A32, One, NegOne, M10A);
     Add(B12, B21, B22, One, One, NegOne, M10B);
-    FastMatmul3x3(M10A, M10B, M10, base);
+    FastMatmul3x3(M10A, M10B, M10, numsteps - 1);
     M10A.deallocate();
     M10B.deallocate();
 
@@ -415,14 +416,14 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M11(step);
     Matrix<Scalar> M11A(step);
     Add(A32, A33, NegOne, NegOne, M11A);
-    FastMatmul3x3(M11A, B21, M11, base);
+    FastMatmul3x3(M11A, B21, M11, numsteps - 1);
     M11A.deallocate();
 
     // M12 = (S3)                     * (S5 + B23);
     Matrix<Scalar> M12(step);
     Matrix<Scalar> M12B(step);
     Add(S5, B23, One, One, M12B);
-    FastMatmul3x3(S3, M12B, M12, base);
+    FastMatmul3x3(S3, M12B, M12, numsteps - 1);
     M12B.deallocate();
     
     // M13 = (A13 + A33)              * (B31 + B33);
@@ -431,7 +432,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M13B(step);
     Add(A13, A33, One, One, M13A);
     Add(B31, B33, One, One, M13B);
-    FastMatmul3x3(M13A, M13B, M13, base);
+    FastMatmul3x3(M13A, M13B, M13, numsteps - 1);
     M13A.deallocate();
     M13B.deallocate();
 
@@ -439,7 +440,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M14(step);
     Matrix<Scalar> M14B(step);
     Add(B11, B13, B23, One, One, NegOne, M14B);
-    FastMatmul3x3(S6, M14B, M14, base);
+    FastMatmul3x3(S6, M14B, M14, numsteps - 1);
     M14B.deallocate();
     
     // M15 = (-A11 + A33)             * (B11 + B33);
@@ -448,7 +449,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M15B(step);
     Add(A11, A33, NegOne, One, M15A);
     Add(B11, B33, One, One, M15B);
-    FastMatmul3x3(M15A, M15B, M15, base);
+    FastMatmul3x3(M15A, M15B, M15, numsteps - 1);
     M15A.deallocate();
     M15B.deallocate();
     
@@ -458,7 +459,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M16B(step);
     Add(A13, A23, NegOne, One, M16A);
     Add(S4, B32, B33, One, One, One, M16B);
-    FastMatmul3x3(M16A, M16B, M16, base);
+    FastMatmul3x3(M16A, M16B, M16, numsteps - 1);
     M16A.deallocate();
     M16B.deallocate();
 
@@ -466,7 +467,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M17(step);
     Matrix<Scalar> M17A(step);
     Add(A12, S3, NegOne, One, M17A);
-    FastMatmul3x3(M17A, S4, M17, base);
+    FastMatmul3x3(M17A, S4, M17, numsteps - 1);
     M16A.deallocate();
 
     // M18 = (-A23 + A33)             * (-B31 + B32);
@@ -475,7 +476,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M18B(step);
     Add(A23, A33, NegOne, One, M18A);
     Add(B31, B32, NegOne, One, M18B);
-    FastMatmul3x3(M18A, M18B, M18, base);
+    FastMatmul3x3(M18A, M18B, M18, numsteps - 1);
     M18A.deallocate();
     M18B.deallocate();
 
@@ -485,7 +486,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M19B(step);
     Add(A11, S1, NegOne, One, M19A);
     Add(B12, B23, NegOne, NegOne, M19B);
-    FastMatmul3x3(M19A, M19B, M19, base);
+    FastMatmul3x3(M19A, M19B, M19, numsteps - 1);
     M19A.deallocate();
     M19B.deallocate();
 
@@ -493,28 +494,28 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M20(step);
     Matrix<Scalar> M20A(step);
     Add(A11, A13, NegOne, NegOne, M20A);
-    FastMatmul3x3(M20A, B33, M20, base);
+    FastMatmul3x3(M20A, B33, M20, numsteps - 1);
     M20A.deallocate();
 
     // M21 = (A11)                    * (-B12 - B13 + B33);
     Matrix<Scalar> M21(step);
     Matrix<Scalar> M21B(step);
     Add(B12, B13, B33, NegOne, NegOne, One, M21B);
-    FastMatmul3x3(A11, M21B, M21, base);
+    FastMatmul3x3(A11, M21B, M21, numsteps - 1);
     M21B.deallocate();
 
     // M22 = (-A21 - A22)             * (B12);
     Matrix<Scalar> M22(step);
     Matrix<Scalar> M22A(step);
     Add(A21, A22, NegOne, NegOne, M22A);
-    FastMatmul3x3(M22A, B12, M22, base);
+    FastMatmul3x3(M22A, B12, M22, numsteps - 1);
     M22A.deallocate();
 
     // M23 = (-A12 + A33)             * (B21);
     Matrix<Scalar> M23(step);
     Matrix<Scalar> M23A(step);
     Add(A12, A33, NegOne, One, M23A);
-    FastMatmul3x3(M23A, B21, M23, base);
+    FastMatmul3x3(M23A, B21, M23, numsteps - 1);
     M23A.deallocate();
 
 
@@ -597,8 +598,8 @@ template double FrobeniusDiff(Matrix<double>& A, Matrix<double>& B);
 template double FrobeniusDiff(Matrix<float>& A, Matrix<float>& B);
 
 template void FastMatmul3x3(Matrix<double>& A, Matrix<double>& B,
-                            Matrix<double>& C, int base);
+                            Matrix<double>& C, int numsteps);
 template void FastMatmul3x3(Matrix<float>& A, Matrix<float>& B,
-                            Matrix<float>& C, int base);
+                            Matrix<float>& C, int numsteps);
 
 #endif  // FAST_3x3_
