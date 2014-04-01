@@ -1,6 +1,7 @@
 #include "fast3x3.hpp"
 
 #include <stdlib.h>
+#include <time.h>
 
 #include <chrono>  // note: C++11
 #include <random>
@@ -32,17 +33,15 @@ int main(int argc, char **argv) {
     std::cout << "n is: " << n << std::endl;
     std::cout << "number of recursive steps is: " << numsteps << std::endl;
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dist(0, 1e5);
+    srand (time(NULL));
 
     Matrix<double> A(n);
     Matrix<double> B(n);
     Matrix<double> C(n);
     for (int j = 0; j < n; ++j) {
         for (int i = 0; i < n; ++i) {
-            A.data()[i + j * A.stride()] = dist(gen);
-            B.data()[i + j * B.stride()] = dist(gen);
+            A.data()[i + j * A.stride()] = ((double) rand() / RAND_MAX) * 1024;
+            B.data()[i + j * B.stride()] = ((double) rand() / RAND_MAX) * 1024;
         }
     }
 
