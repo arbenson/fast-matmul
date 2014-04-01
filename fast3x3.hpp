@@ -40,9 +40,9 @@ public:
     }
 
     Scalar *data() { return data_; }
-    int stride() { return stride_; }
-    int m() { return m_; }
-    int n() { return n_; }
+    const int stride() { return stride_; }
+    const int m() { return m_; }
+    const int n() { return n_; }
 
     void allocate() {
         data_ = new Scalar[m_ * n_];
@@ -108,12 +108,14 @@ template<typename Scalar>
 void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
     assert(A.m() == C.m() &&
            A.n() == C.n());
-    int strideA = A.stride();
-    int strideC = C.stride();
+    const int strideA = A.stride();
+    const int strideC = C.stride();
+    const Scalar *dataA = A.data();
+    Scalar *dataC = C.data();
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            Scalar a = A.data()[i + j * strideA];
-            C.data()[i + j * strideC] = -a;
+            Scalar a = dataA[i + j * strideA];
+            dataC[i + j * strideC] = -a;
         }
     }
 }
@@ -142,12 +144,12 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Scalar alpha1, Scalar alpha2,
            A2.n() == C.m() &&
            C.m() == C.n());
 
-    int strideA1 = A1.stride();
-    int strideA2 = A2.stride();
-    int strideC = C.stride();
+    const int strideA1 = A1.stride();
+    const int strideA2 = A2.stride();
+    const int strideC = C.stride();
 
-    Scalar *dataA1 = A1.data();
-    Scalar *dataA2 = A2.data();
+    const Scalar *dataA1 = A1.data();
+    const Scalar *dataA2 = A2.data();
     Scalar *dataC = C.data();
 
     for (int j = 0; j < C.m(); ++j) {
@@ -172,14 +174,14 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
            A3.n() == C.m() &&
            C.m() == C.n());
 
-    int strideA1 = A1.stride();
-    int strideA2 = A2.stride();
-    int strideA3 = A3.stride();
-    int strideC = C.stride();
+    const int strideA1 = A1.stride();
+    const int strideA2 = A2.stride();
+    const int strideA3 = A3.stride();
+    const int strideC = C.stride();
 
-    Scalar *dataA1 = A1.data();
-    Scalar *dataA2 = A2.data();
-    Scalar *dataA3 = A3.data();
+    const Scalar *dataA1 = A1.data();
+    const Scalar *dataA2 = A2.data();
+    const Scalar *dataA3 = A3.data();
     Scalar *dataC = C.data();
 
     for (int j = 0; j < C.m(); ++j) {
@@ -205,8 +207,8 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
         return;
     }
 
-    int n = A.n();
-    int step = n / 3;
+    const int n = A.n();
+    const int step = n / 3;
 
     // Get a view of all sub-blocks in 3 x 3 partitioning of the matrices.
     // Sub-blocks of A
@@ -337,7 +339,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 
     // M1, M2, ..., M23 are the intermediate matrix multiplications
 
-    // M1 =  (A33)                    * (-B11 - B21 + B31);
+    //  M1 =  (A33)                    * (-B11 - B21 + B31);
     Matrix<Scalar> M1(step);
     Matrix<Scalar> M1B(step);
     Add(B11, B21, B31, NegOne, NegOne, One, M1B);
@@ -490,19 +492,19 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     M19A.deallocate();
     M19B.deallocate();
 
-    // M20 = (-A11 - A13)             * (B33);
-    Matrix<Scalar> M20(step);
-    Matrix<Scalar> M20A(step);
-    Add(A11, A13, NegOne, NegOne, M20A);
-    FastMatmul3x3(M20A, B33, M20, numsteps - 1);
-    M20A.deallocate();
-
     // M21 = (A11)                    * (-B12 - B13 + B33);
     Matrix<Scalar> M21(step);
     Matrix<Scalar> M21B(step);
     Add(B12, B13, B33, NegOne, NegOne, One, M21B);
     FastMatmul3x3(A11, M21B, M21, numsteps - 1);
     M21B.deallocate();
+
+    // M20 = (-A11 - A13)             * (B33);
+    Matrix<Scalar> M20(step);
+    Matrix<Scalar> M20A(step);
+    Add(A11, A13, NegOne, NegOne, M20A);
+    FastMatmul3x3(M20A, B33, M20, numsteps - 1);
+    M20A.deallocate();
 
     // M22 = (-A21 - A22)             * (B12);
     Matrix<Scalar> M22(step);

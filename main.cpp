@@ -7,13 +7,13 @@
 
 // Build with: g++ main.cpp -std=c++0x -O3 -lblas -o test
 // Use with:
-//    ./test n base
+//    ./test n numsteps
 // n is the size of the matrix (default 2187)
-// base is the cutoff for recursion (default 729)
+// numsteps is the number of recursive steps (default 1)
 
 int main(int argc, char **argv) {
     int n = 2187;
-    int numsteps = 3;
+    int numsteps = 1;
     int run_classical = 0;
     int run_fast = 1;
     if (argc > 1) {
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 
     Matrix<double> A(n);
     Matrix<double> B(n);
-    Matrix<double> C1(n);
+    Matrix<double> C(n);
     for (int j = 0; j < n; ++j) {
         for (int i = 0; i < n; ++i) {
             A.data()[i + j * A.stride()] = dist(gen);
@@ -49,25 +49,25 @@ int main(int argc, char **argv) {
     if (run_classical) {
         std::cout << "Running classical gemm..." << std::endl;
         auto t1 = std::chrono::high_resolution_clock::now();
-        Gemm(A, B, C1);
+        Gemm(A, B, C);
         auto t2 = std::chrono::high_resolution_clock::now();
         std::cout << "Classical gemm took "
                   << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
                   << " milliseconds"
                   << std::endl;
-        C1.deallocate();
+        C.deallocate();
     }
 
     if (run_fast) {
         std::cout << "Running fast matmul..." << std::endl;
-        Matrix<double> C2(n);
         auto t3 = std::chrono::high_resolution_clock::now();
-        FastMatmul3x3(A, B, C2, numsteps);
+        FastMatmul3x3(A, B, C, numsteps);
         auto t4 = std::chrono::high_resolution_clock::now();
         std::cout << "Fast matmul took "
                   << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()
                   << " milliseconds"
                   << std::endl;
+        C.deallocate();
     }
 
 #if 0
@@ -111,4 +111,5 @@ int main(int argc, char **argv) {
     std::cout << "(2, 3): " << FrobeniusDiff(C23A, C23B) << std::endl;
     std::cout << "(3, 3): " << FrobeniusDiff(C33A, C33B) << std::endl;
 #endif
+
 }
