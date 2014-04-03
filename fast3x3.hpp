@@ -258,7 +258,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // S6 = A11 + A31;  [1]
     // 6 in total
     //
-    //  M1 =  (A33)                    * (-B11 - B21 + B31); [3]
+    //  M1 =  (A33)                    * (-B11 - B21 + B31); [2]
     //  M2 =  (A22 + A33)              * (-B21 + B32);       [2]
     //  M3 =  (S6 + A12 + A32)         * (B23);              [2]
     //  M4 =  (-A11 + A21)             * (B12 + B13);        [2]
@@ -286,7 +286,8 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // We need to negate B12 but it needs to be done in the matrix multiply.
     // With recursion, this is a little tricky.  For now, we just negate
     // and suffer from one more "subtraction".
-    // In total, 37 additions/subtractions for the intermediate multiplications.
+    // In total, 35 additions/subtractions (not counting negation) for the 
+    // intermediate multiplications.
     //
     // Pre-compute for formulation of C blocks:
     // 
@@ -308,7 +309,7 @@ void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // 
     // In total, 30 additions/subtractions
     //
-    // Overall: 6 + 37 + 3 + 30 = 76 additions/subtractions
+    // Overall: 6 + 35 + 3 + 30 = 74 additions/subtractions
 
     // S1, ..., S5 variables are pre-computations of summations
     // that are used multiple times in the multiplications.
