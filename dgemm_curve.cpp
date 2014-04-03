@@ -9,7 +9,7 @@
 // Build with: g++ dgemm_curve.cpp -std=c++0x -O3 -lblas -o dgemm_curve
 int main(int argc, char **argv) {
     std::vector<int> n_vals;
-    for (int i = 210; i <= 1500; i += 10) {
+    for (int i = 100; i <= 1500; i += 10) {
       n_vals.push_back(i);
     }
 # if 0
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
             }
         }
         auto t1 = std::chrono::high_resolution_clock::now();
-        int num_trials = 10;
+        int num_trials = 12;
         for (int trial = 0; trial < num_trials; ++trial) {
             Gemm(A, B, C);
         }
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         std::cout << " " 
                   << n
                   << " "
-                  << (int) ((float) std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count() / num_trials)
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
                   << ";";
         if (!(n % 100)) {
             std::cout << "..." << std::endl;
