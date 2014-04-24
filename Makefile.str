@@ -1,4 +1,11 @@
-CC = g++ 
+1;2cCC = g++ 
+
+MODE = sequential
+#MODE = cilk
+
+ifeq ($(MODE), cilk)
+  CC = icpc
+endif
 
 # for compiling with MKL
 #MKLROOT := /opt/intel/Compiler/11.1/064/mkl
@@ -11,6 +18,9 @@ BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 #DEBUG := -g -O0 -Wall
 OPT := -O3
 CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++0x
+ifeq ($(MODE), cilk)
+  CFLAGS += -D_CILK_
+endif
 
 LDFLAGS := 
 LDLIBS := $(BLAS_LAPACK_LIB) -lm 
