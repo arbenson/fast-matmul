@@ -1,7 +1,5 @@
 def write_line(header, num_indent, code):
-    '''
-    Write the line of code with num_indent number of indents.
-    '''
+    ''' Write the line of code with num_indent number of indents. '''
     header.write(' ' * 4 * num_indent + code + '\n')
 
 def write_subblocks(header, mat_name, dim1, dim2):
@@ -16,8 +14,8 @@ def write_subblocks(header, mat_name, dim1, dim2):
     write_line(header, 1, 'int %s = %s.n() / %d;' % (y_step, mat_name, dim2))
     for i in xrange(dim1):
         for j in xrange(dim2):
-            write_line(header, 1, 'Matrix<Scalar> %s%d%d(A.data() + %d * %s + %d * %s * A.stride(), A.stride(), %s, %s);' % (
-                    mat_name, i + 1, j + 1, i, x_step, j, y_step, x_step, y_step))
+            write_line(header, 1, 'Matrix<Scalar> %s%d%d(%s.data() + %d * %s + %d * %s * %s.stride(), %s.stride(), %s, %s);' % (
+                    mat_name, i + 1, j + 1, mat_name, i, x_step, j, y_step, mat_name, mat_name, x_step, y_step))
 
 def read_coeffs(filename):
     '''
@@ -40,16 +38,16 @@ def read_coeffs(filename):
     return coeffs
 
 def write_matmul(header, ind, a_coeffs, b_coeffs):
-    '''
+    ''' Write a matrix multiplication call.
+
     header is the file to which we are writing
     ind is which multiplication this is (1, 2, 3, ...)
     a_coeffs are the coefficients for the A matrix
     b_coeffs are the coefficients for the B matrix
     '''
-
-    comment = '// M%d = ( ' % (ind + 1)
+    comment = '// M%d = (' % (ind + 1)
     comment += ' + '.join(['%d * A%d' % (c, i + 1) for i, c in enumerate(a_coeffs) if c != 0])
-    comment += ') * ( '
+    comment += ') * ('
     comment += ' + '.join(['%d * B%d' % (c, i + 1) for i, c in enumerate(b_coeffs) if c != 0])
     comment += ')'
     write_line(header, 1, comment)
@@ -59,36 +57,51 @@ def write_matmul(header, ind, a_coeffs, b_coeffs):
     write_line(header, 1, 'cilk_spawn [&]{')
     write_line(header, 0, '#endif')
 
+    def linear2cart(ind, rows, cols):
+        ''' Given a linear index ind from [0, 1, 2, ..., rows * cols - 1],
+        return the corresponding (row, col) index from
+        [1, 2, ..., row] x [1, 2, ..., col].
+        Ordering of the linear index is assumed to be _row_ major.
+        '''
+        return ((ind / rows) + 1, (ind % cols) + 1)
+
     def num_nonzero(arr):
         ''' Returns number of non-zero entries in the array arr. '''
         return len(filter(lambda x: x != 0, arr))
 
-    def write_addition(coeffs, mat_name):
+    def write_addition(coeffs, mat_name, mat_dims):
         if num_nonzero(coeffs) > 1:
-            write_line(header, 1, 'Matrix<Scalar> M%d%s(%s11.n());' % (
-                    ind + 1, mat_name, mat_name))
-        '''
-        Add(B11, B21, B31, NegOne, NegOne, One, M1B);
-        '''
+            tmp_mat = 'M%d%s' % (ind + 1, mat_name)
+            write_line(header, 1, 'Matrix<Scalar> %s(%s11.n());' % (
+                    tmp_mat, mat_name))
+            add = 'Add('
+            for i, coeff in enumerate(coeffs):
+                if coeff != 0:
+                    add += mat_name + '%d%d, ' % linear2cart(i, mat_dims[0], mat_dims[1])
+            for i, coeff in enumerate(coeffs):
+                if coeff != 0:
+                    add += 'Scalar(%g), ' % coeff
+            add += tmp_mat + ');'
+            write_line(header, 1, add)
 
-    write_addition(a_coeffs, 'A')
-    write_addition(b_coeffs, 'B')
+    write_addition(a_coeffs, 'A', (dims[0], dims[1]))
+    write_addition(b_coeffs, 'B', (dims[1], dims[2]))
 
     def subblock_name(coeffs, mat_name):
         if (num_nonzero(coeffs) > 1):
-            name = 'M%d%s' % (ind, mat_name)
+            name = 'M%d%s' % (ind + 1, mat_name)
         else:
             loc = [i for i, c in enumerate(coeffs) if c != 0]
             name = '%s%d' % (mat_name, loc[0] + 1)
         return name
 
     write_line(header, 1, 'FastMatmul(%s, %s, M%d, numsteps - 1);' % (
-            subblock_name(a_coeffs, 'A'), subblock_name(b_coeffs, 'B'), ind))
+            subblock_name(a_coeffs, 'A'), subblock_name(b_coeffs, 'B'), ind + 1))
     
     if (num_nonzero(a_coeffs) > 1):
-        write_line(header, 1, 'M%dA.deallocate();' % ind)
+        write_line(header, 1, 'M%dA.deallocate();' % (ind + 1))
     if (num_nonzero(b_coeffs) > 1):
-        write_line(header, 1, 'M%dB.deallocate();' % ind)
+        write_line(header, 1, 'M%dB.deallocate();' % (ind + 1))
 
     # Cilk wrapper (end)
     write_line(header, 0, '#ifdef _CILK_')
@@ -98,6 +111,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs):
 outfile = 'output/fast.hpp'
 coeffs = read_coeffs('grey-strassen')
 dims = (2, 2, 2)
+print 'Generating code for %d x %d x %d' % dims
 
 with open(outfile, 'w') as header:
     write_line(header, 0, 'template <typename Scalar>')
@@ -113,18 +127,23 @@ with open(outfile, 'w') as header:
     write_subblocks(header, 'B', dims[1], dims[2])
     write_subblocks(header, 'C', dims[0], dims[2])
 
-    # Scalars needed for multiplications.
+    num_multiplies = len(coeffs[0][0])
+    print '%d matrix multiplications...' % num_multiplies
+
+    # Declaration of all of the intermediate multiplication results.
     write_line(header, 0, '\n')
-    write_line(header, 1, 'Scalar NegOne = Scalar(-1);')
-    write_line(header, 1, 'Scalar One = Scalar(1);')
+    write_line(header, 1, '// These are the intermediate matrices.')
+    write_line(header, 1, '// We define them here so that they can be used')
+    write_line(header, 1, '// inside the lambda functions for Cilk.')
+    for i in xrange(num_multiplies):
+        write_line(header, 1, 'Matrix<Scalar> M%d(C_x_step, C_y_step);' % (i + 1))
     write_line(header, 0, '\n')
 
-    num_multiplies = len(coeffs[0][0])
+    # Write the mutliplication blocks.
     for i in xrange(num_multiplies):
         a_coeffs = [c[i] for c in coeffs[0]]
         b_coeffs = [c[i] for c in coeffs[1]]
         write_matmul(header, i, a_coeffs, b_coeffs)
-
     
     # end of function
     write_line(header, 0, '}\n')
