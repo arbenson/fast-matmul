@@ -114,6 +114,16 @@ dims = (2, 2, 2)
 print 'Generating code for %d x %d x %d' % dims
 
 with open(outfile, 'w') as header:
+    # header information
+    write_line(header, 0, '#ifndef _FAST_HPP_')
+    write_line(header, 0, '#define _FAST_HPP_')
+    write_line(header, 0, '\n')
+    write_line(header, 0, '#include "linalg.hpp"')
+    write_line(header, 0, '#ifdef _CILK_')
+    write_line(header, 0, '# include <cilk/cilk.h>')
+    write_line(header, 0, '#endif')
+    write_line(header, 0, '\n')
+
     write_line(header, 0, 'template <typename Scalar>')
     write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps) {')
     write_line(header, 1, '// Base case for recursion')
@@ -147,3 +157,5 @@ with open(outfile, 'w') as header:
     
     # end of function
     write_line(header, 0, '}\n')
+
+    write_line(header, 0, '#endif  // _FAST_HPP_')
