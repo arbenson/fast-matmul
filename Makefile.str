@@ -1,4 +1,4 @@
-1;2cCC = g++ 
+CC = g++ 
 
 MODE = sequential
 #MODE = cilk
