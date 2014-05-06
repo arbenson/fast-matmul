@@ -25,11 +25,11 @@ public:
     Matrix(Scalar *data, int stride, int m, int n):
         data_(data), stride_(stride), m_(m), n_(n), is_view_(true) {}
 
-    Matrix(int n) {
-        stride_ = n;
-        m_ = n;
-        n_ = n;
-        is_view_ = false;
+    Matrix(int n) : m_(n), n_(n), stride_(n), is_view_(false) {
+        allocate();
+    }
+
+    Matrix(int m, int n) : m_(m), n_(n), stride_(n), is_view_(false) {
         allocate();
     }
 
@@ -65,33 +65,31 @@ private:
 };
 
 // Wrapper for dgemm called by templated gemm.
-void GemmWrap(int dim, double *A, int lda, double *B, int ldb, double *C,
+void GemmWrap(int m, int n, int k, double *A, int lda, double *B, int ldb, double *C,
                int ldc) {
     char transa = 'n';
     char transb = 'n';
     double alpha = 1;
-    double beta = 0;
-    
-    dgemm_(&transa, &transb, &dim, &dim, &dim, &alpha, A, &lda, B, &ldb, &beta,
+    double beta = 0;    
+    dgemm_(&transa, &transb, &m, &n, &n, &alpha, A, &lda, B, &ldb, &beta,
            C, &ldc);
 }
 
 // Wrapper for sgemm called by templated gemm.
-void GemmWrap(int dim, float *A, int lda, float *B, int ldb, float *C,
+void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb, float *C,
                int ldc) {
     char transa = 'n';
     char transb = 'n';
     float alpha = 1;
     float beta = 0;
-    sgemm_(&transa, &transb, &dim, &dim, &dim, &alpha, A, &lda, B, &ldb, &beta,
+    sgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
            C, &ldc);
 }
 
 // Frobenius norm difference: \| A - B \|_F
 template<typename Scalar>
 double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
-    assert(A.m() == B.m() &&
-           A.n() == B.n());
+    assert(A.m() == B.m() && A.n() == B.n());
     double diff = 0.0;
     for (int j = 0; j < A.m(); ++j) {
         for (int i = 0; i < A.n(); ++i) {
@@ -121,28 +119,18 @@ void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
 }
 
 // C <-- A * B
-// all matrices are assumed to be square
 template <typename Scalar>
 void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
-    assert(A.m() == A.n() &&
-           A.n() == B.m() &&
-           B.m() == B.n() &&
-           B.n() == C.m() &&
-           C.m() == C.n());
-    GemmWrap(A.n(), A.data(), A.stride(), B.data(), B.stride(), C.data(),
-              C.stride());
+    assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
+    GemmWrap(A.m(), A.n(), B.n(), A.data(), A.stride(), B.data(), B.stride(), C.data(), C.stride());
 }
 
 // C <-- alpha1 * A1 + alpha2 * A2
-// all matrices are assumed to be square
 template <typename Scalar>
 void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Scalar alpha1, Scalar alpha2,
          Matrix<Scalar> &C) {
-    assert(A1.m() == A1.n() &&
-           A1.n() == A2.m() &&
-           A2.m() == A2.n() &&
-           A2.n() == C.m() &&
-           C.m() == C.n());
+    assert(A1.m() == A2.m() && A2.m() == C.m() &&
+	   A1.n() == A2.n() && A2.n() == C.n());
 
     const int strideA1 = A1.stride();
     const int strideA2 = A2.stride();
@@ -152,7 +140,7 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Scalar alpha1, Scalar alpha2,
     const Scalar *dataA2 = A2.data();
     Scalar *dataC = C.data();
 
-    for (int j = 0; j < C.m(); ++j) {
+    for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
             Scalar a = alpha1 * dataA1[i + j * strideA1];
             Scalar b = alpha2 * dataA2[i + j * strideA2];
@@ -162,17 +150,11 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Scalar alpha1, Scalar alpha2,
 }
 
 // C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3
-// all matrices are assumed to be square
 template <typename Scalar>
 void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
          Scalar alpha1, Scalar alpha2, Scalar alpha3, Matrix<Scalar>& C) {
-    assert(A1.m() == A1.n() &&
-           A1.n() == A2.m() &&
-           A2.m() == A2.n() &&
-           A2.n() == A3.m() &&
-           A3.m() == A3.n() &&
-           A3.n() == C.m() &&
-           C.m() == C.n());
+    assert(A1.m() == A2.m() && A2.m() == A3.m() && A3.m() == C.m() &&
+	   A1.n() == A2.n() && A2.n() == A3.n() && A3.n() == C.n());
 
     const int strideA1 = A1.stride();
     const int strideA2 = A2.stride();
@@ -184,7 +166,7 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
     const Scalar *dataA3 = A3.data();
     Scalar *dataC = C.data();
 
-    for (int j = 0; j < C.m(); ++j) {
+    for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
             Scalar a = alpha1 * dataA1[i + j * strideA1];
             Scalar b = alpha2 * dataA2[i + j * strideA2];
