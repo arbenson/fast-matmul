@@ -12,8 +12,8 @@
 // numsteps is the number of recursive steps to take before using
 // classical matrix multiplication
 template <typename Scalar>
-void FastMatmul3x3(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
-                   int numsteps) {
+void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
+		int numsteps) {
     // Base case for recursion
     if (numsteps == 0) {
         Gemm(A, B, C);
