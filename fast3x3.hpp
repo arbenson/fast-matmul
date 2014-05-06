@@ -165,7 +165,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     //  M1 =  (A33)                    * (-B11 - B21 + B31);
     Matrix<Scalar> M1B(step);
     Add(B11, B21, B31, NegOne, NegOne, One, M1B);
-    FastMatmul3x3(A33, M1B, M1, numsteps - 1);
+    FastMatmul(A33, M1B, M1, numsteps - 1);
     M1B.deallocate();
 #ifdef _CILK_
     }();
@@ -179,7 +179,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M2B(step);
     Add(A22, A33, One, One, M2A);
     Add(B21, B32, NegOne, One, M2B);
-    FastMatmul3x3(M2A, M2B, M2, numsteps - 1);
+    FastMatmul(M2A, M2B, M2, numsteps - 1);
     M2A.deallocate();
     M2B.deallocate();
 #ifdef _CILK_
@@ -192,7 +192,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M3 =  (S6 + A12 + A32)  * (B23);
     Matrix<Scalar> M3A(step);
     Add(S6, A12, A32, One, One, One, M3A);
-    FastMatmul3x3(M3A, B23, M3, numsteps - 1);
+    FastMatmul(M3A, B23, M3, numsteps - 1);
     M3A.deallocate();
 #ifdef _CILK_
     }();
@@ -206,7 +206,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M4B(step);
     Add(A11, A21, NegOne, One, M4A);
     Add(B12, B13, One, One, M4B);
-    FastMatmul3x3(M4A, M4B, M4, numsteps - 1);
+    FastMatmul(M4A, M4B, M4, numsteps - 1);
     M4A.deallocate();
     M4B.deallocate();
 #ifdef _CILK_
@@ -219,7 +219,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M5 =  (S1)                     * (-B12);
     Matrix<Scalar> M5B(step);
     Negate(B12, M5B);
-    FastMatmul3x3(S1, M5B, M5, numsteps - 1);
+    FastMatmul(S1, M5B, M5, numsteps - 1);
 #ifdef _CILK_
     }();
 #endif
@@ -228,7 +228,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     cilk_spawn [&]{
 #endif
     // M6 =  (S2)                     * (B32);
-    FastMatmul3x3(S2, B32, M6, numsteps - 1);
+    FastMatmul(S2, B32, M6, numsteps - 1);
 #ifdef _CILK_
     }();
 #endif
@@ -239,7 +239,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M7 =  (-A21 - A33)             * (B11);
     Matrix<Scalar> M7A(step);
     Add(A21, A33, NegOne, NegOne, M7A);
-    FastMatmul3x3(M7A, B11, M7, numsteps - 1);
+    FastMatmul(M7A, B11, M7, numsteps - 1);
     M7A.deallocate();
 #ifdef _CILK_
     }();
@@ -251,7 +251,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M8 =  (A31 + A33)              * (B11);
     Matrix<Scalar> M8A(step);
     Add(A31, A33, One, One, M8A);
-    FastMatmul3x3(M8A, B11, M8, numsteps - 1);
+    FastMatmul(M8A, B11, M8, numsteps - 1);
     M8A.deallocate();
 #ifdef _CILK_
     }();
@@ -263,7 +263,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M9 =  (A22)                    * (-B12 + S5);
     Matrix<Scalar> M9B(step);    
     Add(B12, S5, NegOne, One, M9B);
-    FastMatmul3x3(A22, M9B, M9, numsteps - 1);
+    FastMatmul(A22, M9B, M9, numsteps - 1);
     M9B.deallocate();
 #ifdef _CILK_
     }();
@@ -277,7 +277,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M10B(step);
     Add(A22, A32, One, NegOne, M10A);
     Add(B12, B21, B22, One, One, NegOne, M10B);
-    FastMatmul3x3(M10A, M10B, M10, numsteps - 1);
+    FastMatmul(M10A, M10B, M10, numsteps - 1);
     M10A.deallocate();
     M10B.deallocate();
 #ifdef _CILK_
@@ -290,7 +290,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M11 = (-A32 - A33)             * (B21);
     Matrix<Scalar> M11A(step);
     Add(A32, A33, NegOne, NegOne, M11A);
-    FastMatmul3x3(M11A, B21, M11, numsteps - 1);
+    FastMatmul(M11A, B21, M11, numsteps - 1);
     M11A.deallocate();
 #ifdef _CILK_
     }();
@@ -302,7 +302,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M12 = (S3)                     * (S5 + B23);
     Matrix<Scalar> M12B(step);
     Add(S5, B23, One, One, M12B);
-    FastMatmul3x3(S3, M12B, M12, numsteps - 1);
+    FastMatmul(S3, M12B, M12, numsteps - 1);
     M12B.deallocate();
 #ifdef _CILK_
     }();
@@ -316,7 +316,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M13B(step);
     Add(A13, A33, One, One, M13A);
     Add(B31, B33, One, One, M13B);
-    FastMatmul3x3(M13A, M13B, M13, numsteps - 1);
+    FastMatmul(M13A, M13B, M13, numsteps - 1);
     M13A.deallocate();
     M13B.deallocate();
 #ifdef _CILK_
@@ -329,7 +329,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M14 = (S6)                     * (B11 + B13 - B23);
     Matrix<Scalar> M14B(step);
     Add(B11, B13, B23, One, One, NegOne, M14B);
-    FastMatmul3x3(S6, M14B, M14, numsteps - 1);
+    FastMatmul(S6, M14B, M14, numsteps - 1);
     M14B.deallocate();
 #ifdef _CILK_
     }();
@@ -343,7 +343,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M15B(step);
     Add(A11, A33, NegOne, One, M15A);
     Add(B11, B33, One, One, M15B);
-    FastMatmul3x3(M15A, M15B, M15, numsteps - 1);
+    FastMatmul(M15A, M15B, M15, numsteps - 1);
     M15A.deallocate();
     M15B.deallocate();
 #ifdef _CILK_
@@ -358,7 +358,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M16B(step);
     Add(A13, A23, NegOne, One, M16A);
     Add(S4, B32, B33, One, One, One, M16B);
-    FastMatmul3x3(M16A, M16B, M16, numsteps - 1);
+    FastMatmul(M16A, M16B, M16, numsteps - 1);
     M16A.deallocate();
     M16B.deallocate();
 #ifdef _CILK_
@@ -371,7 +371,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M17 = (-A12 + S3)              * (S4);
     Matrix<Scalar> M17A(step);
     Add(A12, S3, NegOne, One, M17A);
-    FastMatmul3x3(M17A, S4, M17, numsteps - 1);
+    FastMatmul(M17A, S4, M17, numsteps - 1);
     M17A.deallocate();
 #ifdef _CILK_
     }();
@@ -385,7 +385,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M18B(step);
     Add(A23, A33, NegOne, One, M18A);
     Add(B31, B32, NegOne, One, M18B);
-    FastMatmul3x3(M18A, M18B, M18, numsteps - 1);
+    FastMatmul(M18A, M18B, M18, numsteps - 1);
     M18A.deallocate();
     M18B.deallocate();
 #ifdef _CILK_
@@ -400,7 +400,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     Matrix<Scalar> M19B(step);
     Add(A11, S1, NegOne, One, M19A);
     Add(B12, B23, NegOne, NegOne, M19B);
-    FastMatmul3x3(M19A, M19B, M19, numsteps - 1);
+    FastMatmul(M19A, M19B, M19, numsteps - 1);
     M19A.deallocate();
     M19B.deallocate();
 #ifdef _CILK_
@@ -413,7 +413,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M20 = (-A11 - A13)             * (B33);
     Matrix<Scalar> M20A(step);
     Add(A11, A13, NegOne, NegOne, M20A);
-    FastMatmul3x3(M20A, B33, M20, numsteps - 1);
+    FastMatmul(M20A, B33, M20, numsteps - 1);
     M20A.deallocate();
 #ifdef _CILK_
     }();
@@ -425,7 +425,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M21 = (A11)                    * (-B12 - B13 + B33);
     Matrix<Scalar> M21B(step);
     Add(B12, B13, B33, NegOne, NegOne, One, M21B);
-    FastMatmul3x3(A11, M21B, M21, numsteps - 1);
+    FastMatmul(A11, M21B, M21, numsteps - 1);
     M21B.deallocate();
 #ifdef _CILK_
     }();
@@ -437,7 +437,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M22 = (-A21 - A22)             * (B12);
     Matrix<Scalar> M22A(step);
     Add(A21, A22, NegOne, NegOne, M22A);
-    FastMatmul3x3(M22A, B12, M22, numsteps - 1);
+    FastMatmul(M22A, B12, M22, numsteps - 1);
     M22A.deallocate();
 #ifdef _CILK_
     }();
@@ -449,7 +449,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     // M23 = (-A12 + A33)             * (B21);
     Matrix<Scalar> M23A(step);
     Add(A12, A33, NegOne, One, M23A);
-    FastMatmul3x3(M23A, B21, M23, numsteps - 1);
+    FastMatmul(M23A, B21, M23, numsteps - 1);
     M23A.deallocate();
 #ifdef _CILK_
     }();
@@ -515,9 +515,9 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 }
 
 // Template declarations
-template void FastMatmul3x3(Matrix<double>& A, Matrix<double>& B,
-                            Matrix<double>& C, int numsteps);
-template void FastMatmul3x3(Matrix<float>& A, Matrix<float>& B,
-                            Matrix<float>& C, int numsteps);
+template void FastMatmul(Matrix<double>& A, Matrix<double>& B,
+			 Matrix<double>& C, int numsteps);
+template void FastMatmul(Matrix<float>& A, Matrix<float>& B,
+			 Matrix<float>& C, int numsteps);
 
 #endif  // _FAST_3x3_HPP_
