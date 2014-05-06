@@ -176,6 +176,36 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
     }
 }
 
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3, Matrix<Scalar>& A4,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3, Scalar alpha4, Matrix<Scalar>& C) {
+    assert(A1.m() == A2.m() && A2.m() == A3.m() && A3.m() == C.m() && A4.m() == C.m() &&
+	   A1.n() == A2.n() && A2.n() == A3.n() && A3.n() == C.n() && A4.n() == C.n());
+
+    const int strideA1 = A1.stride();
+    const int strideA2 = A2.stride();
+    const int strideA3 = A3.stride();
+    const int strideA4 = A4.stride();
+    const int strideC = C.stride();
+
+    const Scalar *dataA1 = A1.data();
+    const Scalar *dataA2 = A2.data();
+    const Scalar *dataA3 = A3.data();
+    const Scalar *dataA4 = A4.data();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a = alpha1 * dataA1[i + j * strideA1];
+            Scalar b = alpha2 * dataA2[i + j * strideA2];
+            Scalar c = alpha3 * dataA3[i + j * strideA3];
+            Scalar d = alpha4 * dataA4[i + j * strideA4];
+            dataC[i + j * strideC] = a + b + c + d;
+        }
+    }
+}
+
 
 // Template declarations
 template void Gemm(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C);
