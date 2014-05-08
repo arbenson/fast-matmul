@@ -8,10 +8,11 @@
 
 // Build with: g++ main.cpp -std=c++0x -O3 -lblas -o test
 // Use with:
-//    ./test n numsteps
+//    ./test n numsteps run_classical run_fast
 // n is the size of the matrix (default 2187)
 // numsteps is the number of recursive steps (default 1)
-
+// run_classical is 0/1 on whether or not to run the classical algorithm (default 0)
+// run_fast is 0/1 on whether or not to run the fast algorithm (default 1)
 int main(int argc, char **argv) {
     int n = 2187;
     int numsteps = 1;
@@ -65,6 +66,10 @@ int main(int argc, char **argv) {
                   << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()
                   << " milliseconds"
                   << std::endl;
+    }
+
+    if (!run_fast || !run_classical) {
+	return 0;
     }
 
     // Test for correctness.
