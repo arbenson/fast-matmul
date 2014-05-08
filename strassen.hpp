@@ -2,6 +2,7 @@
 #define _FAST_HPP_
 
 
+// This is an automatically generated file from gen.py.
 #include "linalg.hpp"
 #ifdef _CILK_
 # include <cilk/cilk.h>

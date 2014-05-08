@@ -43,7 +43,7 @@ test: main.o
 strassen: strassen.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-fast332: fast3x3x2.o
+fast332: fast332.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 %.o: %.cpp

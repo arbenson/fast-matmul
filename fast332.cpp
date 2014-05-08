@@ -1,4 +1,4 @@
-#include "fast3x3x2.hpp"
+#include "fast332.hpp"
 
 #include <stdlib.h>
 #include <time.h>
@@ -7,8 +7,8 @@
 #include <random>
 
 int main(int argc, char **argv) {
-    int m = 3600;
-    int n = 2400;
+    int m = 2700;
+    int n = 800;
     int numsteps = 2;
 
     srand (time(NULL));
@@ -16,13 +16,13 @@ int main(int argc, char **argv) {
     Matrix<double> A(m, m);
     Matrix<double> B(m, n);
     Matrix<double> C1(m, n), C2(m, n);
-    for (int j = 0; j < m; ++j) {
-        for (int i = 0; i < m; ++i) {
+    for (int j = 0; j < A.m(); ++j) {
+        for (int i = 0; i < A.n(); ++i) {
             A.data()[i + j * A.stride()] = ((double) rand() / RAND_MAX) * 1024;
         }
     }
-    for (int j = 0; j < n; ++j) {
-        for (int i = 0; i < m; ++i) {
+    for (int j = 0; j < B.n(); ++j) {
+        for (int i = 0; i < B.m(); ++i) {
             B.data()[i + j * B.stride()] = ((double) rand() / RAND_MAX) * 1024;
         }
     }
