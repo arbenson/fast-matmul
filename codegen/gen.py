@@ -79,13 +79,13 @@ def num_nonzero(arr):
     return len(filter(lambda x: x != 0, arr))
 
 
-def linear2cart(ind, rows, cols):
+def linear2cart(ind, cols):
     ''' Given a linear index ind from [0, 1, 2, ..., rows * cols - 1],
     return the corresponding (row, col) index from
     [1, 2, ..., row] x [1, 2, ..., col].
     Ordering of the linear index is assumed to be _row_ major.
     '''
-    return ((ind / rows) + 1, (ind % cols) + 1)
+    return ((ind / cols) + 1, (ind % cols) + 1)
 
 
 def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
@@ -97,10 +97,10 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     b_coeffs are the coefficients for the B matrix
     '''
     comment = '// M%d = (' % (ind + 1)
-    comment += ' + '.join([str(c) + ' * A%d%d' % linear2cart(i, dims[0], dims[1]) \
+    comment += ' + '.join([str(c) + ' * A%d%d' % linear2cart(i, dims[1]) \
                                for i, c in enumerate(a_coeffs) if c != 0])
     comment += ') * ('
-    comment += ' + '.join([str(c) + ' * B%d%d' % linear2cart(i, dims[1], dims[2]) \
+    comment += ' + '.join([str(c) + ' * B%d%d' % linear2cart(i, dims[2]) \
                                for i, c in enumerate(b_coeffs) if c != 0])
     comment += ')'
     write_line(header, 1, comment)
@@ -118,7 +118,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
             add = 'Add('
             for i, coeff in enumerate(coeffs):
                 if coeff != 0:
-                    add += mat_name + '%d%d, ' % linear2cart(i, mat_dims[0], mat_dims[1])
+                    add += mat_name + '%d%d, ' % linear2cart(i, mat_dims[1])
             for i, coeff in enumerate(coeffs):
                 if coeff != 0:
                     add += 'Scalar(%g), ' % coeff
@@ -138,7 +138,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
             name = 'M%d%s' % (ind + 1, mat_name)
         else:
             loc = [i for i, c in enumerate(coeffs) if c != 0]
-            name = mat_name + '%d%d' % linear2cart(loc[0], mat_dims[0], mat_dims[1])
+            name = mat_name + '%d%d' % linear2cart(loc[0], mat_dims[1])
         return name
 
     write_line(header, 1, 'FastMatmul(%s, %s, M%d, numsteps - 1);' % (
@@ -164,7 +164,8 @@ def write_output(header, ind, coeffs, mat_dims):
     for i, coeff in enumerate(coeffs):
         if coeff != 0:
             add += 'Scalar(%g), ' % coeff
-    add += 'C%d%d);' % linear2cart(ind, mat_dims[0], mat_dims[1])
+    print ind, mat_dims, linear2cart(ind, mat_dims[1])
+    add += 'C%d%d);' % linear2cart(ind, mat_dims[1])
     write_line(header, 1, add)
 
 def main():
