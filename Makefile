@@ -25,8 +25,8 @@ endif
 LDFLAGS := 
 LDLIBS := $(BLAS_LAPACK_LIB) -lm 
 
-objects = dgemm_curve.o main.o 
-targets = dgemm_curve test
+objects = dgemm_curve.o main.o strassen.o fast3x3x2.o
+targets = dgemm_curve test strassen fast332
 
 .PHONY : default
 default : all
@@ -38,6 +38,12 @@ dgemm_curve: dgemm_curve.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 test: main.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+strassen: strassen.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+fast332: fast3x3x2.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 %.o: %.cpp
