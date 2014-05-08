@@ -170,23 +170,26 @@ def write_output(header, ind, coeffs, mat_dims):
 def main():
     try:
         outfile = 'output/fast.hpp'
-        coeffs = read_coeffs(sys.argv[1])
+        coeff_file = sys.argv[1]
         dims = tuple([int(d) for d in sys.argv[2].split(',')])
         print 'Generating code for %d x %d x %d' % dims
     except:
         raise Exception('USAGE: python gen.py coeff_file m,n,p')
 
+    coeffs = read_coeffs(sys.argv[1])
     with open(outfile, 'w') as header:
         # header information
         write_line(header, 0, '#ifndef _FAST_HPP_')
         write_line(header, 0, '#define _FAST_HPP_')
         write_line(header, 0, '\n')
+        write_line(header, 0, '// This is an automatically generated file from gen.py.')
         write_line(header, 0, '#include "linalg.hpp"')
         write_line(header, 0, '#ifdef _CILK_')
         write_line(header, 0, '# include <cilk/cilk.h>')
         write_line(header, 0, '#endif')
         write_line(header, 0, '\n')
 
+        # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
                    'Matrix<Scalar>& C, int numsteps) {')
