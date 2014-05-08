@@ -29,7 +29,7 @@ public:
         allocate();
     }
 
-    Matrix(int m, int n) : m_(m), n_(n), stride_(n), is_view_(false) {
+    Matrix(int m, int n) : m_(m), n_(n), stride_(m), is_view_(false) {
         allocate();
     }
 
@@ -71,7 +71,7 @@ void GemmWrap(int m, int n, int k, double *A, int lda, double *B, int ldb, doubl
     char transb = 'n';
     double alpha = 1;
     double beta = 0;
-    dgemm_(&transa, &transb, &m, &n, &n, &alpha, A, &lda, B, &ldb, &beta,
+    dgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
            C, &ldc);
 }
 
@@ -91,10 +91,15 @@ template<typename Scalar>
 double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
     assert(A.m() == B.m() && A.n() == B.n());
     double diff = 0.0;
+    const int strideA = A.stride();
+    const int strideB = B.stride();
+    std::cout << strideA << " " << strideB << std::endl;
+    const Scalar *dataA = A.data();
+    const Scalar *dataB = B.data();
     for (int j = 0; j < A.m(); ++j) {
         for (int i = 0; i < A.n(); ++i) {
-            Scalar a = A.data()[i + j * A.stride()];
-            Scalar b = B.data()[i + j * B.stride()];
+            Scalar a = dataA[i + j * strideA];
+            Scalar b = dataB[i + j * strideB];
             diff += (a - b) * (a - b);
         }
     }
@@ -104,8 +109,7 @@ double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
 // C <-- -A
 template<typename Scalar>
 void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
-    assert(A.m() == C.m() &&
-           A.n() == C.n());
+    assert(A.m() == C.m() && A.n() == C.n());
     const int strideA = A.stride();
     const int strideC = C.stride();
     const Scalar *dataA = A.data();
