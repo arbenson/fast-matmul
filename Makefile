@@ -1,7 +1,7 @@
 CC = g++ 
 
 MODE = sequential
-#MODE = cilk
+MODE = cilk
 
 ifeq ($(MODE), cilk)
   CC = icpc
@@ -24,7 +24,6 @@ endif
 
 LDFLAGS := 
 LDLIBS := $(BLAS_LAPACK_LIB) -lm 
-DEPS := linalg.hpp
 
 objects = dgemm_curve.o main.o strassen.o fast332.o
 targets = dgemm_curve fast333 strassen fast332
@@ -35,16 +34,16 @@ default : all
 .PHONY : all
 all : $(targets)
 
-dgemm_curve: dgemm_curve.o $(DEPS)
+dgemm_curve: dgemm_curve.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-fast333: fast333.o $(DEPS)
+fast333: fast333.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-strassen: strassen.o $(DEPS)
+strassen: strassen.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-fast332: fast332.o $(DEPS)
+fast332: fast332.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 %.o: %.cpp
