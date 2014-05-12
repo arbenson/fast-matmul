@@ -1,3 +1,4 @@
+#include "linalg.hpp"
 #include "fast332.hpp"
 
 #include <stdlib.h>
@@ -7,9 +8,9 @@
 #include <random>
 
 int main(int argc, char **argv) {
-    int m = 2700;
-    int n = 800;
-    int numsteps = 2;
+    int m = 33;
+    int n = 12;
+    int numsteps = 0;
 
     srand (time(NULL));
 
@@ -45,27 +46,31 @@ int main(int argc, char **argv) {
 	      << " milliseconds"
 	      << std::endl;
 
+
     // Test for correctness.
-    double diff = FrobeniusDiff(C1, C2);
+    double diff = FrobeniusDiff<double>(C1, C2);
     std::cout << "Frobenius norm solution difference: "
               << diff
               << std::endl;
 
     // Component-wise differences
-    int step = m / 3;
-    Matrix<double> C11A(C1.data(), C1.stride(), step, step);
-    Matrix<double> C21A(C1.data() + step, C1.stride(), step, step);
-    Matrix<double> C31A(C1.data() + 2 * step, C1.stride(), step, step);
-    Matrix<double> C12A(C1.data() + step * C1.stride(), C1.stride(), step, step);
-    Matrix<double> C22A(C1.data() + step * C1.stride() + step, C1.stride(), step, step);
-    Matrix<double> C32A(C1.data() + step * C1.stride() + 2 * step, C1.stride(), step, step);
+    int C_x_step = C1.m() / 3;
+    int C_y_step = C1.n() / 2;
+    Matrix<double> C11A(C1.data() + 0 * C_x_step + 0 * C_y_step * C1.stride(), C1.stride(), C_x_step, C_y_step);
+    Matrix<double> C12A(C1.data() + 0 * C_x_step + 1 * C_y_step * C1.stride(), C1.stride(), C_x_step, C_y_step);
+    Matrix<double> C21A(C1.data() + 1 * C_x_step + 0 * C_y_step * C1.stride(), C1.stride(), C_x_step, C_y_step);
+    Matrix<double> C22A(C1.data() + 1 * C_x_step + 1 * C_y_step * C1.stride(), C1.stride(), C_x_step, C_y_step);
+    Matrix<double> C31A(C1.data() + 2 * C_x_step + 0 * C_y_step * C1.stride(), C1.stride(), C_x_step, C_y_step);
+    Matrix<double> C32A(C1.data() + 2 * C_x_step + 1 * C_y_step * C1.stride(), C1.stride(), C_x_step, C_y_step);
 
-    Matrix<double> C11B(C2.data(), C2.stride(), step, step);
-    Matrix<double> C21B(C2.data() + step, C2.stride(), step, step);
-    Matrix<double> C31B(C2.data() + 2 * step, C2.stride(), step, step);
-    Matrix<double> C12B(C2.data() + step * C2.stride(), C2.stride(), step, step);
-    Matrix<double> C22B(C2.data() + step * C2.stride() + step, C2.stride(), step, step);
-    Matrix<double> C32B(C2.data() + step * C2.stride() + 2 * step, C2.stride(), step, step);
+    C_x_step = C2.m() / 3;
+    C_y_step = C2.n() / 2;
+    Matrix<double> C11B(C2.data() + 0 * C_x_step + 0 * C_y_step * C2.stride(), C2.stride(), C_x_step, C_y_step);
+    Matrix<double> C12B(C2.data() + 0 * C_x_step + 1 * C_y_step * C2.stride(), C2.stride(), C_x_step, C_y_step);
+    Matrix<double> C21B(C2.data() + 1 * C_x_step + 0 * C_y_step * C2.stride(), C2.stride(), C_x_step, C_y_step);
+    Matrix<double> C22B(C2.data() + 1 * C_x_step + 1 * C_y_step * C2.stride(), C2.stride(), C_x_step, C_y_step);
+    Matrix<double> C31B(C2.data() + 2 * C_x_step + 0 * C_y_step * C2.stride(), C2.stride(), C_x_step, C_y_step);
+    Matrix<double> C32B(C2.data() + 2 * C_x_step + 1 * C_y_step * C2.stride(), C2.stride(), C_x_step, C_y_step);
 
     std::cout << "(1, 1): " << FrobeniusDiff(C11A, C11B) << std::endl;
     std::cout << "(2, 1): " << FrobeniusDiff(C21A, C21B) << std::endl;
@@ -74,4 +79,6 @@ int main(int argc, char **argv) {
     std::cout << "(1, 2): " << FrobeniusDiff(C12A, C12B) << std::endl;
     std::cout << "(2, 2): " << FrobeniusDiff(C22A, C22B) << std::endl;
     std::cout << "(3, 2): " << FrobeniusDiff(C32A, C32B) << std::endl;
+
+    return 0;
 }
