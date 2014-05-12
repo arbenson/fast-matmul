@@ -132,7 +132,7 @@ template <typename Scalar>
 void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
     assert(A.m() > 0 && A.n() > 0);
-    GemmWrap(A.m(), A.n(), B.n(), A.data(), A.stride(), B.data(), B.stride(),
+    GemmWrap(A.m(), B.n(), A.n(), A.data(), A.stride(), B.data(), B.stride(),
 	     C.data(), C.stride());
 }
 
