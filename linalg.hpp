@@ -127,6 +127,15 @@ void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb,
            C, &ldc);
 }
 
+// C <-- A * B
+template <typename Scalar>
+void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
+    assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
+    assert(A.m() > 0 && A.n() > 0);
+    GemmWrap(A.m(), A.n(), B.n(), A.data(), A.stride(), B.data(), B.stride(),
+	     C.data(), C.stride());
+}
+
 // Frobenius norm difference: \| A - B \|_F
 template<typename Scalar>
 double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
@@ -177,15 +186,6 @@ void Add(Matrix<Scalar>& A1, Scalar alpha1, Matrix<Scalar>& C) {
             dataC[i + j * strideC] = alpha1 * a;
         }
     }
-}
-
-// C <-- A * B
-template <typename Scalar>
-void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
-    assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
-    assert(A.m() > 0 && A.n() > 0);
-    GemmWrap(A.m(), A.n(), B.n(), A.data(), A.stride(), B.data(), B.stride(),
-	     C.data(), C.stride());
 }
 
 // C <-- alpha1 * A1 + alpha2 * A2
