@@ -110,8 +110,11 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     write_line(header, 1, 'cilk_spawn [&]{')
     write_line(header, 0, '#endif')
 
+    def need_tmp_mat(coeffs):
+        return num_nonzero(coeffs) > 1 or filter(lambda x: x != 0, coeffs)[0] != 1
+
     def addition(ind, coeffs, mat_name, mat_dims):
-        if num_nonzero(coeffs) > 1:
+        if need_tmp_mat(coeffs):
             tmp_mat = 'M%d%s' % (ind + 1, mat_name)
             write_line(header, 1, 'Matrix<Scalar> %s(%s11.m(), %s11.n());' % (
                     tmp_mat, mat_name, mat_name))
@@ -134,7 +137,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
         write_line(header, 1, add)
 
     def subblock_name(coeffs, mat_name, mat_dims):
-        if (num_nonzero(coeffs) > 1):
+        if need_tmp_mat(coeffs):
             name = 'M%d%s' % (ind + 1, mat_name)
         else:
             loc = [i for i, c in enumerate(coeffs) if c != 0]
@@ -146,9 +149,9 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
             subblock_name(b_coeffs, 'B', (dims[1], dims[2])),
             ind + 1))
     
-    if (num_nonzero(a_coeffs) > 1):
+    if need_tmp_mat(a_coeffs):
         write_line(header, 1, 'M%dA.deallocate();' % (ind + 1))
-    if (num_nonzero(b_coeffs) > 1):
+    if need_tmp_mat(b_coeffs):
         write_line(header, 1, 'M%dB.deallocate();' % (ind + 1))
 
     # Cilk wrapper (end)
