@@ -17,13 +17,14 @@ BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
 #DEBUG := -g -O0 -Wall
 OPT := -O3
-CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++0x
+CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11
 ifeq ($(MODE), cilk)
   CFLAGS += -D_CILK_
 endif
 
 LDFLAGS := 
 LDLIBS := $(BLAS_LAPACK_LIB) -lm 
+DEPS := linalg.hpp
 
 objects = dgemm_curve.o main.o strassen.o fast332.o
 targets = dgemm_curve fast333 strassen fast332
@@ -34,16 +35,16 @@ default : all
 .PHONY : all
 all : $(targets)
 
-dgemm_curve: dgemm_curve.o
+dgemm_curve: dgemm_curve.o $(DEPS)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-fast333: fast333.o
+fast333: fast333.o $(DEPS)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-strassen: strassen.o
+strassen: strassen.o $(DEPS)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-fast332: fast332.o
+fast332: fast332.o $(DEPS)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 %.o: %.cpp
