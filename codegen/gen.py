@@ -40,6 +40,7 @@ def write_line(header, num_indent, code):
     ''' Write the line of code with num_indent number of indents. '''
     header.write(' ' * 4 * num_indent + code + '\n')
 
+
 def write_subblocks(header, mat_name, dim1, dim2):
     '''
     Write subblocks of matrix of dimensions dim1 x dim2.
@@ -54,6 +55,7 @@ def write_subblocks(header, mat_name, dim1, dim2):
         for j in xrange(dim2):
             write_line(header, 1, 'Matrix<Scalar> %s%d%d(%s.data() + %d * %s + %d * %s * %s.stride(), %s.stride(), %s, %s);' % (
                     mat_name, i + 1, j + 1, mat_name, i, x_step, j, y_step, mat_name, mat_name, x_step, y_step))
+
 
 def read_coeffs(filename):
     ''' Read the coefficient file.  There is one group of coefficients for each
@@ -73,6 +75,7 @@ def read_coeffs(filename):
     if (len(coeffs) != 3):
         raise Exception('Expected three sets of coefficients!')
     return coeffs
+
 
 def num_nonzero(arr):
     ''' Returns number of non-zero entries in the array arr. '''
@@ -126,14 +129,14 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
                 if coeff != 0:
                     add += 'Scalar(%g), ' % coeff
             return add + tmp_mat + ');'
-        return ''
+        return None
 
     add = addition(ind, a_coeffs, 'A', (dims[0], dims[1]))
-    if addition != '':
+    if add != None:
         write_line(header, 1, add)
         
     add = addition(ind, b_coeffs, 'B', (dims[1], dims[2]))
-    if addition != '':
+    if add != None:
         write_line(header, 1, add)
 
     def subblock_name(coeffs, mat_name, mat_dims):
@@ -159,6 +162,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     write_line(header, 1, '}();')
     write_line(header, 0, '#endif\n')
 
+
 def write_output(header, ind, coeffs, mat_dims):
     add = 'Add('
     for i, coeff in enumerate(coeffs):
@@ -170,6 +174,7 @@ def write_output(header, ind, coeffs, mat_dims):
     print ind, mat_dims, linear2cart(ind, mat_dims[1])
     add += 'C%d%d);' % linear2cart(ind, mat_dims[1])
     write_line(header, 1, add)
+
 
 def main():
     try:
