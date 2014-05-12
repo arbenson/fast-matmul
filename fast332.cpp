@@ -10,7 +10,7 @@
 int main(int argc, char **argv) {
     int m = 33;
     int n = 12;
-    int numsteps = 0;
+    int numsteps = 1;
 
     srand (time(NULL));
 
