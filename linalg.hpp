@@ -22,6 +22,34 @@ extern "C" {
 template <typename Scalar>
 class Matrix {
 public:
+    // Copy constructor
+    Matrix(Matrix<Scalar>& that) {
+	m_ = that.m();
+	n_ = that.n();
+	stride_ = that.stride();
+	allocate();
+	Scalar *that_data = that.data();
+	for (int i = 0; i < m_ * n_; ++i) {
+	    data_[i] = that_data[i];
+	}
+    }
+
+    Matrix() : m_(0), n_(0), stride_(0), data_(NULL), is_view_(false) {}
+
+    // copy assignment
+    Matrix<Scalar>& operator=(Matrix<Scalar> that) {
+	swap(*this, that);
+	return *this;
+    }
+
+    friend void swap(Matrix<Scalar>& first, Matrix<Scalar>& second) {
+	std::swap(first.m_, second.m_);
+	std::swap(first.n_, second.n_);
+	std::swap(first.stride_, second.stride_);
+	std::swap(first.is_view_, second.is_view_);
+	std::swap(first.data_, second.data_);
+    }
+
     Matrix(Scalar *data, int stride, int m, int n):
         data_(data), stride_(stride), m_(m), n_(n), is_view_(true) {}
 
@@ -64,6 +92,19 @@ private:
     bool is_view_;
 };
 
+template <typename Scalar>
+std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
+    Scalar *data = mat.data();
+    int stride = mat.stride();
+    for (int i = 0; i < mat.m(); ++i) {
+	for (int j = 0; j < mat.n(); ++j) {
+	    os << data[i + j * stride] << " ";
+	}
+	os << std::endl;
+    }
+    return os;
+}
+
 // Wrapper for dgemm called by templated gemm.
 void GemmWrap(int m, int n, int k, double *A, int lda, double *B, int ldb, double *C,
                int ldc) {
@@ -76,8 +117,8 @@ void GemmWrap(int m, int n, int k, double *A, int lda, double *B, int ldb, doubl
 }
 
 // Wrapper for sgemm called by templated gemm.
-void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb, float *C,
-               int ldc) {
+void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb,
+	      float *C, int ldc) {
     char transa = 'n';
     char transb = 'n';
     float alpha = 1;
@@ -93,14 +134,14 @@ double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
     double diff = 0.0;
     const int strideA = A.stride();
     const int strideB = B.stride();
-    std::cout << strideA << " " << strideB << std::endl;
     const Scalar *dataA = A.data();
     const Scalar *dataB = B.data();
-    for (int j = 0; j < A.m(); ++j) {
-        for (int i = 0; i < A.n(); ++i) {
+    for (int j = 0; j < A.n(); ++j) {
+        for (int i = 0; i < A.m(); ++i) {
             Scalar a = dataA[i + j * strideA];
             Scalar b = dataB[i + j * strideB];
-            diff += (a - b) * (a - b);
+	    Scalar local_diff = (a - b);
+            diff += local_diff * local_diff;
         }
     }
     return sqrt(diff);
@@ -118,6 +159,22 @@ void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
         for (int i = 0; i < C.m(); ++i) {
             Scalar a = dataA[i + j * strideA];
             dataC[i + j * strideC] = -a;
+        }
+    }
+}
+
+// C <-- alpha1 * A
+template<typename Scalar>
+void Add(Matrix<Scalar>& A1, Scalar alpha1, Matrix<Scalar>& C) {
+    assert(A1.m() == C.m() && A1.n() == C.n());
+    const int strideA1 = A1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataA1 = A1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a = dataA1[i + j * strideA1];
+            dataC[i + j * strideC] = alpha1 * a;
         }
     }
 }
