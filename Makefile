@@ -1,19 +1,16 @@
-CC = g++ 
+#CC = g++ 
+CC = icpc
 
-MODE = sequential
+#MODE = sequential
 MODE = cilk
 
-ifeq ($(MODE), cilk)
-  CC = icpc
-endif
-
 # for compiling with MKL
-#MKLROOT := /opt/intel/Compiler/11.1/064/mkl
-#INCLUDES := -I$(MKLROOT)/include
-#BLAS_LAPACK_LIB = -L$(MKLROOT)/lib/em64t -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread
+MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
+INCLUDES := -I$(MKLROOT)/include
+BLAS_LAPACK_LIB =  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread  
 
 # for compiling with Linux BLAS
-BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
+#BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
 #DEBUG := -g -O0 -Wall
 OPT := -O3
