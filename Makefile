@@ -22,7 +22,7 @@ endif
 LDFLAGS := 
 LDLIBS := $(BLAS_LAPACK_LIB) -lm 
 
-objects = dgemm_curve.o main.o strassen.o fast332.o
+objects = dgemm_curve.o fast333.o strassen.o fast332.o
 targets = dgemm_curve fast333 strassen fast332
 
 .PHONY : default
