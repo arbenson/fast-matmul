@@ -38,7 +38,8 @@ public:
 
     // copy assignment
     Matrix<Scalar>& operator=(Matrix<Scalar> that) {
-	swap(*this, that);
+	Matrix<Scalar> temp(that);
+	swap(*this, temp);
 	return *this;
     }
 
