@@ -78,6 +78,9 @@ int main(int argc, char **argv) {
               << diff
               << std::endl;
 
+    std::cout << "Frobenius norm of A: " << FrobeniusNorm(A) << std::endl;
+    std::cout << "Frobenius norm of B: " << FrobeniusNorm(B) << std::endl;
+
     // Component-wise differences
     int step = n / 3;
     Matrix<double> C11A(C1.data(), C1.stride(), step, step);
