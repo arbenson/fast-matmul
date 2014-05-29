@@ -74,8 +74,8 @@ int main(int argc, char **argv) {
 
     // Test for correctness.
     double diff = FrobeniusDiff(C1, C2);
-    std::cout << "Frobenius norm solution difference: "
-              << diff
+    std::cout << "Frobenius norm solution relative difference: "
+              << diff / FrobeniusNorm(C1)
               << std::endl;
 
     std::cout << "Frobenius norm of A: " << FrobeniusNorm(A) << std::endl;
