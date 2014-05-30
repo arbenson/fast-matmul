@@ -73,6 +73,7 @@ int main(int argc, char **argv) {
     }
 
     // Test for correctness.
+    std::cout << "Maximum relative difference: " << MaxRelativeDiff(C1, C2) << std::endl;
     double diff = FrobeniusDiff(C1, C2);
     std::cout << "Frobenius norm solution relative difference: "
               << diff / FrobeniusNorm(C1)

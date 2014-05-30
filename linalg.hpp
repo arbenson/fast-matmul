@@ -2,8 +2,8 @@
 #define _LINALG_HPP_
 
 #include <assert.h>
-#include <math.h>
 
+#include <cmath>
 #include <iostream>
 
 extern "C" {
@@ -135,6 +135,28 @@ void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
     assert(A.m() > 0 && A.n() > 0);
     GemmWrap(A.m(), B.n(), A.n(), A.data(), A.stride(), B.data(), B.stride(),
 	     C.data(), C.stride());
+}
+
+// max_ij |a_ij - b_ij| / |a_ij|
+template<typename Scalar>
+double MaxRelativeDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
+    assert(A.m() == B.m() && A.n() == B.n());
+    const int strideA = A.stride();
+    const int strideB = B.stride();
+    const Scalar *dataA = A.data();
+    const Scalar *dataB = B.data();
+    double max_rel_diff = 0;
+    for (int j = 0; j < A.n(); ++j) {
+        for (int i = 0; i < A.m(); ++i) {
+            Scalar a = dataA[i + j * strideA];
+            Scalar b = dataB[i + j * strideB];
+	    Scalar curr_rel_diff = std::abs(a - b) / std::abs(a);
+	    if (curr_rel_diff > max_rel_diff) {
+		max_rel_diff = curr_rel_diff;
+	    }
+        }
+    }
+    return max_rel_diff;
 }
 
 // Frobenius norm difference: \| A - B \|_F
