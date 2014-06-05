@@ -1,4 +1,4 @@
-#include "fast3x3.hpp"
+#include "fast333.hpp"
 
 #include <stdlib.h>
 #include <time.h>
@@ -8,10 +8,11 @@
 
 // Build with: g++ main.cpp -std=c++0x -O3 -lblas -o test
 // Use with:
-//    ./test n numsteps
+//    ./test n numsteps run_classical run_fast
 // n is the size of the matrix (default 2187)
 // numsteps is the number of recursive steps (default 1)
-
+// run_classical is 0/1 on whether or not to run the classical algorithm (default 0)
+// run_fast is 0/1 on whether or not to run the fast algorithm (default 1)
 int main(int argc, char **argv) {
     int n = 2187;
     int numsteps = 1;
@@ -37,7 +38,7 @@ int main(int argc, char **argv) {
 
     Matrix<double> A(n);
     Matrix<double> B(n);
-    Matrix<double> C(n);
+    Matrix<double> C1(n), C2(n);
     for (int j = 0; j < n; ++j) {
         for (int i = 0; i < n; ++i) {
             A.data()[i + j * A.stride()] = ((double) rand() / RAND_MAX) * 1024;
@@ -48,33 +49,38 @@ int main(int argc, char **argv) {
     if (run_classical) {
         std::cout << "Running classical gemm..." << std::endl;
         auto t1 = std::chrono::high_resolution_clock::now();
-        Gemm(A, B, C);
+        Gemm(A, B, C1);
         auto t2 = std::chrono::high_resolution_clock::now();
         std::cout << "Classical gemm took "
                   << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
                   << " milliseconds"
                   << std::endl;
-        C.deallocate();
     }
 
     if (run_fast) {
         std::cout << "Running fast matmul..." << std::endl;
         auto t3 = std::chrono::high_resolution_clock::now();
-        FastMatmul3x3(A, B, C, numsteps);
+        FastMatmul(A, B, C2, numsteps);
         auto t4 = std::chrono::high_resolution_clock::now();
         std::cout << "Fast matmul took "
                   << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()
                   << " milliseconds"
                   << std::endl;
-        C.deallocate();
     }
 
-#if 0
+    if (!run_fast || !run_classical) {
+	return 0;
+    }
+
     // Test for correctness.
+    std::cout << "Maximum relative difference: " << MaxRelativeDiff(C1, C2) << std::endl;
     double diff = FrobeniusDiff(C1, C2);
-    std::cout << "Frobenius norm solution difference: "
-              << diff
+    std::cout << "Frobenius norm solution relative difference: "
+              << diff / FrobeniusNorm(C1)
               << std::endl;
+
+    std::cout << "Frobenius norm of A: " << FrobeniusNorm(A) << std::endl;
+    std::cout << "Frobenius norm of B: " << FrobeniusNorm(B) << std::endl;
 
     // Component-wise differences
     int step = n / 3;
@@ -109,6 +115,4 @@ int main(int argc, char **argv) {
     std::cout << "(1, 3): " << FrobeniusDiff(C13A, C13B) << std::endl;
     std::cout << "(2, 3): " << FrobeniusDiff(C23A, C23B) << std::endl;
     std::cout << "(3, 3): " << FrobeniusDiff(C33A, C33B) << std::endl;
-#endif
-
 }
