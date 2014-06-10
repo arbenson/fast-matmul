@@ -1,8 +1,9 @@
-#CC = g++ 
-CC = icpc
+CC = g++ 
+#CC = icpc
 
-#MODE = sequential
+MODE = sequential
 MODE = cilk
+MODE = openmp
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
@@ -17,6 +18,8 @@ OPT := -O3
 CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11
 ifeq ($(MODE), cilk)
   CFLAGS += -D_CILK_
+else ifeq ($(MODE), openmp)
+  CFLAGS += -D_OPEN_MP_
 endif
 
 LDFLAGS := 
