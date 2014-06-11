@@ -111,7 +111,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     # Cilk wrapper (start)
     write_line(header, 0, '#ifdef _CILK_')
     write_line(header, 1, 'cilk_spawn [&] {')
-    write_line(header, 0, '#elifdef _OPEN_MP_')
+    write_line(header, 0, '#elif defined _OPEN_MP_')
     write_line(header, 0, '# pragma omp task')
     write_line(header, 1, '[&] {')
     write_line(header, 0, '#endif')
@@ -163,7 +163,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     # Cilk wrapper (end)
     write_line(header, 0, '#ifdef _CILK_')
     write_line(header, 1, '}();')
-    write_line(header, 0, '#elifdef _OPEN_MP_')
+    write_line(header, 0, '#elif defined _OPEN_MP_')
     write_line(header, 1, '}();')
     write_line(header, 0, '#endif\n')
 
@@ -200,8 +200,8 @@ def main():
         write_line(header, 0, '#include "linalg.hpp"')
         write_line(header, 0, '#ifdef _CILK_')
         write_line(header, 0, '# include <cilk/cilk.h>')
-        write_line(header, 0, '#elifdef _OPEN_MP_')
-        write_line(header, 0, '# include <openmp.h>')
+        write_line(header, 0, '#elif defined _OPEN_MP_')
+        write_line(header, 0, '# include <omp.h>')
         write_line(header, 0, '#endif')
         write_line(header, 0, '\n')
 
@@ -241,7 +241,7 @@ def main():
         # Cilk sync
         write_line(header, 0, '#ifdef _CILK_')
         write_line(header, 1, 'cilk_sync;')
-        write_line(header, 0, '#elifdef _OPEN_MP_')
+        write_line(header, 0, '#elif defined _OPEN_MP_')
         write_line(header, 1, '# pragma omp taskwait')
         write_line(header, 0, '#endif')
 

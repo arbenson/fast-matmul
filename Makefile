@@ -11,7 +11,7 @@ INCLUDES := -I$(MKLROOT)/include
 BLAS_LAPACK_LIB =  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread  
 
 # for compiling with Linux BLAS
-#BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
+BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
 #DEBUG := -g -O0 -Wall
 OPT := -O3
@@ -24,6 +24,9 @@ endif
 
 LDFLAGS := 
 LDLIBS := $(BLAS_LAPACK_LIB) -lm 
+ifeq ($(MODE), openmp)
+  LDLIBS += -fopenmp
+endif
 
 objects = dgemm_curve.o fast333.o strassen.o fast332.o
 targets = dgemm_curve fast333 strassen fast332

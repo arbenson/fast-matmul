@@ -6,8 +6,8 @@
 #include "linalg.hpp"
 #ifdef _CILK_
 # include <cilk/cilk.h>
-#elifdef _OPEN_MP_
-# include <openmp.h>
+#elif defined _OPEN_MP_
+# include <omp.h>
 #endif
 
 
@@ -54,7 +54,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     // M1 = (1.0 * A11 + 1.0 * A22) * (1.0 * B11 + 1.0 * B22)
 #ifdef _CILK_
     cilk_spawn [&] {
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
 # pragma omp task
     [&] {
 #endif
@@ -67,14 +67,14 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     M1B.deallocate();
 #ifdef _CILK_
     }();
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
     }();
 #endif
 
     // M2 = (1.0 * A21 + 1.0 * A22) * (1.0 * B11)
 #ifdef _CILK_
     cilk_spawn [&] {
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
 # pragma omp task
     [&] {
 #endif
@@ -84,14 +84,14 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     M2A.deallocate();
 #ifdef _CILK_
     }();
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
     }();
 #endif
 
     // M3 = (1.0 * A11) * (1.0 * B12 + -1.0 * B22)
 #ifdef _CILK_
     cilk_spawn [&] {
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
 # pragma omp task
     [&] {
 #endif
@@ -101,14 +101,14 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     M3B.deallocate();
 #ifdef _CILK_
     }();
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
     }();
 #endif
 
     // M4 = (1.0 * A22) * (-1.0 * B11 + 1.0 * B21)
 #ifdef _CILK_
     cilk_spawn [&] {
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
 # pragma omp task
     [&] {
 #endif
@@ -118,14 +118,14 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     M4B.deallocate();
 #ifdef _CILK_
     }();
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
     }();
 #endif
 
     // M5 = (1.0 * A11 + 1.0 * A12) * (1.0 * B22)
 #ifdef _CILK_
     cilk_spawn [&] {
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
 # pragma omp task
     [&] {
 #endif
@@ -135,14 +135,14 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     M5A.deallocate();
 #ifdef _CILK_
     }();
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
     }();
 #endif
 
     // M6 = (-1.0 * A11 + 1.0 * A21) * (1.0 * B11 + 1.0 * B12)
 #ifdef _CILK_
     cilk_spawn [&] {
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
 # pragma omp task
     [&] {
 #endif
@@ -155,14 +155,14 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     M6B.deallocate();
 #ifdef _CILK_
     }();
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
     }();
 #endif
 
     // M7 = (1.0 * A12 + -1.0 * A22) * (1.0 * B21 + 1.0 * B22)
 #ifdef _CILK_
     cilk_spawn [&] {
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
 # pragma omp task
     [&] {
 #endif
@@ -175,13 +175,13 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     M7B.deallocate();
 #ifdef _CILK_
     }();
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
     }();
 #endif
 
 #ifdef _CILK_
     cilk_sync;
-#elifdef _OPEN_MP_
+#elif defined _OPEN_MP_
     # pragma omp taskwait
 #endif
     Add(M1, M4, M5, M7, Scalar(1), Scalar(1), Scalar(-1), Scalar(1), C11);
