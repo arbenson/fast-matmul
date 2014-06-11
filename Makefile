@@ -28,8 +28,8 @@ ifeq ($(MODE), openmp)
   LDLIBS += -fopenmp
 endif
 
-objects = dgemm_curve.o fast333.o strassen.o fast332.o
-targets = dgemm_curve fast333 strassen fast332
+objects = dgemm_curve.o fast333.o strassen.o fast332.o bini332.o
+targets = dgemm_curve fast333 strassen fast332 bini332
 
 .PHONY : default
 default : all
@@ -47,6 +47,9 @@ strassen: strassen.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 fast332: fast332.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+bini332: bini332.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 %.o: %.cpp
