@@ -56,6 +56,30 @@ def write_subblocks(header, mat_name, dim1, dim2):
             write_line(header, 1, 'Matrix<Scalar> %s%d%d(%s.data() + %d * %s + %d * %s * %s.stride(), %s.stride(), %s, %s);' % (
                     mat_name, i + 1, j + 1, mat_name, i, x_step, j, y_step, mat_name, mat_name, x_step, y_step))
 
+def parse_coeff(coeff):
+    coeff = coeff.strip()
+    # First try to convert to float
+    try:
+        coeff = float(coeff)
+        return coeff
+    except:
+        pass
+    
+    # Parameterized coefficient
+    if len(coeff) == 1:
+        # coeff is like 'x'
+        return coeff
+    elif coeff[0] == '-':
+        return '-(%s)' % parse_coeff(coeff[1:])
+    elif coeff[-1] == 'i':
+        return '1.0 / (%s)' % parse_coeff(coeff[:-1])
+    else:
+        try:
+            exp = float(coeff[-1])
+            return ('(%s)' % parse_coeff(coeff[:-1])) * exp
+        except:
+            raise Exception('Cannot parse coefficient: %s' % coeff)
+
 
 def read_coeffs(filename):
     ''' Read the coefficient file.  There is one group of coefficients for each
@@ -69,17 +93,19 @@ def read_coeffs(filename):
                     coeffs.append(curr_group)
                     curr_group = []
             else:
-                curr_group.append([float(val) for val in line.split()])
+                curr_group.append([parse_coeff(val) for val in line.split()])
     coeffs.append(curr_group)
     # There should be three sets of coefficients: one for each matrix.
     if (len(coeffs) != 3):
         raise Exception('Expected three sets of coefficients!')
     return coeffs
 
+def is_nonzero(x):
+    return x != 0 and x != '0'
 
 def num_nonzero(arr):
     ''' Returns number of non-zero entries in the array arr. '''
-    return len(filter(lambda x: x != 0, arr))
+    return len(filter(is_nonzero, arr))
 
 
 def linear2cart(ind, cols):
@@ -101,10 +127,10 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     '''
     comment = '// M%d = (' % (ind + 1)
     comment += ' + '.join([str(c) + ' * A%d%d' % linear2cart(i, dims[1]) \
-                               for i, c in enumerate(a_coeffs) if c != 0])
+                               for i, c in enumerate(a_coeffs) if is_nonzero(c)])
     comment += ') * ('
     comment += ' + '.join([str(c) + ' * B%d%d' % linear2cart(i, dims[2]) \
-                               for i, c in enumerate(b_coeffs) if c != 0])
+                               for i, c in enumerate(b_coeffs) if is_nonzero(c)])
     comment += ')'
     write_line(header, 1, comment)
 
@@ -113,11 +139,11 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     write_line(header, 1, 'cilk_spawn [&] {')
     write_line(header, 0, '#elif defined _OPEN_MP_')
     write_line(header, 0, '# pragma omp task')
-    write_line(header, 1, '[&] {')
+    write_line(header, 1, '{')
     write_line(header, 0, '#endif')
 
     def need_tmp_mat(coeffs):
-        return num_nonzero(coeffs) > 1 or filter(lambda x: x != 0, coeffs)[0] != 1
+        return num_nonzero(coeffs) > 1 or filter(is_nonzero, coeffs)[0] != 1
 
     def addition(ind, coeffs, mat_name, mat_dims):
         if need_tmp_mat(coeffs):
@@ -126,11 +152,11 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
                     tmp_mat, mat_name, mat_name))
             add = 'Add('
             for i, coeff in enumerate(coeffs):
-                if coeff != 0:
+                if is_nonzero(coeff):
                     add += mat_name + '%d%d, ' % linear2cart(i, mat_dims[1])
             for i, coeff in enumerate(coeffs):
-                if coeff != 0:
-                    add += 'Scalar(%g), ' % coeff
+                if is_nonzero(coeff):
+                    add += 'Scalar(%s), ' % coeff
             return add + tmp_mat + ');'
         return None
 
@@ -146,7 +172,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
         if need_tmp_mat(coeffs):
             name = 'M%d%s' % (ind + 1, mat_name)
         else:
-            loc = [i for i, c in enumerate(coeffs) if c != 0]
+            loc = [i for i, c in enumerate(coeffs) if is_nonzero(c)]
             name = mat_name + '%d%d' % linear2cart(loc[0], mat_dims[1])
         return name
 
@@ -164,18 +190,18 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     write_line(header, 0, '#ifdef _CILK_')
     write_line(header, 1, '}();')
     write_line(header, 0, '#elif defined _OPEN_MP_')
-    write_line(header, 1, '}();')
+    write_line(header, 1, '}')
     write_line(header, 0, '#endif\n')
 
 
 def write_output(header, ind, coeffs, mat_dims):
     add = 'Add('
     for i, coeff in enumerate(coeffs):
-        if coeff != 0:
+        if is_nonzero(coeff):
             add += 'M%d, ' % (i + 1)
     for i, coeff in enumerate(coeffs):
-        if coeff != 0:
-            add += 'Scalar(%g), ' % coeff
+        if is_nonzero(coeff):
+            add += 'Scalar(%s), ' % coeff
     print ind, mat_dims, linear2cart(ind, mat_dims[1])
     add += 'C%d%d);' % linear2cart(ind, mat_dims[1])
     write_line(header, 1, add)
@@ -232,17 +258,24 @@ def main():
             write_line(header, 1, 'Matrix<Scalar> M%d(C_x_step, C_y_step);' % (i + 1))
         write_line(header, 0, '\n')
 
+        write_line(header, 0, '#ifdef _OPEN_MP_')        
+        write_line(header, 1, '#pragma omp parallel')
+        write_line(header, 1, '{')
+        write_line(header, 1, '#pragma omp single')
+        write_line(header, 2, '{')
+        write_line(header, 0, '#endif')
+
         # Write the mutliplication blocks.
         for i in xrange(num_multiplies):
             a_coeffs = [c[i] for c in coeffs[0]]
             b_coeffs = [c[i] for c in coeffs[1]]
             write_matmul(header, i, a_coeffs, b_coeffs, dims)
 
-        # Cilk sync
         write_line(header, 0, '#ifdef _CILK_')
         write_line(header, 1, 'cilk_sync;')
         write_line(header, 0, '#elif defined _OPEN_MP_')
-        write_line(header, 1, '# pragma omp taskwait')
+        write_line(header, 2, '}  // End omp single region')
+        write_line(header, 1, '}  // End omp parallel region')
         write_line(header, 0, '#endif')
 
         for ind, row in enumerate(coeffs[2]):
