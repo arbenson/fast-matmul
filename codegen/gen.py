@@ -42,8 +42,7 @@ def write_line(header, num_indent, code):
 
 
 def write_subblocks(header, mat_name, dim1, dim2):
-    '''
-    Write subblocks of matrix of dimensions dim1 x dim2.
+    ''' Write subblocks of matrix of dimensions dim1 x dim2.
     mat_name is the name of the matrix, e.g., 'A' or 'B'
     header is file to write to.
     '''
@@ -78,8 +77,9 @@ def parse_coeff(coeff):
     
     # Parameterized coefficient
     if len(coeff) == 1:
-        # coeff is like 'x'
-        return coeff
+        # Coeff is like 'x'.  We will use 'x' instead of whatever is provided.
+        # For now, this means that we only support one paramterized coefficient.
+        return 'x'
     elif coeff[0] == '-':
         return '-(%s)' % parse_coeff(coeff[1:])
     elif coeff[-1] == 'i':
@@ -189,7 +189,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
             name = mat_name + '%d%d' % linear2cart(loc[0], mat_dims[1])
         return name
 
-    write_line(header, 1, 'FastMatmul(%s, %s, M%d, numsteps - 1);' % (
+    write_line(header, 1, 'FastMatmul(%s, %s, M%d, numsteps - 1, x);' % (
             subblock_name(a_coeffs, 'A', (dims[0], dims[1])),
             subblock_name(b_coeffs, 'B', (dims[1], dims[2])),
             ind + 1))
@@ -247,7 +247,7 @@ def main():
         # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
-                   'Matrix<Scalar>& C, int numsteps) {')
+                   'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
         write_line(header, 1, '// Base case for recursion')
         write_line(header, 1, 'if (numsteps == 0) {')
         write_line(header, 2, 'Gemm(A, B, C);')
