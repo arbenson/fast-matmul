@@ -2,8 +2,8 @@ CC = g++
 #CC = icpc
 
 MODE = sequential
-MODE = cilk
-MODE = openmp
+#MODE = cilk
+#MODE = openmp
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
