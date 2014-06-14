@@ -26,8 +26,6 @@ int main(int argc, char **argv) {
     }
 
 #ifdef _OPEN_MP_
-    int num_threads = omp_get_max_threads();
-    std::cout << "number of threads: " << num_threads << std::endl;
     omp_set_num_threads(omp_get_max_threads());
 #endif
 

@@ -51,24 +51,30 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Matrix<Scalar> M7(C_x_step, C_y_step);
 
 
+#ifdef _OPEN_MP_
+    #pragma omp parallel
+    {
+    #pragma omp single
+        {
+#endif
     // M1 = (1.0 * A11 + 1.0 * A22) * (1.0 * B11 + 1.0 * B22)
 #ifdef _CILK_
     cilk_spawn [&] {
 #elif defined _OPEN_MP_
 # pragma omp task
-    [&] {
+    {
 #endif
     Matrix<Scalar> M1A(A11.m(), A11.n());
-    Add(A11, A22, Scalar(1), Scalar(1), M1A);
+    Add(A11, A22, Scalar(1.0), Scalar(1.0), M1A);
     Matrix<Scalar> M1B(B11.m(), B11.n());
-    Add(B11, B22, Scalar(1), Scalar(1), M1B);
+    Add(B11, B22, Scalar(1.0), Scalar(1.0), M1B);
     FastMatmul(M1A, M1B, M1, numsteps - 1);
     M1A.deallocate();
     M1B.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
-    }();
+    }
 #endif
 
     // M2 = (1.0 * A21 + 1.0 * A22) * (1.0 * B11)
@@ -76,16 +82,16 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     cilk_spawn [&] {
 #elif defined _OPEN_MP_
 # pragma omp task
-    [&] {
+    {
 #endif
     Matrix<Scalar> M2A(A11.m(), A11.n());
-    Add(A21, A22, Scalar(1), Scalar(1), M2A);
+    Add(A21, A22, Scalar(1.0), Scalar(1.0), M2A);
     FastMatmul(M2A, B11, M2, numsteps - 1);
     M2A.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
-    }();
+    }
 #endif
 
     // M3 = (1.0 * A11) * (1.0 * B12 + -1.0 * B22)
@@ -93,16 +99,16 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     cilk_spawn [&] {
 #elif defined _OPEN_MP_
 # pragma omp task
-    [&] {
+    {
 #endif
     Matrix<Scalar> M3B(B11.m(), B11.n());
-    Add(B12, B22, Scalar(1), Scalar(-1), M3B);
+    Add(B12, B22, Scalar(1.0), Scalar(-1.0), M3B);
     FastMatmul(A11, M3B, M3, numsteps - 1);
     M3B.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
-    }();
+    }
 #endif
 
     // M4 = (1.0 * A22) * (-1.0 * B11 + 1.0 * B21)
@@ -110,16 +116,16 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     cilk_spawn [&] {
 #elif defined _OPEN_MP_
 # pragma omp task
-    [&] {
+    {
 #endif
     Matrix<Scalar> M4B(B11.m(), B11.n());
-    Add(B11, B21, Scalar(-1), Scalar(1), M4B);
+    Add(B11, B21, Scalar(-1.0), Scalar(1.0), M4B);
     FastMatmul(A22, M4B, M4, numsteps - 1);
     M4B.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
-    }();
+    }
 #endif
 
     // M5 = (1.0 * A11 + 1.0 * A12) * (1.0 * B22)
@@ -127,16 +133,16 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     cilk_spawn [&] {
 #elif defined _OPEN_MP_
 # pragma omp task
-    [&] {
+    {
 #endif
     Matrix<Scalar> M5A(A11.m(), A11.n());
-    Add(A11, A12, Scalar(1), Scalar(1), M5A);
+    Add(A11, A12, Scalar(1.0), Scalar(1.0), M5A);
     FastMatmul(M5A, B22, M5, numsteps - 1);
     M5A.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
-    }();
+    }
 #endif
 
     // M6 = (-1.0 * A11 + 1.0 * A21) * (1.0 * B11 + 1.0 * B12)
@@ -144,19 +150,19 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     cilk_spawn [&] {
 #elif defined _OPEN_MP_
 # pragma omp task
-    [&] {
+    {
 #endif
     Matrix<Scalar> M6A(A11.m(), A11.n());
-    Add(A11, A21, Scalar(-1), Scalar(1), M6A);
+    Add(A11, A21, Scalar(-1.0), Scalar(1.0), M6A);
     Matrix<Scalar> M6B(B11.m(), B11.n());
-    Add(B11, B12, Scalar(1), Scalar(1), M6B);
+    Add(B11, B12, Scalar(1.0), Scalar(1.0), M6B);
     FastMatmul(M6A, M6B, M6, numsteps - 1);
     M6A.deallocate();
     M6B.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
-    }();
+    }
 #endif
 
     // M7 = (1.0 * A12 + -1.0 * A22) * (1.0 * B21 + 1.0 * B22)
@@ -164,30 +170,31 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     cilk_spawn [&] {
 #elif defined _OPEN_MP_
 # pragma omp task
-    [&] {
+    {
 #endif
     Matrix<Scalar> M7A(A11.m(), A11.n());
-    Add(A12, A22, Scalar(1), Scalar(-1), M7A);
+    Add(A12, A22, Scalar(1.0), Scalar(-1.0), M7A);
     Matrix<Scalar> M7B(B11.m(), B11.n());
-    Add(B21, B22, Scalar(1), Scalar(1), M7B);
+    Add(B21, B22, Scalar(1.0), Scalar(1.0), M7B);
     FastMatmul(M7A, M7B, M7, numsteps - 1);
     M7A.deallocate();
     M7B.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
-    }();
+    }
 #endif
 
 #ifdef _CILK_
     cilk_sync;
 #elif defined _OPEN_MP_
-    # pragma omp taskwait
+        }  // End omp single region
+    }  // End omp parallel region
 #endif
-    Add(M1, M4, M5, M7, Scalar(1), Scalar(1), Scalar(-1), Scalar(1), C11);
-    Add(M3, M5, Scalar(1), Scalar(1), C12);
-    Add(M2, M4, Scalar(1), Scalar(1), C21);
-    Add(M1, M2, M3, M6, Scalar(1), Scalar(-1), Scalar(1), Scalar(1), C22);
+    Add(M1, M4, M5, M7, Scalar(1.0), Scalar(1.0), Scalar(-1.0), Scalar(1.0), C11);
+    Add(M3, M5, Scalar(1.0), Scalar(1.0), C12);
+    Add(M2, M4, Scalar(1.0), Scalar(1.0), C21);
+    Add(M1, M2, M3, M6, Scalar(1.0), Scalar(-1.0), Scalar(1.0), Scalar(1.0), C22);
 }
 
 #endif  // _FAST_HPP_
