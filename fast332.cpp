@@ -9,7 +9,7 @@
 
 int main(int argc, char **argv) {
     int m = 2700;
-    int n = 400;
+    int n = 1200;
     int numsteps = 2;
 
     srand (time(NULL));
