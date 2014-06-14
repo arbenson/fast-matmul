@@ -56,7 +56,18 @@ def write_subblocks(header, mat_name, dim1, dim2):
             write_line(header, 1, 'Matrix<Scalar> %s%d%d(%s.data() + %d * %s + %d * %s * %s.stride(), %s.stride(), %s, %s);' % (
                     mat_name, i + 1, j + 1, mat_name, i, x_step, j, y_step, mat_name, mat_name, x_step, y_step))
 
+
 def parse_coeff(coeff):
+    ''' Parse a coefficient. The grammar is:
+        
+        * --> *i | -* | *p | [a-z] | [floating point number]
+        p --> 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+        *i --> 1 / (*)
+        -* --> -(*)
+        *p --> (*)^p
+
+        So -x2i is parsed as - (1 / ((x)^2))
+    '''
     coeff = coeff.strip()
     # First try to convert to float
     try:
@@ -100,8 +111,10 @@ def read_coeffs(filename):
         raise Exception('Expected three sets of coefficients!')
     return coeffs
 
+
 def is_nonzero(x):
     return x != 0 and x != '0'
+
 
 def num_nonzero(arr):
     ''' Returns number of non-zero entries in the array arr. '''
