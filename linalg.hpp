@@ -434,6 +434,315 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
 }
 
 
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4 + alpha5 * A5
+//     + alpha6 * A6 + alpha7 * A7 + alpha8 * A8
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
+	 Matrix<Scalar>& A4, Matrix<Scalar>& A5, Matrix<Scalar>& A6,
+	 Matrix<Scalar>& A7, Matrix<Scalar>& A8,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3,
+	 Scalar alpha4, Scalar alpha5, Scalar alpha6,
+	 Scalar alpha7, Scalar alpha8,
+	 Matrix<Scalar>& C) {
+    assert(A1.m() == C.m() && A2.m() == C.m() && A3.m() == C.m() &&
+           A4.m() == C.m() && A5.m() == C.m() && A6.m() == C.m() &&
+           A7.m() == C.m() && A8.m() == C.m() &&
+	   A1.n() == C.n() && A2.n() == C.n() && A3.n() == C.n() &&
+	   A4.n() == C.n() && A5.n() == C.n() && A6.n() == C.n() &&
+	   A7.n() == C.n() && A8.n() == C.n());
+
+    const int strideA1 = A1.stride();
+    const int strideA2 = A2.stride();
+    const int strideA3 = A3.stride();
+    const int strideA4 = A4.stride();
+    const int strideA5 = A5.stride();
+    const int strideA6 = A6.stride();
+    const int strideA7 = A7.stride();
+    const int strideA8 = A8.stride();
+    const int strideC = C.stride();
+
+    const Scalar *dataA1 = A1.data();
+    const Scalar *dataA2 = A2.data();
+    const Scalar *dataA3 = A3.data();
+    const Scalar *dataA4 = A4.data();
+    const Scalar *dataA5 = A5.data();
+    const Scalar *dataA6 = A6.data();
+    const Scalar *dataA7 = A7.data();
+    const Scalar *dataA8 = A8.data();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a = alpha1 * dataA1[i + j * strideA1];
+            Scalar b = alpha2 * dataA2[i + j * strideA2];
+            Scalar c = alpha3 * dataA3[i + j * strideA3];
+            Scalar d = alpha4 * dataA4[i + j * strideA4];
+            Scalar e = alpha5 * dataA5[i + j * strideA5];
+            Scalar f = alpha6 * dataA6[i + j * strideA6];
+            Scalar g = alpha7 * dataA7[i + j * strideA7];
+            Scalar h = alpha8 * dataA8[i + j * strideA8];
+            dataC[i + j * strideC] = a + b + c + d + e + f + g + h;
+        }
+    }
+}
+
+
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4 + alpha5 * A5
+//     + alpha6 * A6 + alpha7 * A7 + alpha8 * A8 + alpha9 * A9
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
+	 Matrix<Scalar>& A4, Matrix<Scalar>& A5, Matrix<Scalar>& A6,
+	 Matrix<Scalar>& A7, Matrix<Scalar>& A8, Matrix<Scalar>& A9,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3,
+	 Scalar alpha4, Scalar alpha5, Scalar alpha6,
+	 Scalar alpha7, Scalar alpha8, Scalar alpha9,
+	 Matrix<Scalar>& C) {
+    assert(A1.m() == C.m() && A2.m() == C.m() && A3.m() == C.m() &&
+           A4.m() == C.m() && A5.m() == C.m() && A6.m() == C.m() &&
+           A7.m() == C.m() && A8.m() == C.m() && A9.m() == C.m() &&
+	   A1.n() == C.n() && A2.n() == C.n() && A3.n() == C.n() &&
+	   A4.n() == C.n() && A5.n() == C.n() && A6.n() == C.n() &&
+	   A7.n() == C.n() && A8.n() == C.n() && A9.n() == C.n());
+
+    const int strideA1 = A1.stride();
+    const int strideA2 = A2.stride();
+    const int strideA3 = A3.stride();
+    const int strideA4 = A4.stride();
+    const int strideA5 = A5.stride();
+    const int strideA6 = A6.stride();
+    const int strideA7 = A7.stride();
+    const int strideA8 = A8.stride();
+    const int strideA9 = A9.stride();
+    const int strideC = C.stride();
+
+    const Scalar *dataA1 = A1.data();
+    const Scalar *dataA2 = A2.data();
+    const Scalar *dataA3 = A3.data();
+    const Scalar *dataA4 = A4.data();
+    const Scalar *dataA5 = A5.data();
+    const Scalar *dataA6 = A6.data();
+    const Scalar *dataA7 = A7.data();
+    const Scalar *dataA8 = A8.data();
+    const Scalar *dataA9 = A9.data();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a1 = alpha1 * dataA1[i + j * strideA1];
+            Scalar a2 = alpha2 * dataA2[i + j * strideA2];
+            Scalar a3 = alpha3 * dataA3[i + j * strideA3];
+            Scalar a4 = alpha4 * dataA4[i + j * strideA4];
+            Scalar a5 = alpha5 * dataA5[i + j * strideA5];
+            Scalar a6 = alpha6 * dataA6[i + j * strideA6];
+            Scalar a7 = alpha7 * dataA7[i + j * strideA7];
+            Scalar a8 = alpha8 * dataA8[i + j * strideA8];
+            Scalar a9 = alpha9 * dataA9[i + j * strideA9];
+            dataC[i + j * strideC] = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9;
+        }
+    }
+}
+
+
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4 + alpha5 * A5
+//     + alpha6 * A6 + alpha7 * A7 + alpha8 * A8 + alpha9 * A9 + alpha10 * A10
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
+	 Matrix<Scalar>& A4, Matrix<Scalar>& A5, Matrix<Scalar>& A6,
+	 Matrix<Scalar>& A7, Matrix<Scalar>& A8, Matrix<Scalar>& A9,
+	 Matrix<Scalar>& A10,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3,
+	 Scalar alpha4, Scalar alpha5, Scalar alpha6,
+	 Scalar alpha7, Scalar alpha8, Scalar alpha9,
+	 Scalar alpha10,
+	 Matrix<Scalar>& C) {
+    assert(A1.m() == C.m() && A2.m() == C.m() && A3.m() == C.m() &&
+           A4.m() == C.m() && A5.m() == C.m() && A6.m() == C.m() &&
+           A7.m() == C.m() && A8.m() == C.m() && A9.m() == C.m() &&
+	   A10.m() == C.m() &&
+	   A1.n() == C.n() && A2.n() == C.n() && A3.n() == C.n() &&
+	   A4.n() == C.n() && A5.n() == C.n() && A6.n() == C.n() &&
+	   A7.n() == C.n() && A8.n() == C.n() && A9.n() == C.n() &&
+	   A10.n() == C.n());
+
+    const int strideA1 = A1.stride();
+    const int strideA2 = A2.stride();
+    const int strideA3 = A3.stride();
+    const int strideA4 = A4.stride();
+    const int strideA5 = A5.stride();
+    const int strideA6 = A6.stride();
+    const int strideA7 = A7.stride();
+    const int strideA8 = A8.stride();
+    const int strideA9 = A9.stride();
+    const int strideA10 = A10.stride();
+    const int strideC = C.stride();
+
+    const Scalar *dataA1 = A1.data();
+    const Scalar *dataA2 = A2.data();
+    const Scalar *dataA3 = A3.data();
+    const Scalar *dataA4 = A4.data();
+    const Scalar *dataA5 = A5.data();
+    const Scalar *dataA6 = A6.data();
+    const Scalar *dataA7 = A7.data();
+    const Scalar *dataA8 = A8.data();
+    const Scalar *dataA9 = A9.data();
+    const Scalar *dataA10 = A10.data();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a1 = alpha1 * dataA1[i + j * strideA1];
+            Scalar a2 = alpha2 * dataA2[i + j * strideA2];
+            Scalar a3 = alpha3 * dataA3[i + j * strideA3];
+            Scalar a4 = alpha4 * dataA4[i + j * strideA4];
+            Scalar a5 = alpha5 * dataA5[i + j * strideA5];
+            Scalar a6 = alpha6 * dataA6[i + j * strideA6];
+            Scalar a7 = alpha7 * dataA7[i + j * strideA7];
+            Scalar a8 = alpha8 * dataA8[i + j * strideA8];
+            Scalar a9 = alpha9 * dataA9[i + j * strideA9];
+            Scalar a10 = alpha10 * dataA10[i + j * strideA10];
+            dataC[i + j * strideC] = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10;
+        }
+    }
+}
+
+
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4 + alpha5 * A5
+//     + alpha6 * A6 + alpha7 * A7 + alpha8 * A8 + alpha9 * A9 + alpha10 * A10
+//     + alpha11 * A11
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
+	 Matrix<Scalar>& A4, Matrix<Scalar>& A5, Matrix<Scalar>& A6,
+	 Matrix<Scalar>& A7, Matrix<Scalar>& A8, Matrix<Scalar>& A9,
+	 Matrix<Scalar>& A10, Matrix<Scalar>& A11,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3,
+	 Scalar alpha4, Scalar alpha5, Scalar alpha6,
+	 Scalar alpha7, Scalar alpha8, Scalar alpha9,
+	 Scalar alpha10, Scalar alpha11,
+	 Matrix<Scalar>& C) {
+    assert(A1.m() == C.m() && A2.m() == C.m() && A3.m() == C.m() &&
+           A4.m() == C.m() && A5.m() == C.m() && A6.m() == C.m() &&
+           A7.m() == C.m() && A8.m() == C.m() && A9.m() == C.m() &&
+	   A10.m() == C.m() && A11.m() == C.m() &&
+	   A1.n() == C.n() && A2.n() == C.n() && A3.n() == C.n() &&
+	   A4.n() == C.n() && A5.n() == C.n() && A6.n() == C.n() &&
+	   A7.n() == C.n() && A8.n() == C.n() && A9.n() == C.n() &&
+	   A10.n() == C.n() && A11.n() == C.n());
+
+    const int strideA1 = A1.stride();
+    const int strideA2 = A2.stride();
+    const int strideA3 = A3.stride();
+    const int strideA4 = A4.stride();
+    const int strideA5 = A5.stride();
+    const int strideA6 = A6.stride();
+    const int strideA7 = A7.stride();
+    const int strideA8 = A8.stride();
+    const int strideA9 = A9.stride();
+    const int strideA10 = A10.stride();
+    const int strideA11 = A11.stride();
+    const int strideC = C.stride();
+
+    const Scalar *dataA1 = A1.data();
+    const Scalar *dataA2 = A2.data();
+    const Scalar *dataA3 = A3.data();
+    const Scalar *dataA4 = A4.data();
+    const Scalar *dataA5 = A5.data();
+    const Scalar *dataA6 = A6.data();
+    const Scalar *dataA7 = A7.data();
+    const Scalar *dataA8 = A8.data();
+    const Scalar *dataA9 = A9.data();
+    const Scalar *dataA10 = A10.data();
+    const Scalar *dataA11 = A11.data();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a1 = alpha1 * dataA1[i + j * strideA1];
+            Scalar a2 = alpha2 * dataA2[i + j * strideA2];
+            Scalar a3 = alpha3 * dataA3[i + j * strideA3];
+            Scalar a4 = alpha4 * dataA4[i + j * strideA4];
+            Scalar a5 = alpha5 * dataA5[i + j * strideA5];
+            Scalar a6 = alpha6 * dataA6[i + j * strideA6];
+            Scalar a7 = alpha7 * dataA7[i + j * strideA7];
+            Scalar a8 = alpha8 * dataA8[i + j * strideA8];
+            Scalar a9 = alpha9 * dataA9[i + j * strideA9];
+            Scalar a10 = alpha10 * dataA10[i + j * strideA10];
+            Scalar a11 = alpha11 * dataA11[i + j * strideA11];
+            dataC[i + j * strideC] = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11;
+        }
+    }
+}
+
+
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4 + alpha5 * A5
+//     + alpha6 * A6 + alpha7 * A7 + alpha8 * A8 + alpha9 * A9 + alpha10 * A10
+//     + alpha11 * A11 + alpha12 * A12
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
+	 Matrix<Scalar>& A4, Matrix<Scalar>& A5, Matrix<Scalar>& A6,
+	 Matrix<Scalar>& A7, Matrix<Scalar>& A8, Matrix<Scalar>& A9,
+	 Matrix<Scalar>& A10, Matrix<Scalar>& A11, Matrix<Scalar>& A12,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3,
+	 Scalar alpha4, Scalar alpha5, Scalar alpha6,
+	 Scalar alpha7, Scalar alpha8, Scalar alpha9,
+	 Scalar alpha10, Scalar alpha11, Scalar alpha12,
+	 Matrix<Scalar>& C) {
+    assert(A1.m() == C.m() && A2.m() == C.m() && A3.m() == C.m() &&
+           A4.m() == C.m() && A5.m() == C.m() && A6.m() == C.m() &&
+           A7.m() == C.m() && A8.m() == C.m() && A9.m() == C.m() &&
+	   A10.m() == C.m() && A11.m() == C.m() && A12.m() == C.m() &&
+	   A1.n() == C.n() && A2.n() == C.n() && A3.n() == C.n() &&
+	   A4.n() == C.n() && A5.n() == C.n() && A6.n() == C.n() &&
+	   A7.n() == C.n() && A8.n() == C.n() && A9.n() == C.n() &&
+	   A10.n() == C.n() && A11.n() == C.n() && A12.n() == C.n());
+
+    const int strideA1 = A1.stride();
+    const int strideA2 = A2.stride();
+    const int strideA3 = A3.stride();
+    const int strideA4 = A4.stride();
+    const int strideA5 = A5.stride();
+    const int strideA6 = A6.stride();
+    const int strideA7 = A7.stride();
+    const int strideA8 = A8.stride();
+    const int strideA9 = A9.stride();
+    const int strideA10 = A10.stride();
+    const int strideA11 = A11.stride();
+    const int strideA12 = A12.stride();
+    const int strideC = C.stride();
+
+    const Scalar *dataA1 = A1.data();
+    const Scalar *dataA2 = A2.data();
+    const Scalar *dataA3 = A3.data();
+    const Scalar *dataA4 = A4.data();
+    const Scalar *dataA5 = A5.data();
+    const Scalar *dataA6 = A6.data();
+    const Scalar *dataA7 = A7.data();
+    const Scalar *dataA8 = A8.data();
+    const Scalar *dataA9 = A9.data();
+    const Scalar *dataA10 = A10.data();
+    const Scalar *dataA11 = A11.data();
+    const Scalar *dataA12 = A12.data();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a1 = alpha1 * dataA1[i + j * strideA1];
+            Scalar a2 = alpha2 * dataA2[i + j * strideA2];
+            Scalar a3 = alpha3 * dataA3[i + j * strideA3];
+            Scalar a4 = alpha4 * dataA4[i + j * strideA4];
+            Scalar a5 = alpha5 * dataA5[i + j * strideA5];
+            Scalar a6 = alpha6 * dataA6[i + j * strideA6];
+            Scalar a7 = alpha7 * dataA7[i + j * strideA7];
+            Scalar a8 = alpha8 * dataA8[i + j * strideA8];
+            Scalar a9 = alpha9 * dataA9[i + j * strideA9];
+            Scalar a10 = alpha10 * dataA10[i + j * strideA10];
+            Scalar a11 = alpha11 * dataA11[i + j * strideA11];
+            Scalar a12 = alpha12 * dataA12[i + j * strideA12];
+            dataC[i + j * strideC] = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12;
+        }
+    }
+}
+
+
 // Template declarations
 template void Gemm(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C);
 template void Gemm(Matrix<float>& A, Matrix<float>& B, Matrix<float>& C);
