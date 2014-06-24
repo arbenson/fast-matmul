@@ -1,4 +1,4 @@
-#ifdef _COMMON_HPP_
+#ifndef _COMMON_HPP_
 #define _COMMON_HPP_
 
 #include "linalg.hpp"
