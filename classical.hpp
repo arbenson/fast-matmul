@@ -1,16 +1,12 @@
-#ifndef _FAST_HPP_
-#define _FAST_HPP_
+#ifndef _classical_HPP_
+#define _classical_HPP_
 
 
 // This is an automatically generated file from gen.py.
-#include "linalg.hpp"
-#ifdef _CILK_
-# include <cilk/cilk.h>
-#elif defined _OPEN_MP_
-# include <omp.h>
-#endif
+#include "common.hpp"
 
 
+namespace classical {
 template <typename Scalar>
 void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
     // Base case for recursion
@@ -182,4 +178,6 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(M7, M8, Scalar(1.0), Scalar(1.0), C22);
 }
 
-#endif  // _FAST_HPP_
+}
+
+#endif  // _classical_HPP_

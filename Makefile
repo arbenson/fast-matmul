@@ -29,7 +29,8 @@ ifeq ($(MODE), openmp)
   LDLIBS += -fopenmp
 endif
 
-SRC = bini332.cpp \
+SRC = benchmark.cpp \
+      bini322.cpp \
       classical.cpp \
       dgemm_curve_par.cpp \
       fast333.cpp \
@@ -50,10 +51,10 @@ default : all
 .PHONY : all
 all : $(TARGETS)
 
-#benchmark: benchmark.o
-#	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+benchmark: benchmark.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-bini332: bini332.o
+bini322: bini322.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 classical: classical.o

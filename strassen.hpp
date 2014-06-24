@@ -1,18 +1,14 @@
-#ifndef _FAST_HPP_
-#define _FAST_HPP_
+#ifndef _strassen_HPP_
+#define _strassen_HPP_
 
 
 // This is an automatically generated file from gen.py.
-#include "linalg.hpp"
-#ifdef _CILK_
-# include <cilk/cilk.h>
-#elif defined _OPEN_MP_
-# include <omp.h>
-#endif
+#include "common.hpp"
 
 
+namespace strassen {
 template <typename Scalar>
-void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps) {
+void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
     // Base case for recursion
     if (numsteps == 0) {
         Gemm(A, B, C);
@@ -68,7 +64,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(A11, A22, Scalar(1.0), Scalar(1.0), M1A);
     Matrix<Scalar> M1B(B11.m(), B11.n());
     Add(B11, B22, Scalar(1.0), Scalar(1.0), M1B);
-    FastMatmul(M1A, M1B, M1, numsteps - 1);
+    FastMatmul(M1A, M1B, M1, numsteps - 1, x);
     M1A.deallocate();
     M1B.deallocate();
 #ifdef _CILK_
@@ -86,7 +82,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #endif
     Matrix<Scalar> M2A(A11.m(), A11.n());
     Add(A21, A22, Scalar(1.0), Scalar(1.0), M2A);
-    FastMatmul(M2A, B11, M2, numsteps - 1);
+    FastMatmul(M2A, B11, M2, numsteps - 1, x);
     M2A.deallocate();
 #ifdef _CILK_
     }();
@@ -103,7 +99,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #endif
     Matrix<Scalar> M3B(B11.m(), B11.n());
     Add(B12, B22, Scalar(1.0), Scalar(-1.0), M3B);
-    FastMatmul(A11, M3B, M3, numsteps - 1);
+    FastMatmul(A11, M3B, M3, numsteps - 1, x);
     M3B.deallocate();
 #ifdef _CILK_
     }();
@@ -120,7 +116,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #endif
     Matrix<Scalar> M4B(B11.m(), B11.n());
     Add(B11, B21, Scalar(-1.0), Scalar(1.0), M4B);
-    FastMatmul(A22, M4B, M4, numsteps - 1);
+    FastMatmul(A22, M4B, M4, numsteps - 1, x);
     M4B.deallocate();
 #ifdef _CILK_
     }();
@@ -137,7 +133,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #endif
     Matrix<Scalar> M5A(A11.m(), A11.n());
     Add(A11, A12, Scalar(1.0), Scalar(1.0), M5A);
-    FastMatmul(M5A, B22, M5, numsteps - 1);
+    FastMatmul(M5A, B22, M5, numsteps - 1, x);
     M5A.deallocate();
 #ifdef _CILK_
     }();
@@ -156,7 +152,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(A11, A21, Scalar(-1.0), Scalar(1.0), M6A);
     Matrix<Scalar> M6B(B11.m(), B11.n());
     Add(B11, B12, Scalar(1.0), Scalar(1.0), M6B);
-    FastMatmul(M6A, M6B, M6, numsteps - 1);
+    FastMatmul(M6A, M6B, M6, numsteps - 1, x);
     M6A.deallocate();
     M6B.deallocate();
 #ifdef _CILK_
@@ -176,7 +172,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(A12, A22, Scalar(1.0), Scalar(-1.0), M7A);
     Matrix<Scalar> M7B(B11.m(), B11.n());
     Add(B21, B22, Scalar(1.0), Scalar(1.0), M7B);
-    FastMatmul(M7A, M7B, M7, numsteps - 1);
+    FastMatmul(M7A, M7B, M7, numsteps - 1, x);
     M7A.deallocate();
     M7B.deallocate();
 #ifdef _CILK_
@@ -197,4 +193,6 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(M1, M2, M3, M6, Scalar(1.0), Scalar(-1.0), Scalar(1.0), Scalar(1.0), C22);
 }
 
-#endif  // _FAST_HPP_
+}
+
+#endif  // _strassen_HPP_

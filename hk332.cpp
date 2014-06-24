@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     std::cout << "Running fast matmul..." << std::endl;
     auto t3 = std::chrono::high_resolution_clock::now();
-    FastMatmul(A, B, C2, numsteps);
+    hk332_2::FastMatmul(A, B, C2, numsteps);
     auto t4 = std::chrono::high_resolution_clock::now();
     std::cout << "Fast matmul took "
 	      << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()

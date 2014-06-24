@@ -255,21 +255,21 @@ def main():
         raise Exception('USAGE: python gen.py coeff_file m,n,p out_file')
 
     coeffs = read_coeffs(sys.argv[1])
+    # Create a namespace name from the file name
+    namespace_name = coeff_file.split('.')[0]
+    namespace_name = namespace_name.replace('-', '_')
+
     with open(outfile, 'w') as header:
         # header information
-        write_line(header, 0, '#ifndef _FAST_HPP_')
-        write_line(header, 0, '#define _FAST_HPP_')
+        write_line(header, 0, '#ifndef _%s_HPP_' % namespace_name)
+        write_line(header, 0, '#define _%s_HPP_' % namespace_name)
         write_line(header, 0, '\n')
         write_line(header, 0, '// This is an automatically generated file from gen.py.')
-        write_line(header, 0, '#include "linalg.hpp"')
-        write_line(header, 0, '#ifdef _CILK_')
-        write_line(header, 0, '# include <cilk/cilk.h>')
-        write_line(header, 0, '#elif defined _OPEN_MP_')
-        write_line(header, 0, '# include <omp.h>')
-        write_line(header, 0, '#endif')
+        write_line(header, 0, '#include "common.hpp"')
         write_line(header, 0, '\n')
 
         # Start of fast matrix multiplication function
+        write_line(header, 0, 'namespace %s {' % namespace_name)
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
                    'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
@@ -321,9 +321,10 @@ def main():
     
         # end of function
         write_line(header, 0, '}\n')
-
+        # end of namespace
+        write_line(header, 0, '}\n')
         # end of file
-        write_line(header, 0, '#endif  // _FAST_HPP_')
+        write_line(header, 0, '#endif  // _%s_HPP_' % namespace_name)
 
 if __name__ == '__main__':
     main()
