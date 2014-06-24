@@ -1,4 +1,20 @@
-#include "linalg.hpp"
+#include "common.hpp"
+
+#include "bini322.hpp"
+#include "classical.hpp"
+#include "fast333.hpp"
+#include "grey-fast234.hpp"
+#include "grey-fast243.hpp"
+#include "grey-fast322.hpp"
+#include "grey-fast324.hpp"
+#include "grey-fast332.hpp"
+#include "grey-fast333.hpp"
+#include "grey-fast342.hpp"
+#include "grey-fast423.hpp"
+#include "grey-fast432.hpp"
+#include "grey-fast433.hpp"
+#include "hk332.hpp"
+#include "strassen.hpp"
 
 #include <stdlib.h>
 #include <time.h>
@@ -8,16 +24,6 @@
 #include <random>
 #include <vector>
 
-#define _FAST_333_ 1
-
-#ifdef _FAST_333_
-# include "fast333.hpp"
-#elif defined _FAST_332_
-# include "fast332.hpp"
-#elif defined _STRASSEN_
-# include "strassen.hpp"
-#endif
-
 enum {
   BINI332,
   CLASSICAL,
@@ -25,6 +31,11 @@ enum {
   GREY332,
   GREY333,
   GREY432,
+  GREY423,
+  GREY324,
+  GREY342,
+  GREY234,
+  GREY243,
   GREY433,
   HK332,
 };
@@ -55,26 +66,43 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
         auto t1 = std::chrono::high_resolution_clock::now();
 	switch (algorithm) {
 	case BINI332:
+	  bini322::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case CLASSICAL:
+	  classical::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case GREY322:
-	  grey322_11_50::FastMatmul(A, B, C2, numsteps);	  
+	  grey322_11_50::FastMatmul(A, B, C1, numsteps);	  
 	  break;
 	case GREY332:
 	  grey332_15_103::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case GREY333:
-	  grey333_23_152::FastMatmul(A, B, C2, numsteps);
+	  grey333_23_152::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case GREY432:
-	  grey432_20_144::FastMatmul(A, B, C2, numsteps);
+	  grey432_20_144::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case GREY423:
+	  grey423_20_144::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case GREY324:
+	  grey324_20_144::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case GREY342:
+	  grey342_20_144::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case GREY234:
+	  grey234_20_144::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case GREY243:
+	  grey324_20_144::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case GREY433:
-	  grey433_29_234::FastMatmul(A, B, C2, numsteps);
+	  grey433_29_234::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case HK332:
-	  hk332_2::FastMatmul(A, B, C2, numsteps);
+	  hk332_2::FastMatmul(A, B, C1, numsteps);
 	  break;
 	default:
 	  std::cout << "Unknown algorithm type!" << std::endl;
