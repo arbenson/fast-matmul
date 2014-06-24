@@ -17,9 +17,11 @@ W = []
 
 for j in xrange(m*n):
     line = sys.stdin.readline().split()
+    U.append([])
     while line[0] == "#":
         line = sys.stdin.readline().split()
-    U.append([])
+    if len(line) != q:
+        print "Trouble at line",j,"of U, should have",q,"entries"
     for i in xrange(q):
         U[j].append(int(line[i]))
 
@@ -28,6 +30,8 @@ for j in xrange(n*k):
     V.append([])
     while line[0] == "#":
         line = sys.stdin.readline().split()
+    if len(line) != q:
+        print "Trouble at line",j,"of V, should have",q,"entries"
     for i in xrange(q):
         V[j].append(int(line[i]))
 
@@ -36,6 +40,8 @@ for j in xrange(m*k):
     W.append([])
     while line[0] == "#":
         line = sys.stdin.readline().split()
+    if len(line) != q:
+        print "Trouble at line",j,"of W, should have",q,"entries"   
     for i in xrange(q):
         W[j].append(int(line[i]))
 
@@ -48,7 +54,36 @@ for r in V:
 print "W"
 for r in W:
     print r
+
+
+#print "Ut"
+#Ut = []
+#for j in xrange(len(U[0])):
+#    Ut.append([])
+#    for i in xrange(len(U)):
+#        Ut[j].append(U[i][j])
+#for r in Ut:
+#    print r
+
+#print "Vt"
+#Vt = []
+#for j in xrange(len(V[0])):
+#    Vt.append([])
+#    for i in xrange(len(V)):
+#        Vt[j].append(V[i][j])
+#for r in Vt:
+#    print r
     
+#print "Wt"
+#Wt = []
+#for j in xrange(len(W[0])):
+#    Wt.append([])
+#    for i in xrange(len(W)):
+#        Wt[j].append(W[i][j])
+#for r in Wt:
+#    print r
+
+
 for a in xrange(m):
     for b in xrange(n):
         # a and b describe row of U
