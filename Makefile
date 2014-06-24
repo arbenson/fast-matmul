@@ -1,9 +1,9 @@
 CC = g++ 
-#CC = icpc
+CC = icpc
 
 MODE = sequential
 #MODE = cilk
-#MODE = openmp
+MODE = openmp
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
@@ -11,7 +11,7 @@ INCLUDES := -I$(MKLROOT)/include
 BLAS_LAPACK_LIB =  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread  
 
 # for compiling with Linux BLAS
-BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
+#BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
 #DEBUG := -g -O0 -Wall
 OPT := -O3
@@ -40,6 +40,9 @@ default : all
 all : $(TARGETS)
 
 dgemm_curve: dgemm_curve.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+benchmark: benchmark.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 fast333: fast333.o
