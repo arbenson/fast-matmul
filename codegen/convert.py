@@ -144,7 +144,7 @@ def main():
         # This is a special case for converting from column-major to row-major.
         new_coeffs = col2row(coeffs, dims)
     else:
-        raise Exception('Invalid permutation %d x %d %d' % perm)
+        raise Exception('Invalid permutation %d,%d,%d' % perm)
 
     with open(sys.argv[3], 'w') as out_file:
         out_file.write('# (%d, %d, %d) permutation of %s\n' % (perm[0], perm[1], perm[2], coeff_file))
