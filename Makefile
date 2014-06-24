@@ -29,7 +29,7 @@ ifeq ($(MODE), openmp)
   LDLIBS += -fopenmp
 endif
 
-SRC = bini322.cpp \
+SRC = bini332.cpp \
       classical.cpp \
       dgemm_curve_par.cpp \
       fast333.cpp \
