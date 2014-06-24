@@ -8,9 +8,9 @@
 #include <random>
 
 int main(int argc, char **argv) {
-    int m = 1600;
-    int k = 900;
-    int n = 400;
+    int m = 3600;
+    int k = 2400;
+    int n = 1200;
     int numsteps = 1;
 
     srand (time(NULL));
