@@ -385,6 +385,54 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
     }
 }
 
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4 + alpha5 * A5 + alpha6 * A6 + alpha7 * A7
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
+	 Matrix<Scalar>& A4, Matrix<Scalar>& A5, Matrix<Scalar>& A6,
+	 Matrix<Scalar>& A7,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3,
+	 Scalar alpha4, Scalar alpha5, Scalar alpha6,
+	 Scalar alpha7,
+	 Matrix<Scalar>& C) {
+    assert(A1.m() == C.m() && A2.m() == C.m() && A3.m() == C.m() &&
+           A4.m() == C.m() && A5.m() == C.m() && A6.m() == C.m() &&
+           A7.m() == C.m() &&
+	   A1.n() == C.n() && A2.n() == C.n() && A3.n() == C.n() &&
+	   A4.n() == C.n() && A5.n() == C.n() && A6.n() == C.n() &&
+	   A7.n() == C.n());
+
+    const int strideA1 = A1.stride();
+    const int strideA2 = A2.stride();
+    const int strideA3 = A3.stride();
+    const int strideA4 = A4.stride();
+    const int strideA5 = A5.stride();
+    const int strideA6 = A6.stride();
+    const int strideA7 = A7.stride();
+    const int strideC = C.stride();
+
+    const Scalar *dataA1 = A1.data();
+    const Scalar *dataA2 = A2.data();
+    const Scalar *dataA3 = A3.data();
+    const Scalar *dataA4 = A4.data();
+    const Scalar *dataA5 = A5.data();
+    const Scalar *dataA6 = A6.data();
+    const Scalar *dataA7 = A7.data();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            Scalar a = alpha1 * dataA1[i + j * strideA1];
+            Scalar b = alpha2 * dataA2[i + j * strideA2];
+            Scalar c = alpha3 * dataA3[i + j * strideA3];
+            Scalar d = alpha4 * dataA4[i + j * strideA4];
+            Scalar e = alpha5 * dataA5[i + j * strideA5];
+            Scalar f = alpha6 * dataA6[i + j * strideA6];
+            Scalar g = alpha7 * dataA7[i + j * strideA7];
+            dataC[i + j * strideC] = a + b + c + d + e + f + g;
+        }
+    }
+}
+
 
 // Template declarations
 template void Gemm(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C);

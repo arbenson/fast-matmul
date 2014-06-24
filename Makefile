@@ -3,7 +3,7 @@ CC = icpc
 
 MODE = sequential
 #MODE = cilk
-MODE = openmp
+#MODE = openmp
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
@@ -29,7 +29,7 @@ ifeq ($(MODE), openmp)
   LDLIBS += -fopenmp
 endif
 
-SRC = dgemm_curve.cpp dgemm_curve_par.cpp fast333.cpp strassen.cpp fast332.cpp bini332.cpp
+SRC = classical.cpp dgemm_curve_par.cpp fast333.cpp strassen.cpp bini332.cpp grey-fast432.cpp grey-fast322.cpp hk332.cpp
 OBJECTS = $(SRC:.cpp=.o)
 TARGETS = $(OBJECTS:.o=)
 
@@ -40,14 +40,14 @@ default : all
 .PHONY : all
 all : $(TARGETS)
 
-dgemm_curve: dgemm_curve.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+#dgemm_curve: dgemm_curve.o
+#	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 dgemm_curve_par: dgemm_curve_par.o
 	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
 
-benchmark: benchmark.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+#benchmark: benchmark.o
+#	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 fast333: fast333.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
@@ -55,10 +55,19 @@ fast333: fast333.o
 strassen: strassen.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-fast332: fast332.o
+bini332: bini332.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-bini332: bini332.o
+grey-fast432: grey-fast432.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+grey-fast322: grey-fast322.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+hk332: hk332.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+classical: classical.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 %.o: %.cpp
