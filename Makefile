@@ -29,10 +29,20 @@ ifeq ($(MODE), openmp)
   LDLIBS += -fopenmp
 endif
 
-SRC = classical.cpp dgemm_curve_par.cpp fast333.cpp strassen.cpp bini332.cpp grey-fast432.cpp grey-fast322.cpp hk332.cpp
+SRC = bini322.cpp \
+      classical.cpp \
+      dgemm_curve_par.cpp \
+      fast333.cpp \
+      grey-fast322.cpp \
+      grey-fast332.cpp \
+      grey-fast333.cpp \
+      grey-fast432.cpp \
+      grey-fast433.cpp \
+      hk332.cpp \
+      strassen.cpp
+
 OBJECTS = $(SRC:.cpp=.o)
 TARGETS = $(OBJECTS:.o=)
-
 
 .PHONY : default
 default : all
@@ -40,35 +50,45 @@ default : all
 .PHONY : all
 all : $(TARGETS)
 
+#benchmark: benchmark.o
+#	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+bini332: bini332.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+classical: classical.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
 #dgemm_curve: dgemm_curve.o
 #	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 dgemm_curve_par: dgemm_curve_par.o
 	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
 
-#benchmark: benchmark.o
-#	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
 fast333: fast333.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-strassen: strassen.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-bini332: bini332.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-grey-fast432: grey-fast432.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 grey-fast322: grey-fast322.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
+grey-fast332: grey-fast332.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+grey-fast333: grey-fast333.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+grey-fast432: grey-fast432.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+grey-fast433: grey-fast433.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
 hk332: hk332.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-classical: classical.o
+strassen: strassen.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
 
 %.o: %.cpp
 	$(CC) -c $(CFLAGS) $<
