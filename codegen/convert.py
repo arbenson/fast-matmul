@@ -22,7 +22,7 @@ s1,s2,s3 is the permutation, e.g. 1,2,0 for the <k, n, m> algorithm
 '''
 
 
-def transpose(coeff_set, m, n):
+def transpose(coeff_set, m, n, row2col=True):
     ''' Return a transpose of the coefficient set.
     coeff_set is the original set of coefficients
     m is the number of rows
@@ -32,10 +32,17 @@ def transpose(coeff_set, m, n):
         raise Exception('Incorrect number of entries in coefficient set')
 
     new_coeff_set = []
-    for j in range(n):
+    if row2col:
+        for j in range(n):
+            for i in range(m):
+                # Get the (i, j) coefficient set from the original coefficients
+                new_coeff_set.append([x for x in coeff_set[i * n + j]])
+    else:
         for i in range(m):
-            # Get the (i, j) coefficient set from the original coefficients
-            new_coeff_set.append([x for x in coeff_set[i * n + j]])
+            for j in range(n):
+                # Get the (i, j) coefficient set from the original coefficients
+                new_coeff_set.append([x for x in coeff_set[j * m + i]])
+
     return new_coeff_set
 
 
@@ -76,6 +83,15 @@ def cyclic_right(coeffs, dims):
     return new_coeffs, (dims[2], dims[0], dims[1])
 
 
+def col2row(coeffs, dims):
+    ''' Convert from column-major ordering to row-major ordering. '''
+    new_coeffs = []
+    new_coeffs.append(transpose(coeffs[0], dims[0], dims[1], row2col=False))
+    new_coeffs.append(transpose(coeffs[1], dims[1], dims[2], row2col=False))
+    new_coeffs.append(transpose(coeffs[2], dims[0], dims[2], row2col=False))
+    return new_coeffs
+
+
 def read_coeffs(filename):
     ''' Read the coefficient file.  There is one group of coefficients for each
     of the three matrices.  Keep the textual structure of the file. '''
@@ -97,7 +113,6 @@ def read_coeffs(filename):
 
 
 def main():
-    print sys.argv
     try:
         coeff_file = sys.argv[1]
         dims = tuple([int(d) for d in sys.argv[2].split(',')])
@@ -125,6 +140,9 @@ def main():
         new_coeffs, _ = swap(new_coeffs, new_dims)
     elif perm == (2, 1, 0):
         new_coeffs, _ = swap(coeffs, dims)
+    elif perm == (0, 0, 0):
+        # This is a special case for converting from column-major to row-major.
+        new_coeffs = col2row(coeffs, dims)
     else:
         raise Exception('Invalid permutation %d x %d %d' % perm)
 
