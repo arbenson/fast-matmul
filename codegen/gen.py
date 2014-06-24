@@ -3,11 +3,12 @@ import sys
 '''
 How to use this program:
 
-  python gen.py coeff_file m,n,p
+  python gen.py coeff_file m,n,p out_file
 
 coeff_file is the path to the coefficients file.
 m,n,p are the matrix dimensions:
    multiplying an m x n matrix A by a n x p matrix B and storing in a m x p matrix C
+out_file is the name of the output file
 
 Suppose there are R matrix multiplications in the subproblem.
 Let alpha_{ij}_r and be the coefficients for submatrix A_{ij} in the r-th
@@ -243,12 +244,15 @@ def write_output(header, ind, coeffs, mat_dims):
 
 def main():
     try:
-        outfile = 'output/fast.hpp'
         coeff_file = sys.argv[1]
         dims = tuple([int(d) for d in sys.argv[2].split(',')])
+        outfile = 'output/fast.hpp'
+        if len(sys.argv) > 3:
+            outfile = sys.argv[3]
+
         print 'Generating code for %d x %d x %d' % dims
     except:
-        raise Exception('USAGE: python gen.py coeff_file m,n,p')
+        raise Exception('USAGE: python gen.py coeff_file m,n,p out_file')
 
     coeffs = read_coeffs(sys.argv[1])
     with open(outfile, 'w') as header:
