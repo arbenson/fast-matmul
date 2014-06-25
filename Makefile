@@ -3,7 +3,7 @@ CC = icpc
 
 MODE = sequential
 #MODE = cilk
-#MODE = openmp
+MODE = openmp
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
@@ -16,7 +16,8 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 
 #DEBUG := -g -O0 -Wall
 OPT := -O3
-CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11
+CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 -DNDEBUG
+
 ifeq ($(MODE), cilk)
   CFLAGS += -D_CILK_
 else ifeq ($(MODE), openmp)
@@ -33,7 +34,6 @@ SRC = benchmark.cpp \
       bini322.cpp \
       classical.cpp \
       dgemm_curve_par.cpp \
-      fast333.cpp \
       grey-fast322.cpp \
       grey-fast332.cpp \
       grey-fast333.cpp \
@@ -51,8 +51,11 @@ default : all
 .PHONY : all
 all : $(TARGETS)
 
+#benchmark: benchmark.o
+#	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
 benchmark: benchmark.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
 
 bini322: bini322.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
@@ -65,9 +68,6 @@ classical: classical.o
 
 dgemm_curve_par: dgemm_curve_par.o
 	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
-
-fast333: fast333.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 grey-fast322: grey-fast322.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
