@@ -15,6 +15,7 @@
 #include "grey-fast423.hpp"
 #include "grey-fast432.hpp"
 #include "grey-fast422.hpp"
+#include "grey-fast424.hpp"
 #include "grey-fast433.hpp"
 #include "grey-fast522.hpp"
 #include "hk332.hpp"
@@ -43,6 +44,7 @@ enum {
   GREY234,
   GREY243,
   GREY422,
+  GREY424,
   GREY433,
   GREY522,
   HK332,
@@ -124,8 +126,13 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
       break;
 	case GREY422:
       grey422_14_84::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case GREY424:
+      grey424_26_257::FastMatmul(A, B, C1, numsteps);
+	  break;
 	case GREY522:
 	  grey522_18_99::FastMatmul(A, B, C1, numsteps);
+	  break;
     default:
       std::cout << "Unknown algorithm type!" << std::endl;
     }
@@ -220,7 +227,39 @@ void SquareBenchmarks() {
 }
 
 
+void RectangularBenchmarks() {
+  std::vector<int> n0;
+  for (int i = 200; i <= 2000; i += 10) {
+	n0.push_back(i);
+  }
+
+  std::vector<int> m_vals, n_vals;
+  GetDims(n0, 5, 1, m_vals);
+  GetDims(n0, 2, 1, n_vals);
+
+  std::cout << "MKL" << std::endl;
+  BenchmarkSet(m_vals, n_vals, n_vals, 0, CLASSICAL222);
+  std::cout << "GREY522" << std::endl;
+  BenchmarkSet(m_vals, n_vals, n_vals, 1, GREY522);
+}
+
+
+void OuterProductBenchmark() {
+  std::vector<int> n0;
+  for (int i = 500; i <= 1500; i += 25) {
+	n0.push_back(i);
+  }
+  std::vector<int> m_vals;
+  GetDims(n0, 4, 1, m_vals);
+  std::vector<int> k_vals(m_vals.size(), 1000);
+
+  std::cout << "MKL" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 0, CLASSICAL222);
+  std::cout << "GREY424" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, GREY424);
+}
+
+
 int main(int argc, char **argv) {
-  mkl_set_num_threads(16);
-  SquareBenchmarks();
+  OuterProductBenchmark();
 }
