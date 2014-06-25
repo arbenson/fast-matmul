@@ -23,7 +23,7 @@ python ${SCRIPT} grey422-14-84 4,2,2 ${OUT_DIR}/grey-fast422.hpp
 # 3,3,3
 python ${SCRIPT} grey333-23-152 3,3,3 ${OUT_DIR}/grey-fast333.hpp
 python ${SCRIPT} smirnov333-23-139 3,3,3 ${OUT_DIR}/smirnov-fast333.hpp
-python ${SCRIPT} classical333-27-81 3,3,3 ${OUT_DIR}/classical2x2.hpp
+python ${SCRIPT} classical333-27-81 3,3,3 ${OUT_DIR}/classical333.hpp
 
 # 3,3,2
 python ${SCRIPT} grey332-15-103 3,3,2 ${OUT_DIR}/grey-fast332.hpp
@@ -35,6 +35,6 @@ python ${SCRIPT} bini322 3,2,2 ${OUT_DIR}/bini322.hpp
 
 # 2,2,2
 python ${SCRIPT} strassen 2,2,2 ${OUT_DIR}/strassen.hpp
-python ${SCRIPT} classical222-8-24 2,2,2 ${OUT_DIR}/classical2x2.hpp
+python ${SCRIPT} classical222-8-24 2,2,2 ${OUT_DIR}/classical222.hpp
 
 
