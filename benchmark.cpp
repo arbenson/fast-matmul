@@ -1,8 +1,10 @@
 #include "common.hpp"
+#include "mkl.h"
 
 #include "bini322.hpp"
-#include "classical.hpp"
-#include "fast333.hpp"
+#include "classical222.hpp"
+#include "classical333.hpp"
+#include "smirnov-fast333.hpp"
 #include "grey-fast234.hpp"
 #include "grey-fast243.hpp"
 #include "grey-fast322.hpp"
@@ -12,7 +14,9 @@
 #include "grey-fast342.hpp"
 #include "grey-fast423.hpp"
 #include "grey-fast432.hpp"
+#include "grey-fast422.hpp"
 #include "grey-fast433.hpp"
+#include "grey-fast522.hpp"
 #include "hk332.hpp"
 #include "strassen.hpp"
 
@@ -26,18 +30,23 @@
 
 enum {
   BINI332,
-  CLASSICAL,
+  CLASSICAL222,
+  CLASSICAL333,
   GREY322,
   GREY332,
   GREY333,
+  SMIRNOV333,
   GREY432,
   GREY423,
   GREY324,
   GREY342,
   GREY234,
   GREY243,
+  GREY422,
   GREY433,
+  GREY522,
   HK332,
+  STRASSEN,
 };
 
 
@@ -68,8 +77,11 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
     case BINI332:
       bini322::FastMatmul(A, B, C1, numsteps);
       break;
-    case CLASSICAL:
-      classical::FastMatmul(A, B, C1, numsteps);
+    case CLASSICAL222:
+      classical222_8_24::FastMatmul(A, B, C1, numsteps);
+      break;
+    case CLASSICAL333:
+      classical333_27_81::FastMatmul(A, B, C1, numsteps);
       break;
     case GREY322:
       grey322_11_50::FastMatmul(A, B, C1, numsteps);      
@@ -101,9 +113,19 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
     case GREY433:
       grey433_29_234::FastMatmul(A, B, C1, numsteps);
       break;
+	case SMIRNOV333:
+	  smirnov333_23_139::FastMatmul(A, B, C1, numsteps);
+	  break;
     case HK332:
       hk332_2::FastMatmul(A, B, C1, numsteps);
       break;
+    case STRASSEN:
+      strassen::FastMatmul(A, B, C1, numsteps);
+      break;
+	case GREY422:
+      grey422_14_84::FastMatmul(A, B, C1, numsteps);
+	case GREY522:
+	  grey522_18_99::FastMatmul(A, B, C1, numsteps);
     default:
       std::cout << "Unknown algorithm type!" << std::endl;
     }
@@ -137,9 +159,68 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
   }
 }
 
+// Runs a set of benchmarks.
+void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
+                  std::vector<int>& n_vals, int numsteps,
+                  int algorithm, bool run_check=false) {
+  assert(m_vals.size() == k_vals.size() && k_vals.size() == n_vals.size());
+  for (int i = 0; i < m_vals.size(); ++i) {
+      SingleBenchmark(m_vals[i], k_vals[i], n_vals[i], numsteps, algorithm, run_check);
+  }
+}
+
+void GetDims(std::vector<int>& n0, int rec_size, int num_steps, std::vector<int>& vals) {
+  vals.clear();
+  for (int curr_n0 : n0) {
+	int tmp_num_steps = num_steps;
+	while (tmp_num_steps > 0) {
+	  curr_n0 *= rec_size;
+	  --tmp_num_steps;
+	}
+	vals.push_back(curr_n0);
+  }
+}
+
+void SquareBenchmarks() {
+  std::vector<int> n0;
+  for (int i = 100; i <= 1600; i += 10) {
+	n0.push_back(i);
+  }
+
+  mkl_set_num_threads(16);
+  std::vector<int> m_vals;
+  GetDims(n0, 2, 2, m_vals);
+  std::cout << "MKL" << std::endl;
+  BenchmarkSet(m_vals, m_vals, m_vals, 0, CLASSICAL222);
+
+#if 0
+  for (int num_steps = 1; num_steps <= 3; ++num_steps) {
+	std::cout << "Classical (recursive) " << num_steps << std::endl;
+	BenchmarkSet(m_vals, m_vals, m_vals, num_steps, CLASSICAL222);
+	std::cout << "Strassen " << num_steps << std::endl;
+	BenchmarkSet(m_vals, m_vals, m_vals, num_steps, STRASSEN);
+  }
+#endif
+
+  n0.clear();
+  for (int i = 50; i <= 700; i += 10) {
+	n0.push_back(i);
+  }
+  GetDims(n0, 3, 2, m_vals);
+
+  std::cout << "MKL" << std::endl;
+  BenchmarkSet(m_vals, m_vals, m_vals, 0, CLASSICAL333);
+
+#if 0
+  for (int num_steps = 1; num_steps <= 2; ++num_steps) {
+	std::cout << "GREY333" << std::endl;
+	BenchmarkSet(m_vals, m_vals, m_vals, num_steps, GREY333);
+  }
+#endif
+}
+
 
 int main(int argc, char **argv) {
-  std::vector<int> numsteps = {0, 1};
-  std::vector<int> m_vals = {1200, 2100};
-  BenchmarkSet(m_vals, m_vals, m_vals, numsteps, GREY333);
+  mkl_set_num_threads(16);
+  SquareBenchmarks();
 }
