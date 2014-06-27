@@ -15,37 +15,37 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
         return;
     }
 
-    int A_x_step = A.m() / 2;
-    int A_y_step = A.n() / 2;
-    Matrix<Scalar> A11(A.data() + 0 * A_x_step + 0 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A12(A.data() + 0 * A_x_step + 1 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A21(A.data() + 1 * A_x_step + 0 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A22(A.data() + 1 * A_x_step + 1 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    int B_x_step = B.m() / 2;
-    int B_y_step = B.n() / 2;
-    Matrix<Scalar> B11(B.data() + 0 * B_x_step + 0 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    Matrix<Scalar> B12(B.data() + 0 * B_x_step + 1 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    Matrix<Scalar> B21(B.data() + 1 * B_x_step + 0 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    Matrix<Scalar> B22(B.data() + 1 * B_x_step + 1 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    int C_x_step = C.m() / 2;
-    int C_y_step = C.n() / 2;
-    Matrix<Scalar> C11(C.data() + 0 * C_x_step + 0 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
-    Matrix<Scalar> C12(C.data() + 0 * C_x_step + 1 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
-    Matrix<Scalar> C21(C.data() + 1 * C_x_step + 0 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
-    Matrix<Scalar> C22(C.data() + 1 * C_x_step + 1 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
+    int A_row_step = A.m() / 2;
+    int A_col_step = A.n() / 2;
+    Matrix<Scalar> A11 = A.Subblock(2, 2, 1, 1);
+    Matrix<Scalar> A12 = A.Subblock(2, 2, 1, 2);
+    Matrix<Scalar> A21 = A.Subblock(2, 2, 2, 1);
+    Matrix<Scalar> A22 = A.Subblock(2, 2, 2, 2);
+    int B_row_step = B.m() / 2;
+    int B_col_step = B.n() / 2;
+    Matrix<Scalar> B11 = B.Subblock(2, 2, 1, 1);
+    Matrix<Scalar> B12 = B.Subblock(2, 2, 1, 2);
+    Matrix<Scalar> B21 = B.Subblock(2, 2, 2, 1);
+    Matrix<Scalar> B22 = B.Subblock(2, 2, 2, 2);
+    int C_row_step = C.m() / 2;
+    int C_col_step = C.n() / 2;
+    Matrix<Scalar> C11 = C.Subblock(2, 2, 1, 1);
+    Matrix<Scalar> C12 = C.Subblock(2, 2, 1, 2);
+    Matrix<Scalar> C21 = C.Subblock(2, 2, 2, 1);
+    Matrix<Scalar> C22 = C.Subblock(2, 2, 2, 2);
 
 
     // These are the intermediate matrices.
     // We define them here so that they can be used
     // inside the lambda functions for Cilk.
-    Matrix<Scalar> M1(C_x_step, C_y_step);
-    Matrix<Scalar> M2(C_x_step, C_y_step);
-    Matrix<Scalar> M3(C_x_step, C_y_step);
-    Matrix<Scalar> M4(C_x_step, C_y_step);
-    Matrix<Scalar> M5(C_x_step, C_y_step);
-    Matrix<Scalar> M6(C_x_step, C_y_step);
-    Matrix<Scalar> M7(C_x_step, C_y_step);
-    Matrix<Scalar> M8(C_x_step, C_y_step);
+    Matrix<Scalar> M1(C_row_step, C_col_step);
+    Matrix<Scalar> M2(C_row_step, C_col_step);
+    Matrix<Scalar> M3(C_row_step, C_col_step);
+    Matrix<Scalar> M4(C_row_step, C_col_step);
+    Matrix<Scalar> M5(C_row_step, C_col_step);
+    Matrix<Scalar> M6(C_row_step, C_col_step);
+    Matrix<Scalar> M7(C_row_step, C_col_step);
+    Matrix<Scalar> M8(C_row_step, C_col_step);
 
 
 #ifdef _OPEN_MP_
@@ -179,5 +179,5 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 }
 
 }
-
+  // namespace classical222_8_24
 #endif  // _classical222_8_24_HPP_
