@@ -194,6 +194,22 @@ double FrobeniusNorm(Matrix<Scalar>& A) {
     return sqrt(norm);
 }
 
+
+template<typename Scalar>
+HandleEdges(Matrix<Scalar>& A, Martrix<Scalar>& B, Matrix<Scalar>& C,
+	    int dim1, int dim2, int dim3) {
+  // Adjust part handled by fast matrix multiplication
+  // Add far column of A outer product bottom row B
+
+  // Adjust for far columns of C
+
+  // Adjust for bottom rows of C
+  
+
+}
+
+
+
 // C <-- -A
 template<typename Scalar>
 void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
