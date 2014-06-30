@@ -103,15 +103,14 @@ def write_subblocks(header, mat_name, dim1, dim2):
     mat_name is the name of the matrix, e.g., 'A' or 'B'
     header is file to write to.
     '''
-    x_step = '%s_x_step' % mat_name
-    y_step = '%s_y_step' % mat_name
-    write_line(header, 1, 'int %s = %s.m() / %d;' % (x_step, mat_name, dim1))
-    write_line(header, 1, 'int %s = %s.n() / %d;' % (y_step, mat_name, dim2))
+    row_step = '%s_row_step' % mat_name
+    col_step = '%s_col_step' % mat_name
+    write_line(header, 1, 'int %s = %s.m() / %d;' % (row_step, mat_name, dim1))
+    write_line(header, 1, 'int %s = %s.n() / %d;' % (col_step, mat_name, dim2))
     for i in xrange(dim1):
         for j in xrange(dim2):
-            write_line(header, 1, 'Matrix<Scalar> %s%d%d(%s.data() + %d * %s + %d * %s * %s.stride(), %s.stride(), %s, %s);' % (
-                    mat_name, i + 1, j + 1, mat_name, i, x_step, j, y_step, mat_name, mat_name, x_step, y_step))
-
+            write_line(header, 1, 'Matrix<Scalar> %s%d%d = %s.Subblock(%d, %d, %d, %d);' %
+                       (mat_name, i + 1, j + 1, mat_name, dim1, dim2, i + 1, j + 1))
 
 
 def read_coeffs(filename):
@@ -293,7 +292,7 @@ def main():
         write_line(header, 1, '// We define them here so that they can be used')
         write_line(header, 1, '// inside the lambda functions for Cilk.')
         for i in xrange(num_multiplies):
-            write_line(header, 1, 'Matrix<Scalar> M%d(C_x_step, C_y_step);' % (i + 1))
+            write_line(header, 1, 'Matrix<Scalar> M%d(C_row_step, C_col_step);' % (i + 1))
         write_line(header, 0, '\n')
 
         write_line(header, 0, '#ifdef _OPEN_MP_')        
@@ -322,7 +321,7 @@ def main():
         # end of function
         write_line(header, 0, '}\n')
         # end of namespace
-        write_line(header, 0, '}\n')
+        write_line(header, 0, '}\n  // namespace %s' % namespace_name)
         # end of file
         write_line(header, 0, '#endif  // _%s_HPP_' % namespace_name)
 

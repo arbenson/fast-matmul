@@ -3,13 +3,13 @@ CC = icpc
 
 MODE = sequential
 #MODE = cilk
-MODE = openmp
+#MODE = openmp
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
 INCLUDES := -I$(MKLROOT)/include
-BLAS_LAPACK_LIB =  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread  
-MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread -lm
+BLAS_LAPACK_LIB =  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread
+MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread
 
 # for compiling with Linux BLAS
 #BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
@@ -17,6 +17,7 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 #DEBUG := -g -O0 -Wall
 OPT := -O3
 CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 -DNDEBUG
+#CFLAGS += -g
 
 ifeq ($(MODE), cilk)
   CFLAGS += -D_CILK_
@@ -25,7 +26,7 @@ else ifeq ($(MODE), openmp)
 endif
 
 LDFLAGS := 
-LDLIBS := $(BLAS_LAPACK_LIB) -lm 
+LDLIBS := $(BLAS_LAPACK_LIB)
 ifeq ($(MODE), openmp)
   LDLIBS += -fopenmp
 endif
@@ -37,6 +38,7 @@ SRC = benchmark.cpp \
       grey-fast322.cpp \
       grey-fast332.cpp \
       grey-fast333.cpp \
+      grey-fast424.cpp \
       grey-fast432.cpp \
       grey-fast433.cpp \
       hk332.cpp \
@@ -51,11 +53,11 @@ default : all
 .PHONY : all
 all : $(TARGETS)
 
-#benchmark: benchmark.o
-#	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
 benchmark: benchmark.o
-	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+#benchmark: benchmark.o
+#	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
 
 bini322: bini322.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
@@ -76,6 +78,9 @@ grey-fast332: grey-fast332.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 grey-fast333: grey-fast333.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+grey-fast424: grey-fast424.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 grey-fast432: grey-fast432.o
