@@ -133,20 +133,20 @@ void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
   assert(A.m() > 0 && A.n() > 0);
   int extra_rows_A = A.m() - (A.m() / dim1) * dim1;
   int extra_cols_A = A.n() - (A.n() / dim2) * dim2;
-  int extra_rows_B = B.m() - (B.m() / dim1) * dim1;
+  int extra_rows_B = B.m() - (B.m() / dim2) * dim2;
   int extra_cols_B = B.n() - (B.n() / dim3) * dim3;
   assert(extra_cols_A == extra_rows_B);
 
-  // Adjust part handled by fast matrix multiplication
+  // Adjust part handled by fast matrix multiplication.
   // Add far column of A outer product bottom row B
   if (extra_cols_A > 0) {
 	// In Strassen, this looks like C([1, 2], [1, 2]) += A([1, 2], 3) * B(3, [1, 2])
-	int small_row_dim = A.m() - extra_rows_A;
-	int big_col_dim = B.n() - extra_cols_B;
+	int row_dim = A.m() - extra_rows_A;
+	int col_dim = B.n() - extra_cols_B;
 	int inner_dim_start = A.n() - extra_cols_A;
-	Matrix<Scalar> A_extra = A.Submatrix(0, inner_dim_start, small_row_dim, extra_cols_A);
-	Matrix<Scalar> B_extra = B.Submatrix(inner_dim_start, 0, extra_rows_B, big_col_dim);
-	Matrix<Scalar> C_extra = C.Submatrix(0, 0, small_row_dim, big_col_dim);
+	Matrix<Scalar> A_extra = A.Submatrix(0, inner_dim_start, row_dim, extra_cols_A);
+	Matrix<Scalar> B_extra = B.Submatrix(inner_dim_start, 0, extra_rows_B, col_dim);
+	Matrix<Scalar> C_extra = C.Submatrix(0, 0, row_dim, col_dim);
 	Gemm(A_extra, B_extra, C_extra, Scalar(1.0));
   }
 

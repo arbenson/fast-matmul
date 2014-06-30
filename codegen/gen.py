@@ -317,6 +317,10 @@ def main():
 
         for ind, row in enumerate(coeffs[2]):
             write_output(header, ind, row, (dims[0], dims[2]))
+
+        write_line(header, 0, '\n')
+        write_line(header, 1, '// Handle edge cases with dynamic peeling')
+        write_line(header, 1, 'DynamicPeeling(A, B, C, %d, %d, %d);' % dims)
     
         # end of function
         write_line(header, 0, '}\n')

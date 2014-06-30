@@ -364,6 +364,10 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(M1, M7, M8, M15, Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(-1.0), C22);
     Add(M4, M7, M9, M12, M14, Scalar(-1.0), Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(-1.0), C31);
     Add(M1, M2, M4, M7, M11, M12, Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(-1.0), Scalar(1.0), Scalar(-1.0), C32);
+
+
+    // Handle edge cases with dynamic peeling
+    DynamicPeeling(A, B, C, 3, 3, 2);
 }
 
 }
