@@ -72,27 +72,12 @@ public:
   // Return pair of (starting index, number of indices)
   std::pair<int, int> IndexData(int total, int num_block, int ind) {
   	int step = total / num_block;
-	int extra = total - step * num_block;
-
 	// Determine starting index
 	int start = step * (ind - 1);
 
-#if 0
-	for (int other_ind = 1; other_ind < ind; ++other_ind) {
-	  if (other_ind <= extra) {
-		++start;
-	  }
-	}
-
-	int num = step;
-	// Check if we get an extra index (row or column)
-	if (ind <= extra) {
-	  ++num;
-	}
-#endif
-
 	return std::pair<int, int>(start, step);
   }
+
 
   // Get a view of a subblock of the matrix.
   // num_block_rows and num_block_cols are the number of block rows and columns
@@ -100,8 +85,12 @@ public:
   Matrix<Scalar> Subblock(int num_block_rows, int num_block_cols, int row_ind, int col_ind) {
 	std::pair<int, int> row_data = IndexData(m_, num_block_rows, row_ind);
 	std::pair<int, int> col_data = IndexData(n_, num_block_cols, col_ind);
-	return Matrix<Scalar>(data_ + row_data.first + col_data.first * stride_, stride_,
-						  row_data.second, col_data.second);
+	return Submatrix(row_data.first, col_data.first, row_data.second, col_data.second);
+  }
+
+
+  Matrix<Scalar> Submatrix(int start_row, int start_col, int num_rows, int num_cols) {
+	return Matrix<Scalar>(data(start_row, start_col), stride_, num_rows, num_cols);
   }
 
   ~Matrix() {
@@ -111,6 +100,7 @@ public:
   }
 
   Scalar *data() { return data_; }
+  Scalar *data(int i, int j) { return data_ + i + j * stride_; }
   int stride() { return stride_; }
   int m() { return m_; }
   int n() { return n_; }
@@ -135,6 +125,52 @@ private:
   bool is_view_;
 };
 
+
+template<typename Scalar>
+void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
+					int dim1, int dim2, int dim3) {
+  assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
+  assert(A.m() > 0 && A.n() > 0);
+  int extra_rows_A = A.m() - (A.m() / dim1) * dim1;
+  int extra_cols_A = A.n() - (A.n() / dim2) * dim2;
+  int extra_rows_B = B.m() - (B.m() / dim1) * dim1;
+  int extra_cols_B = B.n() - (B.n() / dim3) * dim3;
+  assert(extra_cols_A == extra_rows_B);
+
+  // Adjust part handled by fast matrix multiplication
+  // Add far column of A outer product bottom row B
+  if (extra_cols_A > 0) {
+	// In Strassen, this looks like C([1, 2], [1, 2]) += A([1, 2], 3) * B(3, [1, 2])
+	int small_row_dim = A.m() - extra_rows_A;
+	int big_col_dim = B.n() - extra_cols_B;
+	int inner_dim_start = A.n() - extra_cols_A;
+	Matrix<Scalar> A_extra = A.Submatrix(0, inner_dim_start, small_row_dim, extra_cols_A);
+	Matrix<Scalar> B_extra = B.Submatrix(inner_dim_start, 0, extra_rows_B, big_col_dim);
+	Matrix<Scalar> C_extra = C.Submatrix(0, 0, small_row_dim, big_col_dim);
+	Gemm(A_extra, B_extra, C_extra, Scalar(1.0));
+  }
+
+  // Adjust for far right columns of C
+  if (extra_cols_B > 0) {
+	// In Strassen, this looks like C(:, 3) = A * B(:, 3)
+	int start_ind = B.n() - extra_cols_B;
+	Matrix<Scalar> B_extra = B.Submatrix(0, start_ind, B.m(), extra_cols_B);
+	Matrix<Scalar> C_extra = C.Submatrix(0, start_ind, C.m(), extra_cols_B);
+	Gemm(A, B_extra, C_extra);
+  }
+
+  // Adjust for bottom rows of C
+  if (extra_rows_A > 0) {
+	// In Strassen, this looks like C(3, [1, 2]) = A(3, :) * B(:, [1, 2])
+	int start_ind = A.m() - extra_rows_A;
+	int num_cols = B.n() - extra_cols_B;
+	Matrix<Scalar> A_extra = A.Submatrix(start_ind, 0, extra_rows_A, A.n());
+	Matrix<Scalar> B_extra = B.Submatrix(0, 0, B.m(), num_cols);
+	Matrix<Scalar> C_extra = C.Submatrix(start_ind, 0, extra_rows_A, num_cols);
+	Gemm(A_extra, B_extra, C_extra);
+  }
+}
+
 template <typename Scalar>
 std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
   Scalar *data = mat.data();
@@ -150,33 +186,31 @@ std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
 
 // Wrapper for dgemm called by templated gemm.
 void GemmWrap(int m, int n, int k, double *A, int lda, double *B, int ldb, double *C,
-			  int ldc) {
+			  int ldc, double beta) {
   char transa = 'n';
   char transb = 'n';
   double alpha = 1;
-  double beta = 0;
   dgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
 		 C, &ldc);
 }
 
 // Wrapper for sgemm called by templated gemm.
 void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb,
-			  float *C, int ldc) {
+			  float *C, int ldc, float beta) {
   char transa = 'n';
   char transb = 'n';
   float alpha = 1;
-  float beta = 0;
   sgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
 		 C, &ldc);
 }
 
-// C <-- A * B
+// C <-- A * B + beta * C
 template <typename Scalar>
-void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C) {
+void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, Scalar beta=Scalar(0.0)) {
   assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
   assert(A.m() > 0 && A.n() > 0);
   GemmWrap(A.m(), B.n(), A.n(), A.data(), A.stride(), B.data(), B.stride(),
-		   C.data(), C.stride());
+		   C.data(), C.stride(), beta);
 }
 
 // max_ij |a_ij - b_ij| / |a_ij|
@@ -789,8 +823,8 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
 
 
 // Template declarations
-template void Gemm(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C);
-template void Gemm(Matrix<float>& A, Matrix<float>& B, Matrix<float>& C);
+template void Gemm(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C, double beta);
+template void Gemm(Matrix<float>& A, Matrix<float>& B, Matrix<float>& C, float beta);
 
 template void Negate(Matrix<double>& A, Matrix<double>& C);
 template void Negate(Matrix<float>& A, Matrix<float>& C);
