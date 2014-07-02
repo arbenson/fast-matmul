@@ -6,6 +6,10 @@ OUT_DIR=..
 # 5,2,2
 python ${SCRIPT} grey522-18-99 5,2,2 ${OUT_DIR}/grey-fast522.hpp
 
+# 4,4,2
+python ${SCRIPT} grey442-26-257 4,4,2 ${OUT_DIR}/grey-fast442.hpp
+python ${SCRIPT} grey424-26-257 4,2,4 ${OUT_DIR}/grey-fast424.hpp
+
 # 4,3,3
 python ${SCRIPT} grey433-29-234 4,3,3 ${OUT_DIR}/grey-fast433.hpp
 

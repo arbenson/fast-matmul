@@ -33,10 +33,12 @@ enum {
   BINI332,
   CLASSICAL222,
   CLASSICAL333,
+  SMIRNOV333,
+  HK332,
+  STRASSEN,
   GREY322,
   GREY332,
   GREY333,
-  SMIRNOV333,
   GREY432,
   GREY423,
   GREY324,
@@ -47,8 +49,6 @@ enum {
   GREY424,
   GREY433,
   GREY522,
-  HK332,
-  STRASSEN,
 };
 
 
@@ -176,6 +176,42 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
   }
 }
 
+void AlgorithmTest(std::vector<int>& n_vals, std::vector<int>& k_vals, std::vector<int>& m_vals,
+				   std::string output_str, int algorithm) {
+  std::cout << output_str << std::endl;
+  BenchmarkSet(n_vals, n_vals, n_vals, 1, algorithm, true);
+  BenchmarkSet(n_vals, n_vals, n_vals, 2, algorithm, true);
+  BenchmarkSet(n_vals, k_vals, m_vals, 1, algorithm, true);
+  BenchmarkSet(n_vals, k_vals, m_vals, 2, algorithm, true);
+}
+
+
+void TestSuite() {
+  std::vector<int> n_vals = {55, 100, 200, 340, 562, 671, 1000, 1200, 1201, 1300, 1400, 1500, 2000, 2003, 2489, 2765};
+  std::vector<int> k_vals = {71, 80,   99, 400, 500, 700, 1000, 1200, 1301, 1400, 1477, 1514, 2020, 2100, 2800, 2900};
+  std::vector<int> m_vals = {44, 70,  101, 402, 600, 634, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010};
+
+  AlgorithmTest(n_vals, k_vals, m_vals, "Classical (2 x 2 recursive)", CLASSICAL222);
+  AlgorithmTest(n_vals, k_vals, m_vals, "Classical (3 x 3 recursive)", CLASSICAL333);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY322", GREY322);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY332", GREY332);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY333", GREY333);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY432", GREY432);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY423", GREY423);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY324", GREY324);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY342", GREY342);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY234", GREY234);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY243", GREY243);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY422", GREY422);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY424", GREY424);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY433", GREY433);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY522", GREY522);
+  AlgorithmTest(n_vals, k_vals, m_vals, "GREY522", GREY522);
+  AlgorithmTest(n_vals, k_vals, m_vals, "SMIRNOV333", SMIRNOV333);
+  AlgorithmTest(n_vals, k_vals, m_vals, "HK332", HK332);
+  AlgorithmTest(n_vals, k_vals, m_vals, "BINI332", BINI332);
+}
+
 void GetDims(std::vector<int>& n0, int rec_size, int num_steps, std::vector<int>& vals) {
   vals.clear();
   for (int curr_n0 : n0) {
@@ -246,20 +282,32 @@ void RectangularBenchmarks() {
 
 void OuterProductBenchmark() {
   std::vector<int> n0;
-  for (int i = 500; i <= 1500; i += 25) {
+  for (int i = 500; i <= 2000; i += 25) {
 	n0.push_back(i);
   }
   std::vector<int> m_vals;
   GetDims(n0, 4, 1, m_vals);
-  std::vector<int> k_vals(m_vals.size(), 1000);
+  std::vector<int> k_vals(m_vals.size(), 1600);
 
   std::cout << "MKL" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 0, CLASSICAL222);
   std::cout << "GREY424" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, GREY424);
+  std::cout << "STRASSEN" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, STRASSEN);
+}
+
+
+void DgemmCurve() {
+  std::vector<int> n0;
+  for (int i = 200; i <= 4000; i += 20) {
+	n0.push_back(i);
+  }
+  std::cout << "MKL" << std::endl;
+  BenchmarkSet(n0, n0, n0, 0, CLASSICAL222);
 }
 
 
 int main(int argc, char **argv) {
-  OuterProductBenchmark();
+  TestSuite();
 }

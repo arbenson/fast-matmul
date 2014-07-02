@@ -15,53 +15,53 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
         return;
     }
 
-    int A_x_step = A.m() / 3;
-    int A_y_step = A.n() / 3;
-    Matrix<Scalar> A11(A.data() + 0 * A_x_step + 0 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A12(A.data() + 0 * A_x_step + 1 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A13(A.data() + 0 * A_x_step + 2 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A21(A.data() + 1 * A_x_step + 0 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A22(A.data() + 1 * A_x_step + 1 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A23(A.data() + 1 * A_x_step + 2 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A31(A.data() + 2 * A_x_step + 0 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A32(A.data() + 2 * A_x_step + 1 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    Matrix<Scalar> A33(A.data() + 2 * A_x_step + 2 * A_y_step * A.stride(), A.stride(), A_x_step, A_y_step);
-    int B_x_step = B.m() / 3;
-    int B_y_step = B.n() / 2;
-    Matrix<Scalar> B11(B.data() + 0 * B_x_step + 0 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    Matrix<Scalar> B12(B.data() + 0 * B_x_step + 1 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    Matrix<Scalar> B21(B.data() + 1 * B_x_step + 0 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    Matrix<Scalar> B22(B.data() + 1 * B_x_step + 1 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    Matrix<Scalar> B31(B.data() + 2 * B_x_step + 0 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    Matrix<Scalar> B32(B.data() + 2 * B_x_step + 1 * B_y_step * B.stride(), B.stride(), B_x_step, B_y_step);
-    int C_x_step = C.m() / 3;
-    int C_y_step = C.n() / 2;
-    Matrix<Scalar> C11(C.data() + 0 * C_x_step + 0 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
-    Matrix<Scalar> C12(C.data() + 0 * C_x_step + 1 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
-    Matrix<Scalar> C21(C.data() + 1 * C_x_step + 0 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
-    Matrix<Scalar> C22(C.data() + 1 * C_x_step + 1 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
-    Matrix<Scalar> C31(C.data() + 2 * C_x_step + 0 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
-    Matrix<Scalar> C32(C.data() + 2 * C_x_step + 1 * C_y_step * C.stride(), C.stride(), C_x_step, C_y_step);
+    int A_row_step = A.m() / 3;
+    int A_col_step = A.n() / 3;
+    Matrix<Scalar> A11 = A.Subblock(3, 3, 1, 1);
+    Matrix<Scalar> A12 = A.Subblock(3, 3, 1, 2);
+    Matrix<Scalar> A13 = A.Subblock(3, 3, 1, 3);
+    Matrix<Scalar> A21 = A.Subblock(3, 3, 2, 1);
+    Matrix<Scalar> A22 = A.Subblock(3, 3, 2, 2);
+    Matrix<Scalar> A23 = A.Subblock(3, 3, 2, 3);
+    Matrix<Scalar> A31 = A.Subblock(3, 3, 3, 1);
+    Matrix<Scalar> A32 = A.Subblock(3, 3, 3, 2);
+    Matrix<Scalar> A33 = A.Subblock(3, 3, 3, 3);
+    int B_row_step = B.m() / 3;
+    int B_col_step = B.n() / 2;
+    Matrix<Scalar> B11 = B.Subblock(3, 2, 1, 1);
+    Matrix<Scalar> B12 = B.Subblock(3, 2, 1, 2);
+    Matrix<Scalar> B21 = B.Subblock(3, 2, 2, 1);
+    Matrix<Scalar> B22 = B.Subblock(3, 2, 2, 2);
+    Matrix<Scalar> B31 = B.Subblock(3, 2, 3, 1);
+    Matrix<Scalar> B32 = B.Subblock(3, 2, 3, 2);
+    int C_row_step = C.m() / 3;
+    int C_col_step = C.n() / 2;
+    Matrix<Scalar> C11 = C.Subblock(3, 2, 1, 1);
+    Matrix<Scalar> C12 = C.Subblock(3, 2, 1, 2);
+    Matrix<Scalar> C21 = C.Subblock(3, 2, 2, 1);
+    Matrix<Scalar> C22 = C.Subblock(3, 2, 2, 2);
+    Matrix<Scalar> C31 = C.Subblock(3, 2, 3, 1);
+    Matrix<Scalar> C32 = C.Subblock(3, 2, 3, 2);
 
 
     // These are the intermediate matrices.
     // We define them here so that they can be used
     // inside the lambda functions for Cilk.
-    Matrix<Scalar> M1(C_x_step, C_y_step);
-    Matrix<Scalar> M2(C_x_step, C_y_step);
-    Matrix<Scalar> M3(C_x_step, C_y_step);
-    Matrix<Scalar> M4(C_x_step, C_y_step);
-    Matrix<Scalar> M5(C_x_step, C_y_step);
-    Matrix<Scalar> M6(C_x_step, C_y_step);
-    Matrix<Scalar> M7(C_x_step, C_y_step);
-    Matrix<Scalar> M8(C_x_step, C_y_step);
-    Matrix<Scalar> M9(C_x_step, C_y_step);
-    Matrix<Scalar> M10(C_x_step, C_y_step);
-    Matrix<Scalar> M11(C_x_step, C_y_step);
-    Matrix<Scalar> M12(C_x_step, C_y_step);
-    Matrix<Scalar> M13(C_x_step, C_y_step);
-    Matrix<Scalar> M14(C_x_step, C_y_step);
-    Matrix<Scalar> M15(C_x_step, C_y_step);
+    Matrix<Scalar> M1(C_row_step, C_col_step);
+    Matrix<Scalar> M2(C_row_step, C_col_step);
+    Matrix<Scalar> M3(C_row_step, C_col_step);
+    Matrix<Scalar> M4(C_row_step, C_col_step);
+    Matrix<Scalar> M5(C_row_step, C_col_step);
+    Matrix<Scalar> M6(C_row_step, C_col_step);
+    Matrix<Scalar> M7(C_row_step, C_col_step);
+    Matrix<Scalar> M8(C_row_step, C_col_step);
+    Matrix<Scalar> M9(C_row_step, C_col_step);
+    Matrix<Scalar> M10(C_row_step, C_col_step);
+    Matrix<Scalar> M11(C_row_step, C_col_step);
+    Matrix<Scalar> M12(C_row_step, C_col_step);
+    Matrix<Scalar> M13(C_row_step, C_col_step);
+    Matrix<Scalar> M14(C_row_step, C_col_step);
+    Matrix<Scalar> M15(C_row_step, C_col_step);
 
 
 #ifdef _OPEN_MP_
@@ -364,8 +364,12 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(M1, M7, M8, M15, Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(-1.0), C22);
     Add(M4, M7, M9, M12, M14, Scalar(-1.0), Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(-1.0), C31);
     Add(M1, M2, M4, M7, M11, M12, Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(-1.0), Scalar(1.0), Scalar(-1.0), C32);
+
+
+    // Handle edge cases with dynamic peeling
+    DynamicPeeling(A, B, C, 3, 3, 2);
 }
 
 }
-
+  // namespace grey332_15_103
 #endif  // _grey332_15_103_HPP_
