@@ -31,6 +31,7 @@ python ${SCRIPT} classical333-27-81 3,3,3 ${OUT_DIR}/classical333.hpp
 
 # 3,3,2
 python ${SCRIPT} grey332-15-103 3,3,2 ${OUT_DIR}/grey-fast332.hpp
+python ${SCRIPT} grey323-15-103 3,2,3 ${OUT_DIR}/grey-fast323.hpp
 python ${SCRIPT} hk332-2 3,3,2 ${OUT_DIR}/hk332.hpp
 
 # 3,2,2

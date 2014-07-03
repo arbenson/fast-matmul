@@ -25,13 +25,14 @@ else ifeq ($(MODE), openmp)
   CFLAGS += -D_OPEN_MP_ -fopenmp
 endif
 
-LDFLAGS := 
+LDFLAGS := -O3
 LDLIBS := $(BLAS_LAPACK_LIB)
 ifeq ($(MODE), openmp)
   LDLIBS += -fopenmp
 endif
 
 SRC = benchmark.cpp \
+	  benchmark_par.cpp \
       bini322.cpp \
       classical.cpp \
       dgemm_curve_par.cpp \
@@ -56,8 +57,8 @@ all : $(TARGETS)
 benchmark: benchmark.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-#benchmark: benchmark.o
-#	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
+benchmark_par: benchmark_par.o
+	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
 
 bini322: bini322.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
@@ -65,8 +66,8 @@ bini322: bini322.o
 classical: classical.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-#dgemm_curve: dgemm_curve.o
-#	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+dgemm_curve: dgemm_curve.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 dgemm_curve_par: dgemm_curve_par.o
 	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
