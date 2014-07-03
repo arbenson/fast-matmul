@@ -1,5 +1,5 @@
 #include "linalg.hpp"
-#include "classical222.hpp"
+#include "grey-fast424.hpp"
 
 #include <stdlib.h>
 #include <time.h>
@@ -8,9 +8,9 @@
 #include <random>
 
 int main(int argc, char **argv) {
-    int m = 2000;
-    int k = 1200;
-    int n = 2000;
+    int m = 4000;
+    int k = 100;
+    int n = 4000;
     int numsteps = 1;
 
     srand (time(NULL));
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     std::cout << "Running fast matmul..." << std::endl;
     auto t3 = std::chrono::high_resolution_clock::now();
-    classical222_8_24::FastMatmul(A, B, C2, numsteps);
+    grey424_26_257::FastMatmul(A, B, C2, numsteps);
     auto t4 = std::chrono::high_resolution_clock::now();
     std::cout << "Fast matmul took "
 	      << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()

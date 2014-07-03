@@ -1,4 +1,4 @@
-# Classical n^3 algorithm
+# Classical n^3 algorithm with 2 x 2 x 2 base case
 1 0 1 0 0 0 0 0
 0 1 0 1 0 0 0 0
 0 0 0 0 1 0 1 0
