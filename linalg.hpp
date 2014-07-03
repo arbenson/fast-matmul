@@ -13,6 +13,9 @@ extern "C" {
   void sgemm_(char *transa, char *transb, int *m, int *n, int *k,
 			  float *alpha, float *a, int *lda, float *b, int *ldb,
 			  float *beta, float *c, int *ldc);
+
+  void daxpy_(int *n, double *alpha, double *A, int *incx, double *C, int *incy);
+  void saxpy_(int *n, float *alpha, float *A, int *incx, float *C, int *incy);
 }
 
 // This is a basic templated matrix class.
@@ -270,6 +273,7 @@ double FrobeniusNorm(Matrix<Scalar>& A) {
   return sqrt(norm);
 }
 
+
 // C <-- -A
 template<typename Scalar>
 void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
@@ -278,6 +282,9 @@ void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
   const int strideC = C.stride();
   const Scalar *dataA = A.data();
   Scalar *dataC = C.data();
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a = dataA[i + j * strideA];
@@ -294,6 +301,10 @@ void Add(Matrix<Scalar>& A1, Scalar alpha1, Matrix<Scalar>& C) {
   const int strideC = C.stride();
   const Scalar *dataA1 = A1.data();
   Scalar *dataC = C.data();
+
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = dataA1[i + j * strideA1];
@@ -317,6 +328,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Scalar alpha1, Scalar alpha2,
   const Scalar *dataA2 = A2.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -343,6 +357,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   const Scalar *dataA3 = A3.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -372,6 +389,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3, Matrix<Scal
   const Scalar *dataA4 = A4.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -408,6 +428,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   const Scalar *dataA5 = A5.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -449,6 +472,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   const Scalar *dataA6 = A6.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -498,6 +524,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   const Scalar *dataA7 = A7.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -550,6 +579,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   const Scalar *dataA8 = A8.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -605,6 +637,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   const Scalar *dataA9 = A9.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -667,6 +702,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   const Scalar *dataA10 = A10.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -733,6 +771,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   const Scalar *dataA11 = A11.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -802,6 +843,9 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   const Scalar *dataA12 = A12.data();
   Scalar *dataC = C.data();
 
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
   for (int j = 0; j < C.n(); ++j) {
 	for (int i = 0; i < C.m(); ++i) {
 	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
@@ -821,6 +865,254 @@ void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
   }
 }
 
+
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4 + alpha5 * A5
+//     + alpha6 * A6 + alpha7 * A7 + alpha8 * A8 + alpha9 * A9 + alpha10 * A10
+//     + alpha11 * A11 + alpha12 * A12 + alpha13 * A13
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
+		 Matrix<Scalar>& A4, Matrix<Scalar>& A5, Matrix<Scalar>& A6,
+		 Matrix<Scalar>& A7, Matrix<Scalar>& A8, Matrix<Scalar>& A9,
+		 Matrix<Scalar>& A10, Matrix<Scalar>& A11, Matrix<Scalar>& A12,
+		 Matrix<Scalar>& A13,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3,
+		 Scalar alpha4, Scalar alpha5, Scalar alpha6,
+		 Scalar alpha7, Scalar alpha8, Scalar alpha9,
+		 Scalar alpha10, Scalar alpha11, Scalar alpha12,
+		 Scalar alpha13,
+		 Matrix<Scalar>& C) {
+  assert(A1.m() == C.m() && A2.m() == C.m() && A3.m() == C.m() &&
+		 A4.m() == C.m() && A5.m() == C.m() && A6.m() == C.m() &&
+		 A7.m() == C.m() && A8.m() == C.m() && A9.m() == C.m() &&
+		 A10.m() == C.m() && A11.m() == C.m() && A12.m() == C.m() &&
+		 A13.m() == C.m() &&
+		 A1.n() == C.n() && A2.n() == C.n() && A3.n() == C.n() &&
+		 A4.n() == C.n() && A5.n() == C.n() && A6.n() == C.n() &&
+		 A7.n() == C.n() && A8.n() == C.n() && A9.n() == C.n() &&
+		 A10.n() == C.n() && A11.n() == C.n() && A12.n() == C.n() &&
+		 A13.n() == C.n());
+
+  const int strideA1 = A1.stride();
+  const int strideA2 = A2.stride();
+  const int strideA3 = A3.stride();
+  const int strideA4 = A4.stride();
+  const int strideA5 = A5.stride();
+  const int strideA6 = A6.stride();
+  const int strideA7 = A7.stride();
+  const int strideA8 = A8.stride();
+  const int strideA9 = A9.stride();
+  const int strideA10 = A10.stride();
+  const int strideA11 = A11.stride();
+  const int strideA12 = A12.stride();
+  const int strideA13 = A13.stride();
+  const int strideC = C.stride();
+
+  const Scalar *dataA1 = A1.data();
+  const Scalar *dataA2 = A2.data();
+  const Scalar *dataA3 = A3.data();
+  const Scalar *dataA4 = A4.data();
+  const Scalar *dataA5 = A5.data();
+  const Scalar *dataA6 = A6.data();
+  const Scalar *dataA7 = A7.data();
+  const Scalar *dataA8 = A8.data();
+  const Scalar *dataA9 = A9.data();
+  const Scalar *dataA10 = A10.data();
+  const Scalar *dataA11 = A11.data();
+  const Scalar *dataA12 = A12.data();
+  const Scalar *dataA13 = A13.data();
+  Scalar *dataC = C.data();
+
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
+  for (int j = 0; j < C.n(); ++j) {
+	for (int i = 0; i < C.m(); ++i) {
+	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
+	  Scalar a2 = alpha2 * dataA2[i + j * strideA2];
+	  Scalar a3 = alpha3 * dataA3[i + j * strideA3];
+	  Scalar a4 = alpha4 * dataA4[i + j * strideA4];
+	  Scalar a5 = alpha5 * dataA5[i + j * strideA5];
+	  Scalar a6 = alpha6 * dataA6[i + j * strideA6];
+	  Scalar a7 = alpha7 * dataA7[i + j * strideA7];
+	  Scalar a8 = alpha8 * dataA8[i + j * strideA8];
+	  Scalar a9 = alpha9 * dataA9[i + j * strideA9];
+	  Scalar a10 = alpha10 * dataA10[i + j * strideA10];
+	  Scalar a11 = alpha11 * dataA11[i + j * strideA11];
+	  Scalar a12 = alpha12 * dataA12[i + j * strideA12];
+	  Scalar a13 = alpha13 * dataA13[i + j * strideA13];
+	  dataC[i + j * strideC] = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13;
+	}
+  }
+}
+
+
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4 + alpha5 * A5
+//     + alpha6 * A6 + alpha7 * A7 + alpha8 * A8 + alpha9 * A9 + alpha10 * A10
+//     + alpha11 * A11 + alpha12 * A12 + alpha13 * A13 + alpha14 * A14
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
+		 Matrix<Scalar>& A4, Matrix<Scalar>& A5, Matrix<Scalar>& A6,
+		 Matrix<Scalar>& A7, Matrix<Scalar>& A8, Matrix<Scalar>& A9,
+		 Matrix<Scalar>& A10, Matrix<Scalar>& A11, Matrix<Scalar>& A12,
+		 Matrix<Scalar>& A13, Matrix<Scalar>& A14,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3,
+		 Scalar alpha4, Scalar alpha5, Scalar alpha6,
+		 Scalar alpha7, Scalar alpha8, Scalar alpha9,
+		 Scalar alpha10, Scalar alpha11, Scalar alpha12,
+		 Scalar alpha13, Scalar alpha14,
+		 Matrix<Scalar>& C) {
+  assert(A1.m() == C.m() && A2.m() == C.m() && A3.m() == C.m() &&
+		 A4.m() == C.m() && A5.m() == C.m() && A6.m() == C.m() &&
+		 A7.m() == C.m() && A8.m() == C.m() && A9.m() == C.m() &&
+		 A10.m() == C.m() && A11.m() == C.m() && A12.m() == C.m() &&
+		 A13.m() == C.m() && A14.m() == C.m() &&
+		 A1.n() == C.n() && A2.n() == C.n() && A3.n() == C.n() &&
+		 A4.n() == C.n() && A5.n() == C.n() && A6.n() == C.n() &&
+		 A7.n() == C.n() && A8.n() == C.n() && A9.n() == C.n() &&
+		 A10.n() == C.n() && A11.n() == C.n() && A12.n() == C.n() &&
+		 A13.n() == C.n() && A14.n() == C.n());
+
+  const int strideA1 = A1.stride();
+  const int strideA2 = A2.stride();
+  const int strideA3 = A3.stride();
+  const int strideA4 = A4.stride();
+  const int strideA5 = A5.stride();
+  const int strideA6 = A6.stride();
+  const int strideA7 = A7.stride();
+  const int strideA8 = A8.stride();
+  const int strideA9 = A9.stride();
+  const int strideA10 = A10.stride();
+  const int strideA11 = A11.stride();
+  const int strideA12 = A12.stride();
+  const int strideA13 = A13.stride();
+  const int strideA14 = A14.stride();
+  const int strideC = C.stride();
+
+  const Scalar *dataA1 = A1.data();
+  const Scalar *dataA2 = A2.data();
+  const Scalar *dataA3 = A3.data();
+  const Scalar *dataA4 = A4.data();
+  const Scalar *dataA5 = A5.data();
+  const Scalar *dataA6 = A6.data();
+  const Scalar *dataA7 = A7.data();
+  const Scalar *dataA8 = A8.data();
+  const Scalar *dataA9 = A9.data();
+  const Scalar *dataA10 = A10.data();
+  const Scalar *dataA11 = A11.data();
+  const Scalar *dataA12 = A12.data();
+  const Scalar *dataA13 = A13.data();
+  const Scalar *dataA14 = A14.data();
+  Scalar *dataC = C.data();
+
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
+  for (int j = 0; j < C.n(); ++j) {
+	for (int i = 0; i < C.m(); ++i) {
+	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
+	  Scalar a2 = alpha2 * dataA2[i + j * strideA2];
+	  Scalar a3 = alpha3 * dataA3[i + j * strideA3];
+	  Scalar a4 = alpha4 * dataA4[i + j * strideA4];
+	  Scalar a5 = alpha5 * dataA5[i + j * strideA5];
+	  Scalar a6 = alpha6 * dataA6[i + j * strideA6];
+	  Scalar a7 = alpha7 * dataA7[i + j * strideA7];
+	  Scalar a8 = alpha8 * dataA8[i + j * strideA8];
+	  Scalar a9 = alpha9 * dataA9[i + j * strideA9];
+	  Scalar a10 = alpha10 * dataA10[i + j * strideA10];
+	  Scalar a11 = alpha11 * dataA11[i + j * strideA11];
+	  Scalar a12 = alpha12 * dataA12[i + j * strideA12];
+	  Scalar a13 = alpha13 * dataA13[i + j * strideA13];
+	  Scalar a14 = alpha14 * dataA14[i + j * strideA14];
+	  dataC[i + j * strideC] = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14;
+	}
+  }
+}
+
+
+// C <-- alpha1 * A1 + alpha2 * A2 + alpha3 * A3 + alpha4 * A4 + alpha5 * A5
+//     + alpha6 * A6 + alpha7 * A7 + alpha8 * A8 + alpha9 * A9 + alpha10 * A10
+//     + alpha11 * A11 + alpha12 * A12 + alpha13 * A13 + alpha14 * A14 + alpha15 * A15
+template <typename Scalar>
+void Add(Matrix<Scalar>& A1, Matrix<Scalar>& A2, Matrix<Scalar>& A3,
+		 Matrix<Scalar>& A4, Matrix<Scalar>& A5, Matrix<Scalar>& A6,
+		 Matrix<Scalar>& A7, Matrix<Scalar>& A8, Matrix<Scalar>& A9,
+		 Matrix<Scalar>& A10, Matrix<Scalar>& A11, Matrix<Scalar>& A12,
+		 Matrix<Scalar>& A13, Matrix<Scalar>& A14, Matrix<Scalar>& A15,
+         Scalar alpha1, Scalar alpha2, Scalar alpha3,
+		 Scalar alpha4, Scalar alpha5, Scalar alpha6,
+		 Scalar alpha7, Scalar alpha8, Scalar alpha9,
+		 Scalar alpha10, Scalar alpha11, Scalar alpha12,
+		 Scalar alpha13, Scalar alpha14, Scalar alpha15,
+		 Matrix<Scalar>& C) {
+  assert(A1.m() == C.m() && A2.m() == C.m() && A3.m() == C.m() &&
+		 A4.m() == C.m() && A5.m() == C.m() && A6.m() == C.m() &&
+		 A7.m() == C.m() && A8.m() == C.m() && A9.m() == C.m() &&
+		 A10.m() == C.m() && A11.m() == C.m() && A12.m() == C.m() &&
+		 A13.m() == C.m() && A14.m() == C.m() && A15.m() == C.m() &&
+		 A1.n() == C.n() && A2.n() == C.n() && A3.n() == C.n() &&
+		 A4.n() == C.n() && A5.n() == C.n() && A6.n() == C.n() &&
+		 A7.n() == C.n() && A8.n() == C.n() && A9.n() == C.n() &&
+		 A10.n() == C.n() && A11.n() == C.n() && A12.n() == C.n() &&
+		 A13.n() == C.n() && A14.n() == C.n() && A15.n() == C.n());
+
+  const int strideA1 = A1.stride();
+  const int strideA2 = A2.stride();
+  const int strideA3 = A3.stride();
+  const int strideA4 = A4.stride();
+  const int strideA5 = A5.stride();
+  const int strideA6 = A6.stride();
+  const int strideA7 = A7.stride();
+  const int strideA8 = A8.stride();
+  const int strideA9 = A9.stride();
+  const int strideA10 = A10.stride();
+  const int strideA11 = A11.stride();
+  const int strideA12 = A12.stride();
+  const int strideA13 = A13.stride();
+  const int strideA14 = A14.stride();
+  const int strideA15 = A15.stride();
+  const int strideC = C.stride();
+
+  const Scalar *dataA1 = A1.data();
+  const Scalar *dataA2 = A2.data();
+  const Scalar *dataA3 = A3.data();
+  const Scalar *dataA4 = A4.data();
+  const Scalar *dataA5 = A5.data();
+  const Scalar *dataA6 = A6.data();
+  const Scalar *dataA7 = A7.data();
+  const Scalar *dataA8 = A8.data();
+  const Scalar *dataA9 = A9.data();
+  const Scalar *dataA10 = A10.data();
+  const Scalar *dataA11 = A11.data();
+  const Scalar *dataA12 = A12.data();
+  const Scalar *dataA13 = A13.data();
+  const Scalar *dataA14 = A14.data();
+  const Scalar *dataA15 = A15.data();
+  Scalar *dataC = C.data();
+
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
+  for (int j = 0; j < C.n(); ++j) {
+	for (int i = 0; i < C.m(); ++i) {
+	  Scalar a1 = alpha1 * dataA1[i + j * strideA1];
+	  Scalar a2 = alpha2 * dataA2[i + j * strideA2];
+	  Scalar a3 = alpha3 * dataA3[i + j * strideA3];
+	  Scalar a4 = alpha4 * dataA4[i + j * strideA4];
+	  Scalar a5 = alpha5 * dataA5[i + j * strideA5];
+	  Scalar a6 = alpha6 * dataA6[i + j * strideA6];
+	  Scalar a7 = alpha7 * dataA7[i + j * strideA7];
+	  Scalar a8 = alpha8 * dataA8[i + j * strideA8];
+	  Scalar a9 = alpha9 * dataA9[i + j * strideA9];
+	  Scalar a10 = alpha10 * dataA10[i + j * strideA10];
+	  Scalar a11 = alpha11 * dataA11[i + j * strideA11];
+	  Scalar a12 = alpha12 * dataA12[i + j * strideA12];
+	  Scalar a13 = alpha13 * dataA13[i + j * strideA13];
+	  Scalar a14 = alpha14 * dataA14[i + j * strideA14];
+	  Scalar a15 = alpha15 * dataA15[i + j * strideA15];
+	  dataC[i + j * strideC] = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15;
+	}
+  }
+}
 
 // Template declarations
 template void Gemm(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C, double beta);
