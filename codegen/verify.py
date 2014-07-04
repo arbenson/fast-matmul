@@ -21,9 +21,9 @@ for j in xrange(m*n):
     while line[0] == "#":
         line = sys.stdin.readline().split()
     if len(line) != q:
-        print "Trouble at line",j,"of U, should have",q,"entries"
+        print "Trouble at line",j,"of U, should have",q,"entries, has",len(line)
     for i in xrange(q):
-        U[j].append(int(line[i]))
+        U[j].append(float(line[i]))
 
 for j in xrange(n*k):
     line = sys.stdin.readline().split()
@@ -31,9 +31,9 @@ for j in xrange(n*k):
     while line[0] == "#":
         line = sys.stdin.readline().split()
     if len(line) != q:
-        print "Trouble at line",j,"of V, should have",q,"entries"
+        print "Trouble at line",j,"of V, should have",q,"entries, has",len(line)
     for i in xrange(q):
-        V[j].append(int(line[i]))
+        V[j].append(float(line[i]))
 
 for j in xrange(m*k):
     line = sys.stdin.readline().split()
@@ -41,9 +41,9 @@ for j in xrange(m*k):
     while line[0] == "#":
         line = sys.stdin.readline().split()
     if len(line) != q:
-        print "Trouble at line",j,"of W, should have",q,"entries"   
+        print "Trouble at line",j,"of W, should have",q,"entries, has",len(line)  
     for i in xrange(q):
-        W[j].append(int(line[i]))
+        W[j].append(float(line[i]))
 
 print "U"
 for r in U:
@@ -102,6 +102,8 @@ for a in xrange(m):
                             # should be a 1
                             if sum != 1:
                                 print "Trouble at", a, b, c, d, e, f, "sum should be 1, is ", sum
+                                print "\tcheck row",rU,"of U, row",rV,"of V, and row",rW,"of W"
                         else:
                             if sum != 0:
                                 print "Trouble at", a, b, c, d, e, f, "sum should be 0, is ", sum
+                                print "\tcheck row",a*n+b,"of U, row",c*k+d,"of V, and row",e*k+f,"of W"
