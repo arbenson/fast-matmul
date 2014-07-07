@@ -12,6 +12,7 @@
 #include "grey-fast323.hpp"
 #include "grey-fast332.hpp"
 #include "grey-fast333.hpp"
+#include "grey-fast333-more-adds.hpp"
 #include "grey-fast342.hpp"
 #include "grey-fast423.hpp"
 #include "grey-fast432.hpp"
@@ -41,6 +42,7 @@ enum {
   GREY323,
   GREY332,
   GREY333,
+  GREY333_MORE,
   GREY432,
   GREY423,
   GREY324,
@@ -98,6 +100,9 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
 	  break;
 	case GREY333:
 	  grey333_23_152::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case GREY333_MORE:
+	  grey333_23_221::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case GREY432:
 	  grey432_20_144::FastMatmul(A, B, C1, numsteps);
@@ -284,10 +289,13 @@ void DgemmCurve() {
 }
 
 void SquareBenchmark(int which) {
+#if 0
   std::vector<int> dim;
   for (int i = 6200; i <= 8000; i += 200) {
 	dim.push_back(i);
   }
+#endif
+  std::vector<int> dim = {4000};
 
   switch (which) {
   case 1:
@@ -297,12 +305,16 @@ void SquareBenchmark(int which) {
   case 2:
     std::cout << "STRASSEN (1)" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, STRASSEN);
+	break;
+  case 200:
     std::cout << "STRASSEN (2)" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, STRASSEN);
     break;
   case 3:
     std::cout << "SMIRNOV333 (1)" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, SMIRNOV333);
+	break;
+  case 300:
     std::cout << "SMIRNOV333 (2)" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, SMIRNOV333);
     break;
@@ -339,12 +351,16 @@ void SquareBenchmark(int which) {
   case 9:
     std::cout << "GREY333 (1)" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, GREY333);
+	break;
+  case 900:
     std::cout << "GREY333 (2)" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, GREY333);
     break;
   case 10:
     std::cout << "CLASSICAL222 (1)" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, CLASSICAL222);
+	break;
+  case 1000:
     std::cout << "CLASSICAL222 (2)" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, CLASSICAL222);
     break;
@@ -371,6 +387,15 @@ void SquareBenchmark(int which) {
     BenchmarkSet(dim, dim, dim, 1, GREY424);
     std::cout << "GREY424 (2)" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, GREY424);
+	break;
+  case 15:
+    std::cout << "GREY333-MORE (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, GREY333_MORE);
+	break;
+  case 1500:
+    std::cout << "GREY333-MORE (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, GREY333_MORE);
+	break;
   }
 }
 

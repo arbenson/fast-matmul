@@ -12,6 +12,7 @@
 #include "grey-fast324.hpp"
 #include "grey-fast323.hpp"
 #include "grey-fast332.hpp"
+#include "grey-fast333-more-adds.hpp"
 #include "grey-fast333.hpp"
 #include "grey-fast342.hpp"
 #include "grey-fast423.hpp"
@@ -42,6 +43,7 @@ enum {
   GREY323,
   GREY332,
   GREY333,
+  GREY333_MORE,
   GREY432,
   GREY423,
   GREY324,
@@ -99,6 +101,9 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
 	break;
     case GREY333:
       grey333_23_152::FastMatmul(A, B, C1, numsteps);
+      break;
+    case GREY333_MORE:
+      grey333_23_221::FastMatmul(A, B, C1, numsteps);
       break;
     case GREY432:
       grey432_20_144::FastMatmul(A, B, C1, numsteps);
@@ -165,12 +170,12 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
                   std::vector<int>& n_vals, std::vector<int>& numsteps,
                   int algorithm, bool run_check=false) {
   assert(m_vals.size() == k_vals.size() && k_vals.size() == n_vals.size());
-  std::cout << std::endl;
   for (int i = 0; i < m_vals.size(); ++i) {
     for (int curr_numsteps : numsteps) {
       SingleBenchmark(m_vals[i], k_vals[i], n_vals[i], curr_numsteps, algorithm, run_check);
     }
   }
+  std::cout << std::endl;
 }
 
 // Runs a set of benchmarks.
@@ -259,16 +264,27 @@ void OuterProductBenchmark() {
   }
   std::vector<int> k_vals(n0.size(), 2000);
 
+#if 0
   std::cout << "MKL" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 0, CLASSICAL222);
+#endif
+
+  omp_set_num_threads(13);
+  std::cout << "13 threads" << std::endl;
   std::cout << "GREY424 (1)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 1, GREY424);
   std::cout << "GREY424 (2)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 2, GREY424);
+
+  omp_set_num_threads(7);
+  std::cout << "7 threads" << std::endl;
   std::cout << "STRASSEN (1)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 1, STRASSEN);
   std::cout << "STRASSEN (2)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 2, STRASSEN);
+
+  omp_set_num_threads(15);
+  std::cout << "15 threads" << std::endl;
   std::cout << "GREY323 (1)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 1, GREY323);
   std::cout << "GREY323 (2)" << std::endl;
@@ -344,13 +360,10 @@ void SquareBenchmark() {
 
 
 int main(int argc, char **argv) {
-    mkl_set_num_threads(16);
-    omp_set_num_threads(16);
-
-    int which = atoi(argv[1]);
-    if (which == 0) {
+  int which = atoi(argv[1]);
+  if (which == 0) {
 	OuterProductBenchmark();
-    } else {
+  } else {
 	SquareBenchmark();
-    }
+  }
 }
