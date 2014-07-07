@@ -266,6 +266,7 @@ def main():
     # Create a namespace name from the file name
     namespace_name = coeff_file.split('.')[0]
     namespace_name = namespace_name.replace('-', '_')
+    namespace_name = namespace_name.split('/')[-1]
 
     with open(outfile, 'w') as header:
         # header information
