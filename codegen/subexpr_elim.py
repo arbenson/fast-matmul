@@ -68,8 +68,9 @@ def eliminate(coeff_set, m, n):
 
 def remove_duplicates(match_dict):
     ''' Remove duplicate eliminations from the match dictionary. '''
-    # Sort by column (first) and index (second)
     sorted_matches = sorted(match_dict.iterkeys())
+
+    # Delete duplicates that overlap in both entries
     keys_to_delete = []
     for key in sorted_matches:
         if len(match_dict[key]) > 1:
@@ -95,7 +96,8 @@ def update_coeffs(coeff_set, elim_info):
         val1b = float(coeff_set[coeff_ind1][sub])
         val2a = float(coeff_set[coeff_ind2][col_ind])
         val2b = float(coeff_set[coeff_ind2][sub])
-        assert(0.0 not in [val1a, val1b, val2a, val2b])
+        if 0.0 in [val1a, val1b, val2a, val2b]:
+            return 0.0
 
         scale1 = val1b / val1a
         scale2 = val2b / val2a
@@ -105,32 +107,33 @@ def update_coeffs(coeff_set, elim_info):
 
     rank = len(coeff_set[0])
     num_entries = len(coeff_set)
+    save_coeff_set = convert.replicate(coeff_set)
+    all_sub_coeffs = []
+    num_subs = 0
+    
     for index, subs in elim_info:
         new_coeff_line = ['0'] * rank
         # In the multiply where the subexpression originates, replace with new matrix.
         new_coeff_line[index[0]] = '1'
+        have_subbed_flag = False
         for sub in subs:
             # Replace the add with the substitute matrix.
             scale = get_scale(index, sub)
-            new_coeff_line[sub] = scale
-        coeff_set.append(new_coeff_line)
+            if scale != 0.0:
+                new_coeff_line[sub] = scale
+                zero_col(sub, index[1], index[2])
+                num_subs += 1
+                have_subbed_flag = True
 
-    # Get the additions needed to form the substitution matrices.
-    all_sub_coeffs = []
-    for index, subs in elim_info:
-        sub_coeffs = ['0'] * num_entries
-        sub_coeffs[index[1]] = coeff_set[index[1]][index[0]]
-        sub_coeffs[index[2]] = coeff_set[index[2]][index[0]]
-        all_sub_coeffs.append(sub_coeffs)
-        
-    # Zero out the columns
-    for index, subs in elim_info:
-        zero_col(index[0], index[1], index[2])
-        for sub in subs:
-            zero_col(sub, index[1], index[2])
+        if have_subbed_flag:
+            zero_col(index[0], index[1], index[2])
+            coeff_set.append(new_coeff_line)
+            sub_coeffs = ['0'] * num_entries
+            sub_coeffs[index[1]] = save_coeff_set[index[1]][index[0]]
+            sub_coeffs[index[2]] = save_coeff_set[index[2]][index[0]]
+            all_sub_coeffs.append(sub_coeffs)            
 
-    return all_sub_coeffs
-
+    return all_sub_coeffs, num_subs
 
 
 def main():
@@ -145,13 +148,13 @@ def main():
     A_elim = eliminate(coeffs[0], dims[0], dims[1])
     B_elim = eliminate(coeffs[1], dims[0], dims[1])
 
-    A_subs = update_coeffs(coeffs[0], A_elim)
-    B_subs = update_coeffs(coeffs[1], B_elim)
+    A_subs, num_subs_A = update_coeffs(coeffs[0], A_elim)
+    B_subs, num_subs_B = update_coeffs(coeffs[1], B_elim)
 
-    def num_elim(elim_info):
-        return sum([len(subs) for index, subs in elim_info])
+    #def num_elim(elim_info):
+    #    return sum([len(subs) for index, subs in elim_info])
 
-    total_elim = num_elim(A_elim) + num_elim(B_elim)
+    total_elim = num_subs_A + num_subs_B
     print 'Eliminating %d non-zeros' % total_elim
 
     new_nonzeros = int(coeff_file.split('-')[-1]) - total_elim
@@ -163,14 +166,17 @@ def main():
         def write_coeff_set(coeff_set):
             ''' Write the coefficient set for a single matrix (A, B, or C). '''
             def pretty_print(value):
-                if float(int(value)) == float(value):
-                    return str(int(value))
+                if float(int(float(value))) == float(value):
+                    return str(int(float(value)))
                 else:
                     return str(value)
 
             for entry in coeff_set:
                 # Single (i, j) entry of a single matrix.
                 out_file.write(' '.join([pretty_print(val) for val in entry]) + '\n')
+
+            if len(coeff_set) == 0:
+                out_file.write('\n')
      
         write_coeff_set(coeffs[0])
         out_file.write('#\n')
