@@ -88,7 +88,7 @@ def read_coeffs(filename):
                 curr_group.append([parse_coeff(val) for val in line.split()])
     coeffs.append(curr_group)
     # There should be three sets of coefficients: one for each matrix.
-    if (len(coeffs) != 3):
+    if (len(coeffs) < 3):
         raise Exception('Expected three sets of coefficients!')
     return coeffs
 
@@ -113,25 +113,6 @@ def write_subblocks(header, mat_name, dim1, dim2):
                        (mat_name, i + 1, j + 1, mat_name, dim1, dim2, i + 1, j + 1))
 
 
-def read_coeffs(filename):
-    ''' Read the coefficient file.  There is one group of coefficients for each
-    of the three matrices.  '''
-    coeffs = []
-    with open(filename, 'r') as coeff_file:
-        curr_group = []
-        for line in coeff_file:
-            if line[0] == '#':
-                if len(curr_group) > 0:
-                    coeffs.append(curr_group)
-                    curr_group = []
-            else:
-                curr_group.append([parse_coeff(val) for val in line.split()])
-    coeffs.append(curr_group)
-    # There should be three sets of coefficients: one for each matrix.
-    if (len(coeffs) != 3):
-        raise Exception('Expected three sets of coefficients!')
-    return coeffs
-
 
 def is_nonzero(x):
     return x != 0 and x != '0'
@@ -151,6 +132,32 @@ def linear2cart(ind, cols):
     return ((ind / cols) + 1, (ind % cols) + 1)
 
 
+def get_suffix(ind, num_rows, num_cols):
+    ''' Get the suffix for a matrix subblock.
+    ind is the number of the matrix subblock (the row in the U or V matrix)
+    num_rows and num_cols are the number of rows and columns in the originial
+                         matrix where the subblock lives
+    '''
+    if ind < num_rows * num_cols:
+        return '%d%d' % linear2cart(ind, num_cols)
+    else:
+        # These correspond to matrices formed by subexpression elimination.
+        return '_X%d' % (ind - num_rows * num_cols + 1)
+
+
+def addition(header, tmp_mat, mat_name, mat_dims, coeffs):
+    write_line(header, 1, 'Matrix<Scalar> %s(%s11.m(), %s11.n());' % (
+            tmp_mat, mat_name, mat_name))
+    add = 'Add('
+    for i, coeff in enumerate(coeffs):
+        if is_nonzero(coeff):
+            add += mat_name + '%s, ' % get_suffix(i, mat_dims[0], mat_dims[1])
+    for i, coeff in enumerate(coeffs):
+        if is_nonzero(coeff):
+            add += 'Scalar(%s), ' % coeff
+    return add + tmp_mat + ');'
+
+
 def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     ''' Write a matrix multiplication call.
 
@@ -160,10 +167,10 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     b_coeffs are the coefficients for the B matrix
     '''
     comment = '// M%d = (' % (ind + 1)
-    comment += ' + '.join([str(c) + ' * A%d%d' % linear2cart(i, dims[1]) \
+    comment += ' + '.join([str(c) + ' * A%s' % get_suffix(i, dims[0], dims[1]) \
                                for i, c in enumerate(a_coeffs) if is_nonzero(c)])
     comment += ') * ('
-    comment += ' + '.join([str(c) + ' * B%d%d' % linear2cart(i, dims[2]) \
+    comment += ' + '.join([str(c) + ' * B%s' % get_suffix(i, dims[1], dims[2]) \
                                for i, c in enumerate(b_coeffs) if is_nonzero(c)])
     comment += ')'
     write_line(header, 1, comment)
@@ -179,26 +186,17 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     def need_tmp_mat(coeffs):
         return num_nonzero(coeffs) > 1 or filter(is_nonzero, coeffs)[0] != 1
 
-    def addition(ind, coeffs, mat_name, mat_dims):
+    def addition_str(ind, coeffs, mat_name, mat_dims):
         if need_tmp_mat(coeffs):
             tmp_mat = 'M%d%s' % (ind + 1, mat_name)
-            write_line(header, 1, 'Matrix<Scalar> %s(%s11.m(), %s11.n());' % (
-                    tmp_mat, mat_name, mat_name))
-            add = 'Add('
-            for i, coeff in enumerate(coeffs):
-                if is_nonzero(coeff):
-                    add += mat_name + '%d%d, ' % linear2cart(i, mat_dims[1])
-            for i, coeff in enumerate(coeffs):
-                if is_nonzero(coeff):
-                    add += 'Scalar(%s), ' % coeff
-            return add + tmp_mat + ');'
+            return addition(header, tmp_mat, mat_name, mat_dims, coeffs)
         return None
 
-    add = addition(ind, a_coeffs, 'A', (dims[0], dims[1]))
+    add = addition_str(ind, a_coeffs, 'A', (dims[0], dims[1]))
     if add != None:
         write_line(header, 1, add)
         
-    add = addition(ind, b_coeffs, 'B', (dims[1], dims[2]))
+    add = addition_str(ind, b_coeffs, 'B', (dims[1], dims[2]))
     if add != None:
         write_line(header, 1, add)
 
@@ -207,7 +205,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
             name = 'M%d%s' % (ind + 1, mat_name)
         else:
             loc = [i for i, c in enumerate(coeffs) if is_nonzero(c)]
-            name = mat_name + '%d%d' % linear2cart(loc[0], mat_dims[1])
+            name = mat_name + get_suffix(loc[0], mat_dims[0], mat_dims[1])
         return name
 
     write_line(header, 1, 'FastMatmul(%s, %s, M%d, numsteps - 1, x);' % (
@@ -227,6 +225,13 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     write_line(header, 1, '}')
     write_line(header, 0, '#endif\n')
 
+def write_substitutions(header, mat_name, mat_dims, coeffs):
+    write_line(header, 1, '\n')
+    for i, coeff_line in enumerate(coeffs):
+        tmp_mat_name = '%s_X%d' % (mat_name, i)
+        write_line(header, 1,
+                   addition(header, tmp_mat_name, mat_name, mat_dims, coeff_line))
+
 
 def write_output(header, ind, coeffs, mat_dims):
     add = 'Add('
@@ -236,8 +241,7 @@ def write_output(header, ind, coeffs, mat_dims):
     for i, coeff in enumerate(coeffs):
         if is_nonzero(coeff):
             add += 'Scalar(%s), ' % coeff
-    print ind, mat_dims, linear2cart(ind, mat_dims[1])
-    add += 'C%d%d);' % linear2cart(ind, mat_dims[1])
+    add += 'C%s);' % get_suffix(ind, mat_dims[0], mat_dims[1])
     write_line(header, 1, add)
 
 
@@ -289,6 +293,11 @@ def main():
         write_subblocks(header, 'A', dims[0], dims[1])
         write_subblocks(header, 'B', dims[1], dims[2])
         write_subblocks(header, 'C', dims[0], dims[2])
+
+        # Generate substitution matrices
+        if len(coeffs) > 3:
+            write_substitutions(header, 'A', (dims[0], dims[1]), coeffs[3])
+            write_substitutions(header, 'B', (dims[1], dims[2]), coeffs[4])
         
         num_multiplies = len(coeffs[0][0])
         print '%d matrix multiplications...' % num_multiplies
