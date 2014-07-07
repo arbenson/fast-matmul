@@ -96,7 +96,7 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
 	  grey332_15_103::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case GREY323:
-	  grey323_15_103::FastMatmul(A, B, C1, numsteps);
+	  grey323_15_89::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case GREY333:
 	  grey333_23_152::FastMatmul(A, B, C1, numsteps);
