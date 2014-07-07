@@ -44,7 +44,7 @@ def find_subexpression(pair, col):
     return can_substitute(pair[0], curr_val)
 
 
-def eliminate(coeff_set, m, n):
+def eliminate(coeff_set):
     # Turn into column form
     rank = len(coeff_set[0])
     cols = [[x[i] for x in coeff_set] for i in range(rank)]
@@ -136,6 +136,10 @@ def update_coeffs(coeff_set, elim_info):
     return all_sub_coeffs, num_subs
 
 
+def transpose(coeffs):
+    return [[x[i] for x in coeffs] for i in range(len(coeffs[0]))]
+
+
 def main():
     try:
         coeff_file = sys.argv[1]
@@ -145,16 +149,18 @@ def main():
         raise Exception('USAGE: python subexpr_elim.py coeff_file m,k,n')
 
     coeffs = convert.read_coeffs(coeff_file)
-    A_elim = eliminate(coeffs[0], dims[0], dims[1])
-    B_elim = eliminate(coeffs[1], dims[0], dims[1])
+    A_elim = eliminate(coeffs[0])
+    B_elim = eliminate(coeffs[1])
+    # Transpose the C coefficients
+    C_coeffs = transpose(coeffs[2])
+    C_elim = eliminate(C_coeffs)
 
     A_subs, num_subs_A = update_coeffs(coeffs[0], A_elim)
     B_subs, num_subs_B = update_coeffs(coeffs[1], B_elim)
+    C_subs, num_subs_C = update_coeffs(C_coeffs, C_elim)
+    C_coeffs = transpose(C_coeffs)
 
-    #def num_elim(elim_info):
-    #    return sum([len(subs) for index, subs in elim_info])
-
-    total_elim = num_subs_A + num_subs_B
+    total_elim = num_subs_A + num_subs_B + num_subs_C
     print 'Eliminating %d non-zeros' % total_elim
 
     new_nonzeros = int(coeff_file.split('-')[-1]) - total_elim
@@ -182,11 +188,13 @@ def main():
         out_file.write('#\n')
         write_coeff_set(coeffs[1])
         out_file.write('#\n')
-        write_coeff_set(coeffs[2])
+        write_coeff_set(C_coeffs)
         out_file.write('# Substitution information\n')
         write_coeff_set(A_subs)
         out_file.write('#\n')
         write_coeff_set(B_subs)
+        out_file.write('#\n')
+        write_coeff_set(C_subs)
 
 
 if __name__ == '__main__':

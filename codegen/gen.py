@@ -238,15 +238,29 @@ def write_substitutions(header, mat_name, mat_dims, coeffs):
                    addition(header, tmp_mat_name, mat_name, mat_dims, coeff_line))
 
 
-def write_output(header, ind, coeffs, mat_dims):
+def output_addition(output_mat, coeffs, mat_dims, rank):
     add = 'Add('
     for i, coeff in enumerate(coeffs):
         if is_nonzero(coeff):
-            add += 'M%d, ' % (i + 1)
+            suffix = i + 1
+            if suffix > rank:
+                suffix = '_X%d' % (suffix - rank)
+            add += 'M%s, ' % suffix
     for i, coeff in enumerate(coeffs):
         if is_nonzero(coeff):
             add += 'Scalar(%s), ' % coeff
-    add += 'C%s);' % get_suffix(ind, mat_dims[0], mat_dims[1])
+    return add + '%s);' % output_mat
+
+
+def write_output_sub(header, ind, coeffs, mat_dims, rank):
+    tmp_mat = 'M_X%d' % (ind + 1)
+    write_line(header, 1, 'Matrix<Scalar> %s(C11.m(), C11.n());' % tmp_mat)
+    add = output_addition(tmp_mat, coeffs, mat_dims, rank)
+    write_line(header, 1, add)
+
+
+def write_output(header, ind, coeffs, mat_dims, rank):
+    add = output_addition('C%s' % get_suffix(ind, mat_dims[0], mat_dims[1]), coeffs, mat_dims, rank)
     write_line(header, 1, add)
 
 
@@ -337,8 +351,13 @@ def main():
         write_line(header, 1, '}  // End omp parallel region')
         write_line(header, 0, '#endif')
 
+        if len(coeffs) >= 6:
+            for ind, row in enumerate(coeffs[5]):
+                write_output_sub(header, ind, row, (dims[0], dims[2]), num_multiplies)
+        write_line(header, 0, '\n')
+
         for ind, row in enumerate(coeffs[2]):
-            write_output(header, ind, row, (dims[0], dims[2]))
+            write_output(header, ind, row, (dims[0], dims[2]), num_multiplies)
 
         write_line(header, 0, '\n')
         write_line(header, 1, '// Handle edge cases with dynamic peeling')
