@@ -9,6 +9,9 @@
 namespace grey332_15_103 {
 template <typename Scalar>
 void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
+    // Update multipliers
+    C.UpdateMultiplier(A.multiplier());
+    C.UpdateMultiplier(B.multiplier());
     // Base case for recursion
     if (numsteps == 0) {
         Gemm(A, B, C);
@@ -47,21 +50,21 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     // These are the intermediate matrices.
     // We define them here so that they can be used
     // inside the lambda functions for Cilk.
-    Matrix<Scalar> M1(C_row_step, C_col_step);
-    Matrix<Scalar> M2(C_row_step, C_col_step);
-    Matrix<Scalar> M3(C_row_step, C_col_step);
-    Matrix<Scalar> M4(C_row_step, C_col_step);
-    Matrix<Scalar> M5(C_row_step, C_col_step);
-    Matrix<Scalar> M6(C_row_step, C_col_step);
-    Matrix<Scalar> M7(C_row_step, C_col_step);
-    Matrix<Scalar> M8(C_row_step, C_col_step);
-    Matrix<Scalar> M9(C_row_step, C_col_step);
-    Matrix<Scalar> M10(C_row_step, C_col_step);
-    Matrix<Scalar> M11(C_row_step, C_col_step);
-    Matrix<Scalar> M12(C_row_step, C_col_step);
-    Matrix<Scalar> M13(C_row_step, C_col_step);
-    Matrix<Scalar> M14(C_row_step, C_col_step);
-    Matrix<Scalar> M15(C_row_step, C_col_step);
+    Matrix<Scalar> M1(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M2(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M3(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M4(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M5(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M6(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M7(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M8(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M9(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M10(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M11(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M12(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M13(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M14(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M15(C_row_step, C_col_step, C.multiplier());
 
 
 #ifdef _OPEN_MP_

@@ -30,6 +30,7 @@ public:
 	m_ = that.m();
 	n_ = that.n();
 	stride_ = that.stride();
+	multiplier_ = that.Multiplier();
 	allocate();
 	Scalar *that_data = that.data();
 	for (int i = 0; i < m_ * n_; ++i) {
@@ -37,10 +38,12 @@ public:
 	}
   }
 
+
   // Move constructor
   Matrix(Matrix<Scalar>&& that) : Matrix() {
 	swap(*this, that);
   }
+
 
   // copy assignment
   Matrix<Scalar>& operator=(Matrix<Scalar> that) {
@@ -54,31 +57,28 @@ public:
 	std::swap(first.stride_, second.stride_);
 	std::swap(first.is_view_, second.is_view_);
 	std::swap(first.data_, second.data_);
+	std::swap(first.multiplier_, second.multiplier_);
   }
 
 
-  Matrix(Scalar *data, int stride, int m, int n):
-	data_(data), stride_(stride), m_(m), n_(n), is_view_(true) {
+  Matrix(Scalar *data, int stride, int m, int n, Scalar multiplier=Scalar(1)):
+	data_(data), stride_(stride), m_(m), n_(n), is_view_(true), multiplier_(multiplier) {
 	assert(stride > m);
   }
 
 
-  Matrix(int n) : m_(n), n_(n), stride_(n), is_view_(false) {
+  Matrix(int n) : m_(n), n_(n), stride_(n), is_view_(false), multiplier_(Scalar(1)) {
 	allocate();
   }
 
 
-  Matrix(int m, int n) : m_(m), n_(n), stride_(m), is_view_(false) {
+  Matrix(int m, int n) : m_(m), n_(n), stride_(m), is_view_(false), multiplier_(Scalar(1)) {
 	allocate();
   }
 
-  // Return pair of (starting index, number of indices)
-  std::pair<int, int> IndexData(int total, int num_block, int ind) {
-  	int step = total / num_block;
-	// Determine starting index
-	int start = step * (ind - 1);
 
-	return std::pair<int, int>(start, step);
+  Matrix(int m, int n, Scalar multiplier) : m_(m), n_(n), stride_(m), is_view_(false), multiplier_(multiplier) {
+	allocate();
   }
 
 
@@ -93,8 +93,9 @@ public:
 
 
   Matrix<Scalar> Submatrix(int start_row, int start_col, int num_rows, int num_cols) {
-	return Matrix<Scalar>(data(start_row, start_col), stride_, num_rows, num_cols);
+	return Matrix<Scalar>(data(start_row, start_col), stride_, num_rows, num_cols, multiplier_);
   }
+
 
   ~Matrix() {
 	if (data_ != NULL && !is_view_) {
@@ -120,12 +121,25 @@ public:
 	}
   }
 
+  void UpdateMultiplier(Scalar multiplier) { multiplier_ *= multiplier; }
+  Scalar multiplier() { return multiplier_; }
+
 private:
+  // Return pair of (starting index, number of indices)
+  std::pair<int, int> IndexData(int total, int num_block, int ind) {
+  	int step = total / num_block;
+	// Determine starting index
+	int start = step * (ind - 1);
+
+	return std::pair<int, int>(start, step);
+  }
+
   Scalar *data_;
   int stride_;
   int m_;
   int n_;
   bool is_view_;
+  Scalar multiplier_;
 };
 
 
