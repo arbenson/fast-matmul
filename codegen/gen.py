@@ -272,6 +272,13 @@ def main():
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
                    'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
+
+        # Handle the multipliers
+        write_line(header, 1, '// Update multipliers')
+        write_line(header, 1, 'C.UpdateMultiplier(A.multiplier());')
+        write_line(header, 1, 'C.UpdateMultiplier(B.multiplier());')
+
+        # Handle base case
         write_line(header, 1, '// Base case for recursion')
         write_line(header, 1, 'if (numsteps == 0) {')
         write_line(header, 2, 'Gemm(A, B, C);')
@@ -292,7 +299,7 @@ def main():
         write_line(header, 1, '// We define them here so that they can be used')
         write_line(header, 1, '// inside the lambda functions for Cilk.')
         for i in xrange(num_multiplies):
-            write_line(header, 1, 'Matrix<Scalar> M%d(C_row_step, C_col_step);' % (i + 1))
+            write_line(header, 1, 'Matrix<Scalar> M%d(C_row_step, C_col_step, C.multiplier());' % (i + 1))
         write_line(header, 0, '\n')
 
         write_line(header, 0, '#ifdef _OPEN_MP_')        
