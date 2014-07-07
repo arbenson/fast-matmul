@@ -112,6 +112,7 @@ def read_coeffs(filename):
     return coeffs
 
 
+
 def main():
     try:
         coeff_file = sys.argv[1]
@@ -122,7 +123,7 @@ def main():
     except:
         raise Exception('USAGE: python convert.py coeff_file m,k,n out_file s1,s2,s3')
 
-    coeffs = read_coeffs(sys.argv[1])
+    coeffs = read_coeffs(coeff_file)
 
     if perm == (0, 1, 2):
         new_coeffs = [replicate(coeffs[i]) for i in range(3)]
@@ -159,6 +160,7 @@ def main():
         write_coeff_set(new_coeffs[1])
         out_file.write('#\n')
         write_coeff_set(new_coeffs[2])
+
 
 if __name__ == '__main__':
     main()
