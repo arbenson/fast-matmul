@@ -225,10 +225,15 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     write_line(header, 1, '}')
     write_line(header, 0, '#endif\n')
 
+
 def write_substitutions(header, mat_name, mat_dims, coeffs):
+    # If it is empty, skip it
+    if len(coeffs) == 0 or len(coeffs[0]) == 0:
+        return
+
     write_line(header, 1, '\n')
     for i, coeff_line in enumerate(coeffs):
-        tmp_mat_name = '%s_X%d' % (mat_name, i)
+        tmp_mat_name = '%s_X%d' % (mat_name, i + 1)
         write_line(header, 1,
                    addition(header, tmp_mat_name, mat_name, mat_dims, coeff_line))
 
