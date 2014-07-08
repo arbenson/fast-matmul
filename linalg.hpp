@@ -25,6 +25,8 @@ extern "C" {
 template <typename Scalar>
 class Matrix {
 public:
+  Matrix() = default;
+
   // Copy constructor
   Matrix(Matrix<Scalar>& that) {
 	m_ = that.m();
@@ -37,7 +39,6 @@ public:
 	  data_[i] = that_data[i];
 	}
   }
-
 
   // Move constructor
   Matrix(Matrix<Scalar>&& that) : Matrix() {
