@@ -9,14 +9,16 @@ and nnz is the number of nonzeros coefficients.
 
 We also include:
 
-  The 3 x 3 x 3 and 3 x 3 x 6 algorithms from Smirnov's paper:
+*  The 3 x 3 x 3 and 3 x 3 x 6 algorithms from Smirnov's paper:
     Smirnov, A. V. "The bilinear complexity and practical algorithms for matrix multiplication." Computational Mathematics and Mathematical Physics 53.12 (2013): 1781-1795.
 
-  The classical matrix multiplication algorithm from recursion (classical222.hpp and classical333.hpp).
+*  Strassen's algorithm (strassen222.hpp).
 
-  Strassen's algorithm (strassen222.hpp)
+*  Bini's approximation algorithm for 3 x 3 x 2 (bini332.hpp).
 
-  Bini's approximation algorithm (TODO: citation).
+*  The 3 x 2 x 2 variant from Hopcroft and Kerr (hk322.hpp):
+   Hopcroft, John E., and Leslie R. Kerr. "On minimizing the number of multiplications necessary for matrix multiplication." SIAM Journal on Applied Mathematics 20.1 (1971): 30-36.
 
-  HK322 (TODO: citation)
+*  The classical matrix multiplication algorithm via recursion (classical222.hpp and classical333.hpp).
+
 
