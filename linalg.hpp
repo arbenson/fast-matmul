@@ -203,20 +203,18 @@ std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
 
 // Wrapper for dgemm called by templated gemm.
 void GemmWrap(int m, int n, int k, double *A, int lda, double *B, int ldb, double *C,
-			  int ldc, double beta) {
+			  int ldc, double alpha, double beta) {
   char transa = 'n';
   char transb = 'n';
-  double alpha = 1;
   dgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
 		 C, &ldc);
 }
 
 // Wrapper for sgemm called by templated gemm.
 void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb,
-			  float *C, int ldc, float beta) {
+			  float *C, int ldc, float alpha, float beta) {
   char transa = 'n';
   char transb = 'n';
-  float alpha = 1;
   sgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
 		 C, &ldc);
 }
@@ -226,8 +224,9 @@ template <typename Scalar>
 void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, Scalar beta=Scalar(0.0)) {
   assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
   assert(A.m() > 0 && A.n() > 0);
+  Scalar alpha = C.multiplier();
   GemmWrap(A.m(), B.n(), A.n(), A.data(), A.stride(), B.data(), B.stride(),
-		   C.data(), C.stride(), beta);
+		   C.data(), C.stride(), alpha, beta);
 }
 
 // max_ij |a_ij - b_ij| / |a_ij|
