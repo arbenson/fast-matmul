@@ -9,6 +9,7 @@ python ${SCRIPT} grey522-18-99 5,2,2 ${OUT_DIR}/fast522_18_99.hpp
 # 4,4,2
 python ${SCRIPT} grey442-26-257 4,4,2 ${OUT_DIR}/fast442_26_257.hpp
 python ${SCRIPT} grey424-26-257 4,2,4 ${OUT_DIR}/fast424_26_257.hpp
+python ${SCRIPT} eliminated/grey424-26-206 4,2,4 ${OUT_DIR}/fast424_26_206.hpp
 
 # 4,3,3
 python ${SCRIPT} grey433-29-234 4,3,3 ${OUT_DIR}/fast433_29_234.hpp
@@ -32,7 +33,10 @@ python ${SCRIPT} classical333-27-81 3,3,3 ${OUT_DIR}/classical333.hpp
 # 3,3,2
 python ${SCRIPT} grey332-15-103 3,3,2 ${OUT_DIR}/fast332_15_103.hpp
 python ${SCRIPT} grey323-15-103 3,2,3 ${OUT_DIR}/fast323_15_103.hpp
-python ${SCRIPT} hk332-2 3,3,2 ${OUT_DIR}/hk332.hpp
+python ${SCRIPT} hk332-15-94 3,3,2 ${OUT_DIR}/hk332_15_94.hpp
+python ${SCRIPT} hk323-15-94 3,2,3 ${OUT_DIR}/hk323_15_94.hpp
+python ${SCRIPT} eliminated/hk323-15-84 3,2,3 ${OUT_DIR}/hk323_15_84.hpp
+python ${SCRIPT} eliminated/grey323-15-89 3,2,3 ${OUT_DIR}/fast323_15_89.hpp
 
 # 3,2,2
 python ${SCRIPT} grey322-11-50 3,2,2 ${OUT_DIR}/fast322_11_50.hpp
