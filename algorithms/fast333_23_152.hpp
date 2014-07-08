@@ -9,19 +9,6 @@
 namespace grey333_23_152 {
 
 template <typename Scalar>
-void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
-#ifdef _OPEN_MP_
-# pragma omp parallel
-    {
-# pragma omp single
-#endif
-        FastMatmulRecursive(A, B, C, numsteps, x);
-#ifdef _OPEN_MP_
-    }
-#endif
-}
-
-template <typename Scalar>
 void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
     // Update multipliers
     C.UpdateMultiplier(A.multiplier());
@@ -540,6 +527,19 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 
     // Handle edge cases with dynamic peeling
     DynamicPeeling(A, B, C, 3, 3, 3);
+}
+
+template <typename Scalar>
+void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
+#ifdef _OPEN_MP_
+# pragma omp parallel
+    {
+# pragma omp single
+#endif
+        FastMatmulRecursive(A, B, C, numsteps, x);
+#ifdef _OPEN_MP_
+    }
+#endif
 }
 
 }

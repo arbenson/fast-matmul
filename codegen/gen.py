@@ -311,21 +311,6 @@ def main():
         # Wrap in a namespace
         write_line(header, 0, 'namespace %s {\n' % namespace_name)
 
-        # Wrapper to deal with OpenMP
-        write_line(header, 0, 'template <typename Scalar>')
-        write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
-                   'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
-        write_line(header, 0, '#ifdef _OPEN_MP_')
-        write_line(header, 0, '# pragma omp parallel')
-        write_line(header, 1, '{')
-        write_line(header, 0, '# pragma omp single')
-        write_line(header, 0, '#endif')
-	write_line(header, 2, 'FastMatmulRecursive(A, B, C, numsteps, x);')
-        write_line(header, 0, '#ifdef _OPEN_MP_')
-        write_line(header, 1, '}')
-        write_line(header, 0, '#endif')
-        write_line(header, 0, '}\n')
-
         # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
@@ -393,6 +378,22 @@ def main():
     
         # end of function
         write_line(header, 0, '}\n')
+
+        # Wrapper to deal with OpenMP
+        write_line(header, 0, 'template <typename Scalar>')
+        write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
+                   'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
+        write_line(header, 0, '#ifdef _OPEN_MP_')
+        write_line(header, 0, '# pragma omp parallel')
+        write_line(header, 1, '{')
+        write_line(header, 0, '# pragma omp single')
+        write_line(header, 0, '#endif')
+	write_line(header, 2, 'FastMatmulRecursive(A, B, C, numsteps, x);')
+        write_line(header, 0, '#ifdef _OPEN_MP_')
+        write_line(header, 1, '}')
+        write_line(header, 0, '#endif')
+        write_line(header, 0, '}\n')
+
         # end of namespace
         write_line(header, 0, '}\n  // namespace %s' % namespace_name)
         # end of file
