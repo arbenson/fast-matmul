@@ -14,6 +14,7 @@
 #include "fast243_20_144.hpp"
 #include "fast322_11_50.hpp"
 #include "fast323_15_103.hpp"
+#include "fast323_15_89.hpp"
 #include "fast324_20_144.hpp"
 #include "fast332_15_103.hpp"
 #include "fast333_23_152.hpp"
@@ -21,6 +22,7 @@
 #include "fast342_20_144.hpp"
 #include "fast422_14_84.hpp"
 #include "fast423_20_144.hpp"
+#include "fast424_26_206.hpp"
 #include "fast424_26_257.hpp"
 #include "fast432_20_144.hpp"
 #include "fast433_29_234.hpp"
@@ -31,35 +33,42 @@
 #include "bini322.hpp"
 #include "classical222.hpp"
 #include "classical333.hpp"
-#include "hk332.hpp"
+#include "hk332_15_94.hpp"
+#include "hk323_15_84.hpp"
+#include "hk323_15_94.hpp"
 #include "smirnov333_23_139.hpp"
 #include "smirnov336_40_960.hpp"
 #include "strassen.hpp"
 
 
 enum {
+  MKL,
   BINI332,
   CLASSICAL222,
   CLASSICAL333,
-  SMIRNOV333,
-  SMIRNOV336,
-  HK332,
+  SMIRNOV333_23_139,
+  SMIRNOV336_40_960,
+  HK332_15_94,
+  HK323_15_94,
+  HK323_15_84,
   STRASSEN,
-  GREY322,
-  GREY323,
-  GREY332,
-  GREY333,
-  GREY333_MORE,
-  GREY432,
-  GREY423,
-  GREY324,
-  GREY342,
-  GREY234,
-  GREY243,
-  GREY422,
-  GREY424,
-  GREY433,
-  GREY522,
+  FAST322_11_50,
+  FAST323_15_103,
+  FAST323_15_89,
+  FAST332_15_103,
+  FAST333_23_152,
+  FAST333_23_221,
+  FAST432_20_144,
+  FAST423_20_144,
+  FAST324_20_144,
+  FAST342_20_144,
+  FAST234_20_144,
+  FAST243_20_144,
+  FAST422_14_84,
+  FAST424_26_257,
+  FAST424_26_206,
+  FAST433_29_234,
+  FAST522_18_99,
 };
 
 
@@ -87,6 +96,10 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
   for (int trial = 0; trial < num_trials; ++trial) {
 	auto t1 = std::chrono::high_resolution_clock::now();
 	switch (algorithm) {
+	case MKL:
+	  // Just run the classical version with zero steps of recursion.
+	  classical222_8_24::FastMatmul(A, B, C1, 0);
+	  break;
 	case BINI332:
 	  bini322::FastMatmul(A, B, C1, numsteps);
 	  break;
@@ -96,61 +109,73 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
 	case CLASSICAL333:
 	  classical333_27_81::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY322:
+	case FAST322_11_50:
 	  grey322_11_50::FastMatmul(A, B, C1, numsteps);      
 	  break;
-	case GREY332:
+	case FAST332_15_103:
 	  grey332_15_103::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY323:
+	case FAST323_15_103:
 	  grey323_15_103::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY333:
+	case FAST323_15_89:
+	  grey323_15_103::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case FAST333_23_152:
 	  grey333_23_152::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY333_MORE:
+	case FAST333_23_221:
 	  grey333_23_221::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY432:
+	case FAST432_20_144:
 	  grey432_20_144::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY423:
+	case FAST423_20_144:
 	  grey423_20_144::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY324:
+	case FAST324_20_144:
 	  grey324_20_144::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY342:
+	case FAST342_20_144:
 	  grey342_20_144::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY234:
+	case FAST234_20_144:
 	  grey234_20_144::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY243:
-	  grey324_20_144::FastMatmul(A, B, C1, numsteps);
+	case FAST243_20_144:
+	  grey243_20_144::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY433:
+	case FAST433_29_234:
 	  grey433_29_234::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case SMIRNOV333:
+	case SMIRNOV333_23_139:
 	  smirnov333_23_139::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case SMIRNOV336:
+	case SMIRNOV336_40_960:
 	  smirnov336_40_960::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case HK332:
-	  hk332_2::FastMatmul(A, B, C1, numsteps);
+	case HK332_15_94:
+	  hk332_15_94::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case HK323_15_94:
+	  hk323_15_94::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case HK323_15_84:
+	  hk323_15_84::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case STRASSEN:
 	  strassen::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY422:
+	case FAST422_14_84:
 	  grey422_14_84::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY424:
+	case FAST424_26_257:
 	  grey424_26_257::FastMatmul(A, B, C1, numsteps);
 	  break;
-	case GREY522:
+	case FAST424_26_206:
+	  grey424_26_206::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case FAST522_18_99:
 	  grey522_18_99::FastMatmul(A, B, C1, numsteps);
 	  break;
 	default:
@@ -164,7 +189,7 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
   size_t ind = num_trials / 2 + 1;
   std::cout << " " << m << " " << k << " " << n << " "
 			<< numsteps << " " << times[ind] << " "
-			<< "; ..." << std::endl;
+			<< "; ...";
 
   if (run_check) {
 	// Test for correctness.
@@ -184,6 +209,7 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
 	  SingleBenchmark(m_vals[i], k_vals[i], n_vals[i], curr_numsteps, algorithm, run_check);
 	}
   }
+  std::cout << std::endl << std::endl;
 }
 
 // Runs a set of benchmarks.
@@ -194,6 +220,7 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
   for (int i = 0; i < m_vals.size(); ++i) {
 	SingleBenchmark(m_vals[i], k_vals[i], n_vals[i], numsteps, algorithm, run_check);
   }
+  std::cout << std::endl << std::endl;
 }
 
 
@@ -214,22 +241,22 @@ void TestSuite() {
 
   AlgorithmTest(n_vals, k_vals, m_vals, "Classical (2 x 2 recursive)", CLASSICAL222);
   AlgorithmTest(n_vals, k_vals, m_vals, "Classical (3 x 3 recursive)", CLASSICAL333);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY322", GREY322);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY332", GREY332);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY333", GREY333);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY432", GREY432);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY423", GREY423);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY324", GREY324);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY342", GREY342);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY234", GREY234);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY243", GREY243);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY422", GREY422);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY424", GREY424);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY433", GREY433);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY522", GREY522);
-  AlgorithmTest(n_vals, k_vals, m_vals, "GREY522", GREY522);
-  AlgorithmTest(n_vals, k_vals, m_vals, "SMIRNOV333", SMIRNOV333);
-  AlgorithmTest(n_vals, k_vals, m_vals, "HK332", HK332);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST322_11_50", FAST322_11_50);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST332_15_103", FAST332_15_103);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST333_23_221", FAST333_23_221);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST432_20_144", FAST432_20_144);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST423_20_144", FAST423_20_144);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST324_20_144", FAST324_20_144);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST342_20_144", FAST342_20_144);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST234_20_144", FAST234_20_144);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST243_20_144", FAST243_20_144);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST422_14_84", FAST422_14_84);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST424_26_257", FAST424_26_257);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST433_29_234", FAST433_29_234);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST522_18_99", FAST522_18_99);
+  AlgorithmTest(n_vals, k_vals, m_vals, "FAST522_18_99", FAST522_18_99);
+  AlgorithmTest(n_vals, k_vals, m_vals, "SMIRNOV333_23_139", SMIRNOV333_23_139);
+  AlgorithmTest(n_vals, k_vals, m_vals, "HK332_15_94", HK332_15_94);
   AlgorithmTest(n_vals, k_vals, m_vals, "BINI332", BINI332);
 }
 
@@ -260,23 +287,56 @@ void RectangularBenchmarks() {
   GetDims(n0, 2, 1, n_vals);
 
   std::cout << "MKL" << std::endl;
-  BenchmarkSet(m_vals, n_vals, n_vals, 0, CLASSICAL222);
-  std::cout << "GREY522" << std::endl;
-  BenchmarkSet(m_vals, n_vals, n_vals, 1, GREY522);
+  BenchmarkSet(m_vals, n_vals, n_vals, 0, MKL);
+  std::cout << "FAST522_18_99" << std::endl;
+  BenchmarkSet(m_vals, n_vals, n_vals, 1, FAST522_18_99);
 }
 
 
 void OuterProductBenchmark() {
   std::vector<int> m_vals;
-  for (int i = 1600; i <= 8000; i += 80) {
+  for (int i = 1600; i <= 8000; i += 100) {
 	m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 1600);
 
-  std::cout << "GREY323 (1)" << std::endl;
-  BenchmarkSet(m_vals, k_vals, m_vals, 1, GREY323);
-  std::cout << "GREY323 (2)" << std::endl;
-  BenchmarkSet(m_vals, k_vals, m_vals, 2, GREY323);
+  std::cout << "MKL" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 0, MKL);
+
+  std::cout << "STRASSEN (1)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, STRASSEN);
+  std::cout << "STRASSEN (2)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 2, STRASSEN);
+
+  std::cout << "FAST323_15_103 (1)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST323_15_103);
+  std::cout << "FAST323_15_103 (2)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST323_15_103);
+
+  std::cout << "FAST323_15_89 (1)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST323_15_89);
+  std::cout << "FAST323_15_89 (2)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST323_15_89);
+
+  std::cout << "HK323_15_94 (1)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, HK323_15_94);
+  std::cout << "HK323_15_94 (2)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 2, HK323_15_94);
+
+  std::cout << "HK323_15_84 (1)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, HK323_15_84);
+  std::cout << "HK323_15_84 (2)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 2, HK323_15_84);
+
+  std::cout << "FAST424_26_257 (1)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST424_26_257);
+  std::cout << "FAST424_26_257 (2)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST424_26_257);
+
+  std::cout << "FAST424_26_206 (1)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST424_26_206);
+  std::cout << "FAST424_26_206 (2)" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST424_26_206);
 }
 
 void DgemmCurve() {
@@ -285,7 +345,7 @@ void DgemmCurve() {
 	n0.push_back(i);
   }
   std::cout << "MKL" << std::endl;
-  BenchmarkSet(n0, n0, n0, 0, CLASSICAL222);
+  BenchmarkSet(n0, n0, n0, 0, MKL);
 }
 
 
@@ -311,7 +371,7 @@ void SquareBenchmark(int which) {
   switch (which) {
   case 1:
     std::cout << "MKL" << std::endl;
-    BenchmarkSet(dim, dim, dim, 0, CLASSICAL222);
+    BenchmarkSet(dim, dim, dim, 0, MKL);
     break;
   case 2:
     std::cout << "STRASSEN (1)" << std::endl;
@@ -322,36 +382,36 @@ void SquareBenchmark(int which) {
     BenchmarkSet(dim, dim, dim, 2, STRASSEN);
     break;
   case 3:
-    std::cout << "SMIRNOV333 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, SMIRNOV333);
+    std::cout << "SMIRNOV333_23_139 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, SMIRNOV333_23_139);
 	break;
   case 300:
-    std::cout << "SMIRNOV333 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, SMIRNOV333);
+    std::cout << "SMIRNOV333_23_139 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, SMIRNOV333_23_139);
     break;
   case 4:
-    std::cout << "GREY422 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, GREY422);
-    std::cout << "GREY422 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, GREY422);
+    std::cout << "FAST422_14_84 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST422_14_84);
+    std::cout << "FAST422_14_84 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST422_14_84);
     break;
   case 5:
-    std::cout << "GREY522 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, GREY522);
-    std::cout << "GREY522 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, GREY522);
+    std::cout << "FAST522_18_99 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST522_18_99);
+    std::cout << "FAST522_18_99 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST522_18_99);
     break;
   case 6:
-    std::cout << "GREY234 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, GREY234);
-    std::cout << "GREY234 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, GREY234);
+    std::cout << "FAST234_20_144 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST234_20_144);
+    std::cout << "FAST234_20_144 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST234_20_144);
     break;
   case 7:
-    std::cout << "GREY433 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, GREY433);
-    std::cout << "GREY433 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, GREY433);
+    std::cout << "FAST433_29_234 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST433_29_234);
+    std::cout << "FAST433_29_234 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST433_29_234);
     break;
   case 8:
     std::cout << "BINI322 (1)" << std::endl;
@@ -360,12 +420,12 @@ void SquareBenchmark(int which) {
     BenchmarkSet(dim, dim, dim, 2, BINI332);
     break;
   case 9:
-    std::cout << "GREY333 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, GREY333);
+    std::cout << "FAST333_23_221 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST333_23_221);
 	break;
   case 900:
-    std::cout << "GREY333 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, GREY333);
+    std::cout << "FAST333_23_221 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST333_23_221);
     break;
   case 10:
     std::cout << "CLASSICAL222 (1)" << std::endl;
@@ -376,36 +436,36 @@ void SquareBenchmark(int which) {
     BenchmarkSet(dim, dim, dim, 2, CLASSICAL222);
     break;
   case 11:
-    std::cout << "GREY332 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, GREY332);
-    std::cout << "GREY332 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, GREY332);
+    std::cout << "FAST332_15_103 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST332_15_103);
+    std::cout << "FAST332_15_103 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST332_15_103);
     break;
   case 12:
-    std::cout << "GREY322 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, GREY322);
-    std::cout << "GREY322 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, GREY322);
+    std::cout << "FAST322_11_50 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST322_11_50);
+    std::cout << "FAST322_11_50 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST322_11_50);
     break;
   case 13:
-    std::cout << "HK332 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, HK332);
-    std::cout << "HK332 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, HK332);
+    std::cout << "HK332_15_94 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, HK332_15_94);
+    std::cout << "HK332_15_94 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, HK332_15_94);
     break;
   case 14:
-    std::cout << "GREY424 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, GREY424);
-    std::cout << "GREY424 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, GREY424);
+    std::cout << "FAST424_26_257 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST424_26_257);
+    std::cout << "FAST424_26_257 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST424_26_257);
 	break;
   case 15:
-    std::cout << "GREY333-MORE (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, GREY333_MORE);
+    std::cout << "FAST333_23_221 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST333_23_221);
 	break;
   case 1500:
-    std::cout << "GREY333-MORE (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, GREY333_MORE);
+    std::cout << "FAST333_23_221 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST333_23_221);
 	break;
   }
 }
@@ -413,8 +473,6 @@ void SquareBenchmark(int which) {
 
 
 int main(int argc, char **argv) {
-  TestSuite();
-  return 0;
   int which = atoi(argv[1]);
   if (which == 0) {
 	OuterProductBenchmark();
