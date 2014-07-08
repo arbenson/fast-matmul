@@ -184,7 +184,8 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
     write_line(header, 0, '#endif')
 
     def need_tmp_mat(coeffs):
-        return num_nonzero(coeffs) > 1 or filter(is_nonzero, coeffs)[0] != 1
+        return num_nonzero(coeffs) > 1
+        #return num_nonzero(coeffs) > 1 or filter(is_nonzero, coeffs)[0] != 1
 
     def addition_str(ind, coeffs, mat_name, mat_dims):
         if need_tmp_mat(coeffs):
@@ -208,10 +209,24 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
             name = mat_name + get_suffix(loc[0], mat_dims[0], mat_dims[1])
         return name
 
-    write_line(header, 1, 'FastMatmul(%s, %s, M%d, numsteps - 1, x);' % (
+    # Handle the case where there is one non-zero coefficient and it is
+    # not equal to one.  We need to propagate the multiplier information.
+    res_mat = 'M%d' % (ind + 1)
+
+    a_nonzero_coeffs = filter(is_nonzero, a_coeffs)
+    b_nonzero_coeffs = filter(is_nonzero, b_coeffs)
+    if len(a_nonzero_coeffs) == 1 and a_nonzero_coeffs[0] != 1:
+        write_line(header, 1, '%s.UpdateMultiplier(Scalar(%d));' % (res_mat, a_nonzero_coeffs[0]))
+
+    if len(b_nonzero_coeffs) == 1 and b_nonzero_coeffs[0] != 1:
+        write_line(header, 1, '%s.UpdateMultiplier(Scalar(%d));' % (res_mat, b_nonzero_coeffs[0]))
+
+
+    # Finally, write the actual call to matrix multiply.
+    write_line(header, 1, 'FastMatmul(%s, %s, %s, numsteps - 1, x);' % (
             subblock_name(a_coeffs, 'A', (dims[0], dims[1])),
             subblock_name(b_coeffs, 'B', (dims[1], dims[2])),
-            ind + 1))
+            res_mat))
     
     if need_tmp_mat(a_coeffs):
         write_line(header, 1, 'M%dA.deallocate();' % (ind + 1))
@@ -301,6 +316,8 @@ def main():
         write_line(header, 1, '// Update multipliers')
         write_line(header, 1, 'C.UpdateMultiplier(A.multiplier());')
         write_line(header, 1, 'C.UpdateMultiplier(B.multiplier());')
+        write_line(header, 1, 'A.UpdateMultiplier(Scalar(1.0));')
+        write_line(header, 1, 'B.UpdateMultiplier(Scalar(1.0));')
 
         # Handle base case
         write_line(header, 1, '// Base case for recursion')
