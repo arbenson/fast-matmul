@@ -368,8 +368,6 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #elif defined _OPEN_MP_
         # pragma omp taskwait
 #endif
-    Matrix<Scalar> M_X1(C11.m(), C11.n());
-    Add(M_X1);
 
 
     Add(M1, M2, Scalar(1.0), Scalar(1.0), C11);
