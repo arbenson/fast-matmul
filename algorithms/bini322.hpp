@@ -7,8 +7,22 @@
 
 
 namespace bini322 {
+
 template <typename Scalar>
 void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
+#ifdef _OPEN_MP_
+# pragma omp parallel
+    {
+# pragma omp single
+#endif
+        FastMatmulRecursive(A, B, C, numsteps, x);
+#ifdef _OPEN_MP_
+    }
+#endif
+}
+
+template <typename Scalar>
+void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
     // Update multipliers
     C.UpdateMultiplier(A.multiplier());
     C.UpdateMultiplier(B.multiplier());
@@ -59,12 +73,6 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Matrix<Scalar> M10(C_row_step, C_col_step, C.multiplier());
 
 
-#ifdef _OPEN_MP_
-    #pragma omp parallel
-    {
-    #pragma omp single
-        {
-#endif
     // M1 = (1.0 * A11 + 1.0 * A22) * (x * B11 + 1.0 * B22)
 #ifdef _CILK_
     cilk_spawn [&] {
@@ -76,7 +84,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(A11, A22, Scalar(1.0), Scalar(1.0), M1A);
     Matrix<Scalar> M1B(B11.m(), B11.n());
     Add(B11, B22, Scalar(x), Scalar(1.0), M1B);
-    FastMatmul(M1A, M1B, M1, numsteps - 1, x);
+    FastMatmulRecursive(M1A, M1B, M1, numsteps - 1, x);
     M1A.deallocate();
     M1B.deallocate();
 #ifdef _CILK_
@@ -94,7 +102,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #endif
     Matrix<Scalar> M2B(B11.m(), B11.n());
     Add(B21, B22, Scalar(-1.0), Scalar(-1.0), M2B);
-    FastMatmul(A22, M2B, M2, numsteps - 1, x);
+    FastMatmulRecursive(A22, M2B, M2, numsteps - 1, x);
     M2B.deallocate();
 #ifdef _CILK_
     }();
@@ -109,7 +117,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A11, B22, M3, numsteps - 1, x);
+    FastMatmulRecursive(A11, B22, M3, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -127,7 +135,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(A12, A22, Scalar(x), Scalar(1.0), M4A);
     Matrix<Scalar> M4B(B11.m(), B11.n());
     Add(B11, B21, Scalar(-(x)), Scalar(1.0), M4B);
-    FastMatmul(M4A, M4B, M4, numsteps - 1, x);
+    FastMatmulRecursive(M4A, M4B, M4, numsteps - 1, x);
     M4A.deallocate();
     M4B.deallocate();
 #ifdef _CILK_
@@ -147,7 +155,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(A11, A12, Scalar(1.0), Scalar(x), M5A);
     Matrix<Scalar> M5B(B11.m(), B11.n());
     Add(B12, B22, Scalar(x), Scalar(1.0), M5B);
-    FastMatmul(M5A, M5B, M5, numsteps - 1, x);
+    FastMatmulRecursive(M5A, M5B, M5, numsteps - 1, x);
     M5A.deallocate();
     M5B.deallocate();
 #ifdef _CILK_
@@ -167,7 +175,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(A21, A32, Scalar(1.0), Scalar(1.0), M6A);
     Matrix<Scalar> M6B(B11.m(), B11.n());
     Add(B11, B22, Scalar(1.0), Scalar(x), M6B);
-    FastMatmul(M6A, M6B, M6, numsteps - 1, x);
+    FastMatmulRecursive(M6A, M6B, M6, numsteps - 1, x);
     M6A.deallocate();
     M6B.deallocate();
 #ifdef _CILK_
@@ -183,7 +191,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A32, B11, M7, numsteps - 1, x);
+    FastMatmulRecursive(A32, B11, M7, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -199,7 +207,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #endif
     Matrix<Scalar> M8B(B11.m(), B11.n());
     Add(B11, B12, Scalar(-1.0), Scalar(-1.0), M8B);
-    FastMatmul(A21, M8B, M8, numsteps - 1, x);
+    FastMatmulRecursive(A21, M8B, M8, numsteps - 1, x);
     M8B.deallocate();
 #ifdef _CILK_
     }();
@@ -218,7 +226,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(A31, A32, Scalar(x), Scalar(1.0), M9A);
     Matrix<Scalar> M9B(B11.m(), B11.n());
     Add(B11, B21, Scalar(1.0), Scalar(x), M9B);
-    FastMatmul(M9A, M9B, M9, numsteps - 1, x);
+    FastMatmulRecursive(M9A, M9B, M9, numsteps - 1, x);
     M9A.deallocate();
     M9B.deallocate();
 #ifdef _CILK_
@@ -238,7 +246,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Add(A21, A31, Scalar(1.0), Scalar(x), M10A);
     Matrix<Scalar> M10B(B11.m(), B11.n());
     Add(B12, B22, Scalar(1.0), Scalar(-(x)), M10B);
-    FastMatmul(M10A, M10B, M10, numsteps - 1, x);
+    FastMatmulRecursive(M10A, M10B, M10, numsteps - 1, x);
     M10A.deallocate();
     M10B.deallocate();
 #ifdef _CILK_
@@ -250,8 +258,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #ifdef _CILK_
     cilk_sync;
 #elif defined _OPEN_MP_
-        }  // End omp single region
-    }  // End omp parallel region
+        # pragma omp taskwait
 #endif
 
 

@@ -223,7 +223,7 @@ def write_matmul(header, ind, a_coeffs, b_coeffs, dims):
 
 
     # Finally, write the actual call to matrix multiply.
-    write_line(header, 1, 'FastMatmul(%s, %s, %s, numsteps - 1, x);' % (
+    write_line(header, 1, 'FastMatmulRecursive(%s, %s, %s, numsteps - 1, x);' % (
             subblock_name(a_coeffs, 'A', (dims[0], dims[1])),
             subblock_name(b_coeffs, 'B', (dims[1], dims[2])),
             res_mat))
@@ -306,10 +306,27 @@ def main():
         write_line(header, 0, '#include "common.hpp"')
         write_line(header, 0, '\n')
 
-        # Start of fast matrix multiplication function
-        write_line(header, 0, 'namespace %s {' % namespace_name)
+        # Wrap in a namespace
+        write_line(header, 0, 'namespace %s {\n' % namespace_name)
+
+        # Wrapper to deal with OpenMP
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
+                   'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
+        write_line(header, 0, '#ifdef _OPEN_MP_')
+        write_line(header, 0, '# pragma omp parallel')
+        write_line(header, 1, '{')
+        write_line(header, 0, '# pragma omp single')
+        write_line(header, 0, '#endif')
+	write_line(header, 2, 'FastMatmulRecursive(A, B, C, numsteps, x);')
+        write_line(header, 0, '#ifdef _OPEN_MP_')
+        write_line(header, 1, '}')
+        write_line(header, 0, '#endif')
+        write_line(header, 0, '}\n')
+
+        # Start of fast matrix multiplication function
+        write_line(header, 0, 'template <typename Scalar>')
+        write_line(header, 0, 'void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
                    'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
 
         # Handle the multipliers
@@ -348,13 +365,6 @@ def main():
             write_line(header, 1, 'Matrix<Scalar> M%d(C_row_step, C_col_step, C.multiplier());' % (i + 1))
         write_line(header, 0, '\n')
 
-        write_line(header, 0, '#ifdef _OPEN_MP_')        
-        write_line(header, 1, '#pragma omp parallel')
-        write_line(header, 1, '{')
-        write_line(header, 1, '#pragma omp single')
-        write_line(header, 2, '{')
-        write_line(header, 0, '#endif')
-
         # Write the mutliplication blocks.
         for i in xrange(num_multiplies):
             a_coeffs = [c[i] for c in coeffs[0]]
@@ -364,8 +374,7 @@ def main():
         write_line(header, 0, '#ifdef _CILK_')
         write_line(header, 1, 'cilk_sync;')
         write_line(header, 0, '#elif defined _OPEN_MP_')
-        write_line(header, 2, '}  // End omp single region')
-        write_line(header, 1, '}  // End omp parallel region')
+        write_line(header, 2, '# pragma omp taskwait')
         write_line(header, 0, '#endif')
 
         if len(coeffs) >= 6:

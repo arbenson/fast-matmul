@@ -22,7 +22,7 @@ CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 -DNDEBUG
 ifeq ($(MODE), cilk)
   CFLAGS += -D_CILK_
 else ifeq ($(MODE), openmp)
-  CFLAGS += -D_OPEN_MP_ -D_OPEN_MP_ADDS_ -fopenmp
+  CFLAGS += -D_OPEN_MP_ -fopenmp
 endif
 
 LDFLAGS := -O3

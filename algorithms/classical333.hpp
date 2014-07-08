@@ -7,8 +7,22 @@
 
 
 namespace classical333_27_81 {
+
 template <typename Scalar>
 void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
+#ifdef _OPEN_MP_
+# pragma omp parallel
+    {
+# pragma omp single
+#endif
+        FastMatmulRecursive(A, B, C, numsteps, x);
+#ifdef _OPEN_MP_
+    }
+#endif
+}
+
+template <typename Scalar>
+void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
     // Update multipliers
     C.UpdateMultiplier(A.multiplier());
     C.UpdateMultiplier(B.multiplier());
@@ -87,12 +101,6 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
     Matrix<Scalar> M27(C_row_step, C_col_step, C.multiplier());
 
 
-#ifdef _OPEN_MP_
-    #pragma omp parallel
-    {
-    #pragma omp single
-        {
-#endif
     // M1 = (1.0 * A11) * (1.0 * B11)
 #ifdef _CILK_
     cilk_spawn [&] {
@@ -100,7 +108,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A11, B11, M1, numsteps - 1, x);
+    FastMatmulRecursive(A11, B11, M1, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -114,7 +122,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A12, B21, M2, numsteps - 1, x);
+    FastMatmulRecursive(A12, B21, M2, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -128,7 +136,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A13, B31, M3, numsteps - 1, x);
+    FastMatmulRecursive(A13, B31, M3, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -142,7 +150,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A11, B12, M4, numsteps - 1, x);
+    FastMatmulRecursive(A11, B12, M4, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -156,7 +164,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A12, B22, M5, numsteps - 1, x);
+    FastMatmulRecursive(A12, B22, M5, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -170,7 +178,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A13, B32, M6, numsteps - 1, x);
+    FastMatmulRecursive(A13, B32, M6, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -184,7 +192,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A11, B13, M7, numsteps - 1, x);
+    FastMatmulRecursive(A11, B13, M7, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -198,7 +206,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A12, B23, M8, numsteps - 1, x);
+    FastMatmulRecursive(A12, B23, M8, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -212,7 +220,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A13, B33, M9, numsteps - 1, x);
+    FastMatmulRecursive(A13, B33, M9, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -226,7 +234,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A21, B11, M10, numsteps - 1, x);
+    FastMatmulRecursive(A21, B11, M10, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -240,7 +248,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A22, B21, M11, numsteps - 1, x);
+    FastMatmulRecursive(A22, B21, M11, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -254,7 +262,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A23, B31, M12, numsteps - 1, x);
+    FastMatmulRecursive(A23, B31, M12, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -268,7 +276,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A21, B12, M13, numsteps - 1, x);
+    FastMatmulRecursive(A21, B12, M13, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -282,7 +290,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A22, B22, M14, numsteps - 1, x);
+    FastMatmulRecursive(A22, B22, M14, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -296,7 +304,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A23, B32, M15, numsteps - 1, x);
+    FastMatmulRecursive(A23, B32, M15, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -310,7 +318,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A21, B13, M16, numsteps - 1, x);
+    FastMatmulRecursive(A21, B13, M16, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -324,7 +332,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A22, B23, M17, numsteps - 1, x);
+    FastMatmulRecursive(A22, B23, M17, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -338,7 +346,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A23, B33, M18, numsteps - 1, x);
+    FastMatmulRecursive(A23, B33, M18, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -352,7 +360,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A31, B11, M19, numsteps - 1, x);
+    FastMatmulRecursive(A31, B11, M19, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -366,7 +374,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A32, B21, M20, numsteps - 1, x);
+    FastMatmulRecursive(A32, B21, M20, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -380,7 +388,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A33, B31, M21, numsteps - 1, x);
+    FastMatmulRecursive(A33, B31, M21, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -394,7 +402,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A31, B12, M22, numsteps - 1, x);
+    FastMatmulRecursive(A31, B12, M22, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -408,7 +416,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A32, B22, M23, numsteps - 1, x);
+    FastMatmulRecursive(A32, B22, M23, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -422,7 +430,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A33, B32, M24, numsteps - 1, x);
+    FastMatmulRecursive(A33, B32, M24, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -436,7 +444,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A31, B13, M25, numsteps - 1, x);
+    FastMatmulRecursive(A31, B13, M25, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -450,7 +458,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A32, B23, M26, numsteps - 1, x);
+    FastMatmulRecursive(A32, B23, M26, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -464,7 +472,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 # pragma omp task
     {
 #endif
-    FastMatmul(A33, B33, M27, numsteps - 1, x);
+    FastMatmulRecursive(A33, B33, M27, numsteps - 1, x);
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -474,8 +482,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #ifdef _CILK_
     cilk_sync;
 #elif defined _OPEN_MP_
-        }  // End omp single region
-    }  // End omp parallel region
+        # pragma omp taskwait
 #endif
 
 
