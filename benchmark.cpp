@@ -33,6 +33,7 @@
 #include "classical333.hpp"
 #include "hk332.hpp"
 #include "smirnov333_23_139.hpp"
+#include "smirnov336_40_960.hpp"
 #include "strassen.hpp"
 
 
@@ -41,6 +42,7 @@ enum {
   CLASSICAL222,
   CLASSICAL333,
   SMIRNOV333,
+  SMIRNOV336,
   HK332,
   STRASSEN,
   GREY322,
@@ -132,6 +134,9 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
 	  break;
 	case SMIRNOV333:
 	  smirnov333_23_139::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case SMIRNOV336:
+	  smirnov336_40_960::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case HK332:
 	  hk332_2::FastMatmul(A, B, C1, numsteps);
