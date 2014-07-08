@@ -3,6 +3,9 @@
 SCRIPT=gen.py
 OUT_DIR=../algorithms
 
+# 3,3,6
+python ${SCRIPT} smirnov336-40-960 3,6,6 ${OUT_DIR}/smirnov336_40_960.hpp
+
 # 5,2,2
 python ${SCRIPT} grey522-18-99 5,2,2 ${OUT_DIR}/fast522_18_99.hpp
 
