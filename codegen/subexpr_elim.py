@@ -1,5 +1,6 @@
 import convert
 import sys
+import gen
 
 def all_pairs(col):
     ''' Return all pairs in column, where the column refers to the rank multiply.
@@ -140,6 +141,11 @@ def transpose(coeffs):
     return [[x[i] for x in coeffs] for i in range(len(coeffs[0]))]
 
 
+def num_nonzero(coeffs):
+    return sum([1 for coeff_set in coeffs for coeff_line in coeff_set \
+                  for coeff in coeff_line if gen.is_nonzero(coeff)])
+
+
 def main():
     try:
         coeff_file = sys.argv[1]
@@ -149,6 +155,8 @@ def main():
         raise Exception('USAGE: python subexpr_elim.py coeff_file m,k,n')
 
     coeffs = convert.read_coeffs(coeff_file)
+    print 'nnz = ', num_nonzero(coeffs)
+
     A_elim = eliminate(coeffs[0])
     B_elim = eliminate(coeffs[1])
     # Transpose the C coefficients
