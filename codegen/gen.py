@@ -268,6 +268,8 @@ def output_addition(output_mat, coeffs, mat_dims, rank):
 
 
 def write_output_sub(header, ind, coeffs, mat_dims, rank):
+    if len(coeffs) == 0:
+        return
     tmp_mat = 'M_X%d' % (ind + 1)
     write_line(header, 1, 'Matrix<Scalar> %s(C11.m(), C11.n());' % tmp_mat)
     add = output_addition(tmp_mat, coeffs, mat_dims, rank)
