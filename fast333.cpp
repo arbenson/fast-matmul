@@ -1,5 +1,6 @@
 #include "linalg.hpp"
-#include "strassen.hpp"
+#include "fast333_23_152.hpp"
+#include "fast333_23_221.hpp"
 
 #include <stdlib.h>
 #include <time.h>
@@ -8,9 +9,9 @@
 #include <random>
 
 int main(int argc, char **argv) {
-    int m = 6000;
-    int k = 6000;
-    int n = 2000;
+    int m = 2700;
+    int k = 2700;
+    int n = 2700;
     int numsteps = 2;
 
     srand (time(NULL));
@@ -40,8 +41,7 @@ int main(int argc, char **argv) {
 
     std::cout << "Running fast matmul..." << std::endl;
     auto t3 = std::chrono::high_resolution_clock::now();
-
-	strassen::FastMatmul(A, B, C2, numsteps);
+    grey333_23_152::FastMatmul(A, B, C2, numsteps);
     auto t4 = std::chrono::high_resolution_clock::now();
     std::cout << "Fast matmul took "
 	      << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()

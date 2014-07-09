@@ -1,28 +1,3 @@
-#include "common.hpp"
-#include "mkl.h"
-#include "omp.h"
-
-#include "bini322.hpp"
-#include "classical222.hpp"
-#include "classical333.hpp"
-#include "smirnov-fast333.hpp"
-#include "grey-fast234.hpp"
-#include "grey-fast243.hpp"
-#include "grey-fast322.hpp"
-#include "grey-fast324.hpp"
-#include "grey-fast323.hpp"
-#include "grey-fast332.hpp"
-#include "grey-fast333.hpp"
-#include "grey-fast342.hpp"
-#include "grey-fast423.hpp"
-#include "grey-fast432.hpp"
-#include "grey-fast422.hpp"
-#include "grey-fast424.hpp"
-#include "grey-fast433.hpp"
-#include "grey-fast522.hpp"
-#include "hk332.hpp"
-#include "strassen.hpp"
-
 #include <stdlib.h>
 #include <time.h>
 
@@ -30,6 +5,36 @@
 #include <chrono>
 #include <random>
 #include <vector>
+
+#include "common.hpp"
+#include "mkl.h"
+
+// New fast algorithms
+#include "fast234_20_144.hpp"
+#include "fast243_20_144.hpp"
+#include "fast322_11_50.hpp"
+#include "fast323_15_103.hpp"
+#include "fast324_20_144.hpp"
+#include "fast332_15_103.hpp"
+#include "fast333_23_152.hpp"
+#include "fast333_23_221.hpp"
+#include "fast342_20_144.hpp"
+#include "fast422_14_84.hpp"
+#include "fast423_20_144.hpp"
+#include "fast424_26_257.hpp"
+#include "fast432_20_144.hpp"
+#include "fast433_29_234.hpp"
+#include "fast442_26_257.hpp"
+#include "fast522_18_99.hpp"
+
+// Other fast algorithms and classical algorithms
+#include "bini322.hpp"
+#include "classical222.hpp"
+#include "classical333.hpp"
+#include "hk332.hpp"
+#include "smirnov333_23_139.hpp"
+#include "strassen.hpp"
+
 
 enum {
   BINI332,
@@ -42,6 +47,7 @@ enum {
   GREY323,
   GREY332,
   GREY333,
+  GREY333_MORE,
   GREY432,
   GREY423,
   GREY324,
@@ -99,6 +105,9 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
 	break;
     case GREY333:
       grey333_23_152::FastMatmul(A, B, C1, numsteps);
+      break;
+    case GREY333_MORE:
+      grey333_23_221::FastMatmul(A, B, C1, numsteps);
       break;
     case GREY432:
       grey432_20_144::FastMatmul(A, B, C1, numsteps);
@@ -165,12 +174,12 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
                   std::vector<int>& n_vals, std::vector<int>& numsteps,
                   int algorithm, bool run_check=false) {
   assert(m_vals.size() == k_vals.size() && k_vals.size() == n_vals.size());
-  std::cout << std::endl;
   for (int i = 0; i < m_vals.size(); ++i) {
     for (int curr_numsteps : numsteps) {
       SingleBenchmark(m_vals[i], k_vals[i], n_vals[i], curr_numsteps, algorithm, run_check);
     }
   }
+  std::cout << std::endl;
 }
 
 // Runs a set of benchmarks.
@@ -259,16 +268,27 @@ void OuterProductBenchmark() {
   }
   std::vector<int> k_vals(n0.size(), 2000);
 
+#if 0
   std::cout << "MKL" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 0, CLASSICAL222);
+#endif
+
+  omp_set_num_threads(13);
+  std::cout << "13 threads" << std::endl;
   std::cout << "GREY424 (1)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 1, GREY424);
   std::cout << "GREY424 (2)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 2, GREY424);
+
+  omp_set_num_threads(7);
+  std::cout << "7 threads" << std::endl;
   std::cout << "STRASSEN (1)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 1, STRASSEN);
   std::cout << "STRASSEN (2)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 2, STRASSEN);
+
+  omp_set_num_threads(15);
+  std::cout << "15 threads" << std::endl;
   std::cout << "GREY323 (1)" << std::endl;
   BenchmarkSet(n0, k_vals, n0, 1, GREY323);
   std::cout << "GREY323 (2)" << std::endl;
@@ -344,13 +364,10 @@ void SquareBenchmark() {
 
 
 int main(int argc, char **argv) {
-    mkl_set_num_threads(16);
-    omp_set_num_threads(16);
-
-    int which = atoi(argv[1]);
-    if (which == 0) {
+  int which = atoi(argv[1]);
+  if (which == 0) {
 	OuterProductBenchmark();
-    } else {
+  } else {
 	SquareBenchmark();
-    }
+  }
 }
