@@ -17,6 +17,7 @@
 #include "fast323_15_89.hpp"
 #include "fast324_20_144.hpp"
 #include "fast332_15_103.hpp"
+#include "fast333_23_125.hpp"
 #include "fast333_23_152.hpp"
 #include "fast333_23_221.hpp"
 #include "fast342_20_144.hpp"
@@ -36,6 +37,7 @@
 #include "hk332_15_94.hpp"
 #include "hk323_15_84.hpp"
 #include "hk323_15_94.hpp"
+#include "smirnov333_23_128.hpp"
 #include "smirnov333_23_139.hpp"
 #include "smirnov336_40_960.hpp"
 #include "strassen.hpp"
@@ -46,6 +48,7 @@ enum {
   BINI332,
   CLASSICAL222,
   CLASSICAL333,
+  SMIRNOV333_23_128,
   SMIRNOV333_23_139,
   SMIRNOV336_40_960,
   HK332_15_94,
@@ -56,6 +59,7 @@ enum {
   FAST323_15_103,
   FAST323_15_89,
   FAST332_15_103,
+  FAST333_23_125,
   FAST333_23_152,
   FAST333_23_221,
   FAST432_20_144,
@@ -121,6 +125,9 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
 	case FAST323_15_89:
 	  grey323_15_103::FastMatmul(A, B, C1, numsteps);
 	  break;
+	case FAST333_23_125:
+	  grey333_23_125::FastMatmul(A, B, C1, numsteps);
+	  break;
 	case FAST333_23_152:
 	  grey333_23_152::FastMatmul(A, B, C1, numsteps);
 	  break;
@@ -147,6 +154,9 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
 	  break;
 	case FAST433_29_234:
 	  grey433_29_234::FastMatmul(A, B, C1, numsteps);
+	  break;
+	case SMIRNOV333_23_128:
+	  smirnov333_23_128::FastMatmul(A, B, C1, numsteps);
 	  break;
 	case SMIRNOV333_23_139:
 	  smirnov333_23_139::FastMatmul(A, B, C1, numsteps);
@@ -374,98 +384,44 @@ void SquareBenchmark(int which) {
     BenchmarkSet(dim, dim, dim, 0, MKL);
     break;
   case 2:
-    std::cout << "STRASSEN (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, STRASSEN);
-	break;
-  case 200:
-    std::cout << "STRASSEN (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, STRASSEN);
-    break;
-  case 3:
     std::cout << "SMIRNOV333_23_139 (1)" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, SMIRNOV333_23_139);
 	break;
-  case 300:
+  case 3:
     std::cout << "SMIRNOV333_23_139 (2)" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, SMIRNOV333_23_139);
     break;
   case 4:
-    std::cout << "FAST422_14_84 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST422_14_84);
-    std::cout << "FAST422_14_84 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST422_14_84);
-    break;
+    std::cout << "FAST333_23_152 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST333_23_152);
+	break;
   case 5:
-    std::cout << "FAST522_18_99 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST522_18_99);
-    std::cout << "FAST522_18_99 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST522_18_99);
+    std::cout << "FAST333_23_152 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST333_23_152);
     break;
   case 6:
-    std::cout << "FAST234_20_144 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST234_20_144);
-    std::cout << "FAST234_20_144 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST234_20_144);
-    break;
+    std::cout << "FAST333_23_221 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST333_23_221);
+	break;
   case 7:
-    std::cout << "FAST433_29_234 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST433_29_234);
-    std::cout << "FAST433_29_234 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST433_29_234);
-    break;
+    std::cout << "FAST333_23_221 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST333_23_221);
+	break;
   case 8:
-    std::cout << "BINI322 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, BINI332);
-    std::cout << "BINI332 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, BINI332);
-    break;
+    std::cout << "FAST333_23_125 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST333_23_125);
+	break;
   case 9:
-    std::cout << "FAST333_23_221 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST333_23_221);
+    std::cout << "FAST333_23_125 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST333_23_125);
 	break;
-  case 900:
-    std::cout << "FAST333_23_221 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST333_23_221);
-    break;
   case 10:
-    std::cout << "CLASSICAL222 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, CLASSICAL222);
+    std::cout << "SMIRNOV333_23_128 (1)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, SMIRNOV333_23_128);
 	break;
-  case 1000:
-    std::cout << "CLASSICAL222 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, CLASSICAL222);
-    break;
   case 11:
-    std::cout << "FAST332_15_103 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST332_15_103);
-    std::cout << "FAST332_15_103 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST332_15_103);
-    break;
-  case 12:
-    std::cout << "FAST322_11_50 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST322_11_50);
-    std::cout << "FAST322_11_50 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST322_11_50);
-    break;
-  case 13:
-    std::cout << "HK332_15_94 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, HK332_15_94);
-    std::cout << "HK332_15_94 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, HK332_15_94);
-    break;
-  case 14:
-    std::cout << "FAST424_26_257 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST424_26_257);
-    std::cout << "FAST424_26_257 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST424_26_257);
-	break;
-  case 15:
-    std::cout << "FAST333_23_221 (1)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST333_23_221);
-	break;
-  case 1500:
-    std::cout << "FAST333_23_221 (2)" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST333_23_221);
+    std::cout << "SMIRNOV333_23_128 (2)" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, SMIRNOV333_23_128);
 	break;
   }
 }

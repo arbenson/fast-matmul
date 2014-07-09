@@ -30,7 +30,9 @@ python ${SCRIPT} grey422-14-84 4,2,2 ${OUT_DIR}/fast422_14_84.hpp
 
 # 3,3,3
 python ${SCRIPT} grey333-23-152 3,3,3 ${OUT_DIR}/fast333_23_152.hpp
+python ${SCRIPT} eliminated/grey333-23-125 3,3,3 ${OUT_DIR}/fast333_23_125.hpp
 python ${SCRIPT} smirnov333-23-139 3,3,3 ${OUT_DIR}/smirnov333_23_139.hpp
+python ${SCRIPT} eliminated/smirnov333-23-128 3,3,3 ${OUT_DIR}/smirnov333_23_128.hpp
 python ${SCRIPT} classical333-27-81 3,3,3 ${OUT_DIR}/classical333.hpp
 
 # 3,3,2
