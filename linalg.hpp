@@ -25,7 +25,10 @@ extern "C" {
 template <typename Scalar>
 class Matrix {
 public:
-  Matrix() = default;
+  // Default constructor
+  Matrix(int n=0) : m_(n), n_(n), stride_(n), is_view_(false), multiplier_(Scalar(1)) {
+	allocate();
+  }
 
   // Copy constructor
   Matrix(Matrix<Scalar>& that) {
@@ -44,7 +47,6 @@ public:
   Matrix(Matrix<Scalar>&& that) : Matrix() {
 	swap(*this, that);
   }
-
 
   // copy assignment
   Matrix<Scalar>& operator=(Matrix<Scalar> that) {
@@ -66,12 +68,6 @@ public:
 	data_(data), stride_(stride), m_(m), n_(n), is_view_(true), multiplier_(multiplier) {
 	assert(stride > m);
   }
-
-
-  Matrix(int n) : m_(n), n_(n), stride_(n), is_view_(false), multiplier_(Scalar(1)) {
-	allocate();
-  }
-
 
   Matrix(int m, int n) : m_(m), n_(n), stride_(m), is_view_(false), multiplier_(Scalar(1)) {
 	allocate();
@@ -99,7 +95,7 @@ public:
 
 
   ~Matrix() {
-	if (data_ != NULL && !is_view_) {
+	if (data_ != NULL && !is_view_ && m_ > 0 & n_ > 0) {
 	  deallocate();
 	}
   }
@@ -111,8 +107,10 @@ public:
   int n() { return n_; }
 
   void allocate() {
-	data_ = new Scalar[m_ * n_];
-	assert(data_ != NULL);
+	if (n_ > 0 && m_ > 0) {
+	  data_ = new Scalar[m_ * n_];
+	  assert(data_ != NULL);
+	}
   }
 
   void deallocate() {
