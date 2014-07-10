@@ -115,7 +115,7 @@ public:
 
   void deallocate() {
 	if (data_ != NULL) {
-	  delete data_;
+	  delete[] data_;
 	  data_ = NULL;
 	}
   }
