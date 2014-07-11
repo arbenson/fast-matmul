@@ -14,10 +14,10 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 # for compiling with Linux BLAS
 #BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
-#DEBUG := -g -O0 -Wall
+#DEBUG := -g -Wall
 OPT := -O3
 CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 -DNDEBUG
-#CFLAGS += -g
+CFLAGS += -g
 
 ifeq ($(MODE), cilk)
   CFLAGS += -D_CILK_
@@ -53,6 +53,9 @@ default : all
 
 .PHONY : all
 all : $(TARGETS)
+
+add_benchmark: add_benchmark.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 benchmark: benchmark.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
