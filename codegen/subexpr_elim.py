@@ -44,11 +44,13 @@ def find_subexpression(pair, col):
     curr_val = (col[ind1], col[ind2])
     return can_substitute(pair[0], curr_val)
 
-
-def eliminate(coeff_set):
+def get_cols(coeff_set):
     # Turn into column form
     rank = len(coeff_set[0])
-    cols = [[x[i] for x in coeff_set] for i in range(rank)]
+    return [[x[i] for x in coeff_set] for i in range(rank)]
+
+def eliminate(coeff_set):
+    cols = get_cols(coeff_set) 
     match_dict = {}
 
     for i, col in enumerate(cols):
