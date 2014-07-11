@@ -71,7 +71,7 @@ void Axpy(Scalar *C, Scalar *A, int n, Scalar alpha) {
 print axpy_funcs
 
 
-for i in range(1, 26):
+for i in range(1, 40):
     print write_Add(i)
     print ''
 print '\n#endif  // _ALL_ADDS_HPP_'

@@ -32,7 +32,7 @@ def write_Add(num_adds):
 print '#ifndef _ALL_SLOW_ADDS_HPP_'
 print '#define _ALL_SLOW_ADDS_HPP_\n'
 
-for i in range(1, 26):
+for i in range(1, 40):
     print write_Add(i)
     print ''
 print '\n#endif  // _ALL_ADDS_HPP_'

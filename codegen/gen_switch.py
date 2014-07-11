@@ -8,7 +8,7 @@ def write_add_type(func_name, i):
     add += 'C);'
     print add
 
-for i in range(1, 25):
+for i in range(1, 40):
     print 'case %d:' % (i)
     print 'switch (add_type) {'
 
@@ -23,6 +23,3 @@ for i in range(1, 25):
     print 'break;'
     print '}\n'
     print 'break;'
-
-    
-
