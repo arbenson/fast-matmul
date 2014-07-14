@@ -55,7 +55,7 @@ def main():
         coeff_file = sys.argv[1]
         dims = tuple([int(d) for d in sys.argv[2].split(',')])
     except:
-        raise Exception('USAGE: python count_reads_writes.py coeff_file m,k,n')
+        raise Exception('USAGE: python counts.py coeff_file m,k,n')
 
     coeffs = convert.read_coeffs(coeff_file)
     coeffs[2] = subexpr_elim.transpose(coeffs[2])
