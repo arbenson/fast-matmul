@@ -366,7 +366,7 @@ void UpdateAddDaxpy(Matrix<Scalar>& A1,
 }
 
 // Code-generated additions
-#include "all_adds.hpp"
+#include "all_at_once_adds.hpp"
 
 
 // Template declarations

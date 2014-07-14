@@ -9,10 +9,6 @@
 #include "common.hpp"
 #include "mkl.h"
 
-#include "linalg.hpp"
-#include "blas_adds.hpp"
-#include "slow_adds.hpp"
-
 enum {
   MANUAL=0,
   MKL_DAXPY,

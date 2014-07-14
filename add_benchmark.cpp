@@ -10,8 +10,8 @@
 #include "mkl.h"
 
 #include "linalg.hpp"
-#include "daxpy_adds.hpp"
-#include "slow_adds.hpp"
+#include "daxpy_pairwise_adds.hpp"
+#include "manual_pairwise_adds.hpp"
 
 enum {
   ADD = 0,

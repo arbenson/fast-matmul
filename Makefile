@@ -7,7 +7,7 @@ MODE = sequential
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
-INCLUDES := -I$(MKLROOT)/include -I./algorithms -I.
+INCLUDES := -I$(MKLROOT)/include -I./algorithms -I./linalg -I.
 BLAS_LAPACK_LIB =  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread
 MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread
 
