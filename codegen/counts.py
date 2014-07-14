@@ -7,7 +7,7 @@ import subexpr_elim
 This script takes a coefficient file (eliminated or not) and counts the number
 of additions, read, and writes performed by the algorithm. Example usage:
 
-     python count_reads_writes.py eliminated/grey333-23-125 3,3,3
+     python counts.py eliminated/grey333-23-125 3,3,3
 
 This produces the following output:
 
@@ -54,13 +54,10 @@ def main():
     try:
         coeff_file = sys.argv[1]
         dims = tuple([int(d) for d in sys.argv[2].split(',')])
-        print 'Reading coefficients for %d x %d x %d matrix' % dims
     except:
         raise Exception('USAGE: python count_reads_writes.py coeff_file m,k,n')
 
     coeffs = convert.read_coeffs(coeff_file)
-    print 'nnz = ', subexpr_elim.num_nonzero(coeffs)
-
     coeffs[2] = subexpr_elim.transpose(coeffs[2])
 
     counts = [base_counts(coeffs[i]) for i in range(3)]
