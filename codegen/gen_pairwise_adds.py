@@ -12,7 +12,7 @@ C += alpha3 * A3
   .
 C += alphaN * AN
 
-Each add can be a manually written for loop or a DAXPY add.  Use:
+Each add can be a manually written for loop or a DAXPY add.  Usage:
 
 python gen_pairwise_adds.py manual
 

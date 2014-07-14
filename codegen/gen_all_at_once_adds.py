@@ -1,5 +1,12 @@
 '''
 This script automatically generates the Add() functions needed by the fast algorithms.
+The adds are the "all-at-once" version, i.e., the adds look like:
+
+C = alpha1 * A1 + alpha2 * A2 + ... + alphaN * AN
+
+Usage:
+
+python gen_all_at_once_adds.py
 '''
 
 def write_Add(num_adds):
@@ -46,12 +53,12 @@ def write_Add(num_adds):
     return add
 
 
-print '#ifndef _ALL_ADDS_HPP_'
-print '#define _ALL_ADDS_HPP_\n'
+print '#ifndef _ALL_ADDS_ALL_AT_ONCE_HPP_'
+print '#define _ALL_ADDS_ALL_AT_ONCE_HPP_\n'
 for i in range(1, 40):
     print write_Add(i)
     print ''
-print '\n#endif  // _ALL_ADDS_HPP_'
+print '\n#endif  // _ALL_ADDS_ALL_AT_ONCE_HPP_'
 
 
 
