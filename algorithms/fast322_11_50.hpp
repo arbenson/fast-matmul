@@ -68,11 +68,11 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp task
     {
 #endif
-    Matrix<Scalar> M1B(B11.m(), B11.n());
-    Add(B12, B22, Scalar(1.0), Scalar(1.0), M1B);
+    Matrix<Scalar> T1(B11.m(), B11.n());
+    Add(B12, B22, Scalar(1.0), Scalar(1.0), T1);
     M1.UpdateMultiplier(Scalar(-1));
-    FastMatmulRecursive(A11, M1B, M1, numsteps - 1, x);
-    M1B.deallocate();
+    FastMatmulRecursive(A11, T1, M1, numsteps - 1, x);
+    T1.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -86,13 +86,13 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp task
     {
 #endif
-    Matrix<Scalar> M2A(A11.m(), A11.n());
-    Add(A11, A31, Scalar(1.0), Scalar(1.0), M2A);
-    Matrix<Scalar> M2B(B11.m(), B11.n());
-    Add(B11, B12, Scalar(1.0), Scalar(1.0), M2B);
-    FastMatmulRecursive(M2A, M2B, M2, numsteps - 1, x);
-    M2A.deallocate();
-    M2B.deallocate();
+    Matrix<Scalar> S2(A11.m(), A11.n());
+    Add(A11, A31, Scalar(1.0), Scalar(1.0), S2);
+    Matrix<Scalar> T2(B11.m(), B11.n());
+    Add(B11, B12, Scalar(1.0), Scalar(1.0), T2);
+    FastMatmulRecursive(S2, T2, M2, numsteps - 1, x);
+    S2.deallocate();
+    T2.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -106,10 +106,10 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp task
     {
 #endif
-    Matrix<Scalar> M3B(B11.m(), B11.n());
-    Add(B21, B22, Scalar(1.0), Scalar(1.0), M3B);
-    FastMatmulRecursive(A22, M3B, M3, numsteps - 1, x);
-    M3B.deallocate();
+    Matrix<Scalar> T3(B11.m(), B11.n());
+    Add(B21, B22, Scalar(1.0), Scalar(1.0), T3);
+    FastMatmulRecursive(A22, T3, M3, numsteps - 1, x);
+    T3.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -123,10 +123,10 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp task
     {
 #endif
-    Matrix<Scalar> M4A(A11.m(), A11.n());
-    Add(A11, A12, Scalar(-1.0), Scalar(1.0), M4A);
-    FastMatmulRecursive(M4A, B22, M4, numsteps - 1, x);
-    M4A.deallocate();
+    Matrix<Scalar> S4(A11.m(), A11.n());
+    Add(A11, A12, Scalar(-1.0), Scalar(1.0), S4);
+    FastMatmulRecursive(S4, B22, M4, numsteps - 1, x);
+    S4.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -140,13 +140,13 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp task
     {
 #endif
-    Matrix<Scalar> M5A(A11.m(), A11.n());
-    Add(A11, A32, Scalar(1.0), Scalar(1.0), M5A);
-    Matrix<Scalar> M5B(B11.m(), B11.n());
-    Add(B11, B22, Scalar(-1.0), Scalar(1.0), M5B);
-    FastMatmulRecursive(M5A, M5B, M5, numsteps - 1, x);
-    M5A.deallocate();
-    M5B.deallocate();
+    Matrix<Scalar> S5(A11.m(), A11.n());
+    Add(A11, A32, Scalar(1.0), Scalar(1.0), S5);
+    Matrix<Scalar> T5(B11.m(), B11.n());
+    Add(B11, B22, Scalar(-1.0), Scalar(1.0), T5);
+    FastMatmulRecursive(S5, T5, M5, numsteps - 1, x);
+    S5.deallocate();
+    T5.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -176,13 +176,13 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp task
     {
 #endif
-    Matrix<Scalar> M7A(A11.m(), A11.n());
-    Add(A12, A32, Scalar(1.0), Scalar(1.0), M7A);
-    Matrix<Scalar> M7B(B11.m(), B11.n());
-    Add(B21, B22, Scalar(1.0), Scalar(1.0), M7B);
-    FastMatmulRecursive(M7A, M7B, M7, numsteps - 1, x);
-    M7A.deallocate();
-    M7B.deallocate();
+    Matrix<Scalar> S7(A11.m(), A11.n());
+    Add(A12, A32, Scalar(1.0), Scalar(1.0), S7);
+    Matrix<Scalar> T7(B11.m(), B11.n());
+    Add(B21, B22, Scalar(1.0), Scalar(1.0), T7);
+    FastMatmulRecursive(S7, T7, M7, numsteps - 1, x);
+    S7.deallocate();
+    T7.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -210,10 +210,10 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp task
     {
 #endif
-    Matrix<Scalar> M9B(B11.m(), B11.n());
-    Add(B11, B21, Scalar(1.0), Scalar(1.0), M9B);
-    FastMatmulRecursive(A32, M9B, M9, numsteps - 1, x);
-    M9B.deallocate();
+    Matrix<Scalar> T9(B11.m(), B11.n());
+    Add(B11, B21, Scalar(1.0), Scalar(1.0), T9);
+    FastMatmulRecursive(A32, T9, M9, numsteps - 1, x);
+    T9.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -227,10 +227,10 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp task
     {
 #endif
-    Matrix<Scalar> M10A(A11.m(), A11.n());
-    Add(A31, A32, Scalar(-1.0), Scalar(1.0), M10A);
-    FastMatmulRecursive(M10A, B11, M10, numsteps - 1, x);
-    M10A.deallocate();
+    Matrix<Scalar> S10(A11.m(), A11.n());
+    Add(A31, A32, Scalar(-1.0), Scalar(1.0), S10);
+    FastMatmulRecursive(S10, B11, M10, numsteps - 1, x);
+    S10.deallocate();
 #ifdef _CILK_
     }();
 #elif defined _OPEN_MP_
@@ -285,6 +285,6 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #endif
 }
 
-}
-  // namespace grey322_11_50
+}  // namespace grey322_11_50
+
 #endif  // _grey322_11_50_HPP_

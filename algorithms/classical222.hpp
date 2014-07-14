@@ -196,6 +196,6 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #endif
 }
 
-}
-  // namespace classical222_8_24
+}  // namespace classical222_8_24
+
 #endif  // _classical222_8_24_HPP_

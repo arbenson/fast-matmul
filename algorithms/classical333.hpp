@@ -501,6 +501,6 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int num
 #endif
 }
 
-}
-  // namespace classical333_27_81
+}  // namespace classical333_27_81
+
 #endif  // _classical333_27_81_HPP_
