@@ -228,6 +228,28 @@ void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, Scalar beta=S
 		   C.data(), C.stride(), alpha, beta);
 }
 
+// C <-- alpha * A + C
+//template <typename Scalar>
+void AxpyWrap(double *C, double *A, int n, double alpha) {
+  int incx = 1;
+  int incy = 1;
+  daxpy_(&n, &alpha, A, &incx, C, &incy);
+}
+
+// C <-- alpha * A + C
+//template <typename Scalar>
+void AxpyWrap(float *C, float *A, int n, float alpha) {
+  int incx = 1;
+  int incy = 1;
+  saxpy_(&n, &alpha, A, &incx, C, &incy);
+}
+
+template<typename Scalar>
+void Axpy(Scalar *C, Scalar *A, int n, Scalar alpha) {
+  AxpyWrap(C, A, n, alpha);
+}
+
+
 // max_ij |a_ij - b_ij| / |a_ij|
 template<typename Scalar>
 double MaxRelativeDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
@@ -303,6 +325,44 @@ void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
 	  dataC[i + j * strideC] = -a;
 	}
   }
+}
+
+// C += alpha1 * A1
+template <typename Scalar>
+void UpdateAdd(Matrix<Scalar>& A1,
+			   Scalar alpha1,
+			   Matrix<Scalar>& C) {
+    const int strideA1 = A1.stride();
+    Scalar *dataA1 = A1.data();
+
+    const int strideC = C.stride();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        const Scalar *dataA_curr = dataA1 + j * strideA1;
+		const Scalar *dataC_curr = dataC + j * strideC;
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i] += alpha1 * dataA_curr[i];
+        }
+    }
+}
+
+// C += alpha1 * A1
+template <typename Scalar>
+void UpdateAddDaxpy(Matrix<Scalar>& A1,
+					Scalar alpha1,
+					Matrix<Scalar>& C) {
+    const int strideA1 = A1.stride();
+    Scalar *dataA1 = A1.data();
+
+    const int strideC = C.stride();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        Scalar *dataA_curr = dataA1 + j * strideA1;
+		Scalar *dataC_curr = dataC + j * strideC;
+		Axpy(dataC_curr, dataA_curr, C.m(), alpha1);
+    }
 }
 
 // Code-generated additions
