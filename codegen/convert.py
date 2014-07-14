@@ -106,9 +106,6 @@ def read_coeffs(filename):
             else:
                 curr_group.append([val for val in line.split()])
     coeffs.append(curr_group)
-    # There should be three sets of coefficients: one for each matrix.
-    if (len(coeffs) != 3):
-        raise Exception('Expected three sets of coefficients!')
     return coeffs
 
 
@@ -124,6 +121,10 @@ def main():
         raise Exception('USAGE: python convert.py coeff_file m,k,n out_file s1,s2,s3')
 
     coeffs = read_coeffs(coeff_file)
+    # There should be three sets of coefficients: one for each matrix.
+    if (len(coeffs) != 3):
+        raise Exception('Expected three sets of coefficients!')
+
 
     if perm == (0, 1, 2):
         new_coeffs = [replicate(coeffs[i]) for i in range(3)]
