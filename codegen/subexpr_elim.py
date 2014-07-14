@@ -44,13 +44,14 @@ def find_subexpression(pair, col):
     curr_val = (col[ind1], col[ind2])
     return can_substitute(pair[0], curr_val)
 
-def get_cols(coeff_set):
-    # Turn into column form
-    rank = len(coeff_set[0])
-    return [[x[i] for x in coeff_set] for i in range(rank)]
+
+def transpose(coeffs):
+    ''' Given a list of rows, return a list of columns. '''
+    return [[x[i] for x in coeffs] for i in range(len(coeffs[0]))]
+
 
 def eliminate(coeff_set):
-    cols = get_cols(coeff_set) 
+    cols = transpose(coeff_set) 
     match_dict = {}
 
     for i, col in enumerate(cols):
@@ -87,6 +88,7 @@ def remove_duplicates(match_dict):
 
 def update_coeffs(coeff_set, elim_info):
     ''' Given the eliminations, create the new coefficients. '''
+
     def zero_col(col_ind, coeff_ind1, coeff_ind2):
         coeff_set[coeff_ind1][col_ind] = '0'
         coeff_set[coeff_ind2][col_ind] = '0'
@@ -139,11 +141,8 @@ def update_coeffs(coeff_set, elim_info):
     return all_sub_coeffs, num_subs
 
 
-def transpose(coeffs):
-    return [[x[i] for x in coeffs] for i in range(len(coeffs[0]))]
-
-
 def num_nonzero(coeffs):
+    ''' Returns the total number of nonzero in the coefficients. '''
     return sum([1 for coeff_set in coeffs for coeff_line in coeff_set \
                   for coeff in coeff_line if gen.is_nonzero(coeff)])
 
