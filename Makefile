@@ -17,7 +17,7 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 #DEBUG := -g -Wall
 OPT := -O3
 CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 -DNDEBUG
-CFLAGS += -g
+#CFLAGS += -g
 
 ifeq ($(MODE), cilk)
   CFLAGS += -D_CILK_
@@ -55,6 +55,9 @@ default : all
 all : $(TARGETS)
 
 add_benchmark: add_benchmark.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+daxpy_benchmark: daxpy_benchmark.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 benchmark: benchmark.o
