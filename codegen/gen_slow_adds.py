@@ -23,7 +23,7 @@ def write_Add(num_adds):
     add += '    Add(A1, alpha1, C);\n'
     # Subsequent adds: C = alpha_i A_i + C
     for i in range(2, num_adds + 1):
-        add += '    Add(A%d, C, alpha%d, Scalar(1.0), C);\n' % (i, i)
+        add += '    UpdateAdd(A%d, alpha%d, C);\n' % (i, i)
     add += '}\n'
 
     return add
@@ -35,4 +35,4 @@ print '#define _ALL_SLOW_ADDS_HPP_\n'
 for i in range(1, 40):
     print write_Add(i)
     print ''
-print '\n#endif  // _ALL_ADDS_HPP_'
+print '\n#endif  // _ALL_SLOW_ADDS_HPP_'
