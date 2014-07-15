@@ -121,6 +121,7 @@ public:
   }
 
   void UpdateMultiplier(Scalar multiplier) { multiplier_ *= multiplier; }
+  void set_multiplier(Scalar multiplier) { multiplier_ = multiplier; }
   Scalar multiplier() { return multiplier_; }
 
 private:
@@ -340,9 +341,9 @@ void UpdateAdd(Matrix<Scalar>& A1,
 
     for (int j = 0; j < C.n(); ++j) {
         const Scalar *dataA_curr = dataA1 + j * strideA1;
-		const Scalar *dataC_curr = dataC + j * strideC;
+		Scalar *dataC_curr = dataC + j * strideC;
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i] += alpha1 * dataA_curr[i];
+            dataC_curr[i] += alpha1 * dataA_curr[i];
         }
     }
 }
@@ -362,6 +363,19 @@ void UpdateAddDaxpy(Matrix<Scalar>& A1,
         Scalar *dataA_curr = dataA1 + j * strideA1;
 		Scalar *dataC_curr = dataC + j * strideC;
 		Axpy(dataC_curr, dataA_curr, C.m(), alpha1);
+    }
+}
+
+// C := 0
+template <typename Scalar>
+void ZeroOut(Matrix<Scalar>& C) {
+    const int strideC = C.stride();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+		    dataC[i + j * strideC] = Scalar(0);
+        }
     }
 }
 
