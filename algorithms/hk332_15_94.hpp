@@ -13,16 +13,14 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     // Update multipliers
     C.UpdateMultiplier(A.multiplier());
     C.UpdateMultiplier(B.multiplier());
-    A.UpdateMultiplier(Scalar(1.0));
-    B.UpdateMultiplier(Scalar(1.0));
+    A.set_multiplier(Scalar(1.0));
+    B.set_multiplier(Scalar(1.0));
     // Base case for recursion
     if (numsteps == 0) {
         Gemm(A, B, C);
         return;
     }
 
-    int A_row_step = A.m() / 3;
-    int A_col_step = A.n() / 3;
     Matrix<Scalar> A11 = A.Subblock(3, 3, 1, 1);
     Matrix<Scalar> A12 = A.Subblock(3, 3, 1, 2);
     Matrix<Scalar> A13 = A.Subblock(3, 3, 1, 3);
@@ -32,16 +30,12 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     Matrix<Scalar> A31 = A.Subblock(3, 3, 3, 1);
     Matrix<Scalar> A32 = A.Subblock(3, 3, 3, 2);
     Matrix<Scalar> A33 = A.Subblock(3, 3, 3, 3);
-    int B_row_step = B.m() / 3;
-    int B_col_step = B.n() / 2;
     Matrix<Scalar> B11 = B.Subblock(3, 2, 1, 1);
     Matrix<Scalar> B12 = B.Subblock(3, 2, 1, 2);
     Matrix<Scalar> B21 = B.Subblock(3, 2, 2, 1);
     Matrix<Scalar> B22 = B.Subblock(3, 2, 2, 2);
     Matrix<Scalar> B31 = B.Subblock(3, 2, 3, 1);
     Matrix<Scalar> B32 = B.Subblock(3, 2, 3, 2);
-    int C_row_step = C.m() / 3;
-    int C_col_step = C.n() / 2;
     Matrix<Scalar> C11 = C.Subblock(3, 2, 1, 1);
     Matrix<Scalar> C12 = C.Subblock(3, 2, 1, 2);
     Matrix<Scalar> C21 = C.Subblock(3, 2, 2, 1);
@@ -53,21 +47,21 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     // These are the intermediate matrices.
     // We define them here so that they can be used
     // inside the lambda functions for Cilk.
-    Matrix<Scalar> M1(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M2(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M3(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M4(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M5(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M6(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M7(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M8(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M9(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M10(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M11(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M12(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M13(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M14(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M15(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M1(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M2(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M3(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M4(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M5(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M6(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M7(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M8(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M9(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M10(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M11(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M12(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M13(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M14(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M15(C11.m(), C11.n(), C.multiplier());
 
 
     // M1 = (1.0 * A11 + -1.0 * A12 + 1.0 * A31) * (1.0 * B12)
@@ -348,8 +342,6 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #elif defined _OPEN_MP_
         # pragma omp taskwait
 #endif
-
-
     Add(M1, M2, M4, M5, M6, M8, Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(-1.0), Scalar(1.0), C11);
     Add(M1, M6, M8, M10, M15, Scalar(1.0), Scalar(-1.0), Scalar(1.0), Scalar(1.0), Scalar(-1.0), C12);
     Add(M3, M4, M11, M13, M14, Scalar(1.0), Scalar(1.0), Scalar(-1.0), Scalar(-1.0), Scalar(-1.0), C21);

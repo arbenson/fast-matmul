@@ -13,16 +13,14 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     // Update multipliers
     C.UpdateMultiplier(A.multiplier());
     C.UpdateMultiplier(B.multiplier());
-    A.UpdateMultiplier(Scalar(1.0));
-    B.UpdateMultiplier(Scalar(1.0));
+    A.set_multiplier(Scalar(1.0));
+    B.set_multiplier(Scalar(1.0));
     // Base case for recursion
     if (numsteps == 0) {
         Gemm(A, B, C);
         return;
     }
 
-    int A_row_step = A.m() / 4;
-    int A_col_step = A.n() / 2;
     Matrix<Scalar> A11 = A.Subblock(4, 2, 1, 1);
     Matrix<Scalar> A12 = A.Subblock(4, 2, 1, 2);
     Matrix<Scalar> A21 = A.Subblock(4, 2, 2, 1);
@@ -31,8 +29,6 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     Matrix<Scalar> A32 = A.Subblock(4, 2, 3, 2);
     Matrix<Scalar> A41 = A.Subblock(4, 2, 4, 1);
     Matrix<Scalar> A42 = A.Subblock(4, 2, 4, 2);
-    int B_row_step = B.m() / 2;
-    int B_col_step = B.n() / 4;
     Matrix<Scalar> B11 = B.Subblock(2, 4, 1, 1);
     Matrix<Scalar> B12 = B.Subblock(2, 4, 1, 2);
     Matrix<Scalar> B13 = B.Subblock(2, 4, 1, 3);
@@ -41,8 +37,6 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     Matrix<Scalar> B22 = B.Subblock(2, 4, 2, 2);
     Matrix<Scalar> B23 = B.Subblock(2, 4, 2, 3);
     Matrix<Scalar> B24 = B.Subblock(2, 4, 2, 4);
-    int C_row_step = C.m() / 4;
-    int C_col_step = C.n() / 4;
     Matrix<Scalar> C11 = C.Subblock(4, 4, 1, 1);
     Matrix<Scalar> C12 = C.Subblock(4, 4, 1, 2);
     Matrix<Scalar> C13 = C.Subblock(4, 4, 1, 3);
@@ -92,32 +86,32 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     // These are the intermediate matrices.
     // We define them here so that they can be used
     // inside the lambda functions for Cilk.
-    Matrix<Scalar> M1(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M2(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M3(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M4(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M5(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M6(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M7(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M8(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M9(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M10(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M11(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M12(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M13(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M14(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M15(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M16(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M17(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M18(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M19(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M20(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M21(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M22(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M23(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M24(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M25(C_row_step, C_col_step, C.multiplier());
-    Matrix<Scalar> M26(C_row_step, C_col_step, C.multiplier());
+    Matrix<Scalar> M1(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M2(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M3(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M4(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M5(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M6(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M7(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M8(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M9(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M10(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M11(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M12(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M13(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M14(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M15(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M16(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M17(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M18(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M19(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M20(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M21(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M22(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M23(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M24(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M25(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M26(C11.m(), C11.n(), C.multiplier());
 
 
     // M1 = (1.0 * A_X1 + 1.0 * A_X2 + 1.0 * A_X3 + 1.0 * A_X4) * (1.0 * B_X1)
@@ -608,28 +602,52 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
     Matrix<Scalar> M_X1(C11.m(), C11.n());
     Add(M6, M11, Scalar(-1.0), Scalar(1.0), M_X1);
+
+
     Matrix<Scalar> M_X2(C11.m(), C11.n());
     Add(M12, M13, Scalar(1.0), Scalar(1.0), M_X2);
+
+
     Matrix<Scalar> M_X3(C11.m(), C11.n());
     Add(M2, M8, Scalar(1.0), Scalar(0.5), M_X3);
+
+
     Matrix<Scalar> M_X4(C11.m(), C11.n());
     Add(M19, M26, Scalar(-0.5), Scalar(1.0), M_X4);
+
+
     Matrix<Scalar> M_X5(C11.m(), C11.n());
     Add(M2, M16, Scalar(1.0), Scalar(0.5), M_X5);
+
+
     Matrix<Scalar> M_X6(C11.m(), C11.n());
     Add(M20, M22, Scalar(0.5), Scalar(-1.0), M_X6);
+
+
     Matrix<Scalar> M_X7(C11.m(), C11.n());
     Add(M4, M7, Scalar(0.5), Scalar(-0.5), M_X7);
+
+
     Matrix<Scalar> M_X8(C11.m(), C11.n());
     Add(M5, M11, Scalar(1.0), Scalar(-1.0), M_X8);
+
+
     Matrix<Scalar> M_X9(C11.m(), C11.n());
     Add(M10, M18, Scalar(-0.5), Scalar(0.5), M_X9);
+
+
     Matrix<Scalar> M_X10(C11.m(), C11.n());
     Add(M14, M15, Scalar(-1.0), Scalar(-1.0), M_X10);
+
+
     Matrix<Scalar> M_X11(C11.m(), C11.n());
     Add(M16, M17, Scalar(-0.5), Scalar(0.5), M_X11);
+
+
     Matrix<Scalar> M_X12(C11.m(), C11.n());
     Add(M5, M23, Scalar(-1.0), Scalar(1.0), M_X12);
+
+
     Matrix<Scalar> M_X13(C11.m(), C11.n());
     Add(M18, M25, Scalar(0.5), Scalar(1.0), M_X13);
 
