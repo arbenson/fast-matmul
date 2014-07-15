@@ -2,7 +2,6 @@
 #include "fast424_26_257.hpp"
 
 #include <stdlib.h>
-#include <time.h>
 
 #include <chrono>
 #include <random>
@@ -13,21 +12,9 @@ int main(int argc, char **argv) {
     int n = 4000;
     int numsteps = 1;
 
-    srand (time(NULL));
-
-    Matrix<double> A(m, k);
-    Matrix<double> B(k, n);
+    Matrix<double> A = RandomMatrix<double>(m, k);
+    Matrix<double> B = RandomMatrix<double>(k, n);
     Matrix<double> C1(m, n), C2(m, n);
-    for (int j = 0; j < A.n(); ++j) {
-        for (int i = 0; i < A.m(); ++i) {
-            A.data()[i + j * A.stride()] = ((double) rand() / RAND_MAX) * 1024;
-        }
-    }
-    for (int j = 0; j < B.n(); ++j) {
-        for (int i = 0; i < B.m(); ++i) {
-            B.data()[i + j * B.stride()] = ((double) rand() / RAND_MAX) * 1024;
-        }
-    }
 
     std::cout << "Running classical gemm..." << std::endl;
     auto t1 = std::chrono::high_resolution_clock::now();
