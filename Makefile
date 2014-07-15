@@ -32,6 +32,8 @@ ifeq ($(MODE), openmp)
 endif
 
 SRC = benchmark.cpp \
+      add_benchmark.cpp \
+      daxpy_benchmark.cpp \
       bini322.cpp \
       classical.cpp \
       dgemm_curve_par.cpp \
@@ -43,7 +45,8 @@ SRC = benchmark.cpp \
       fast432.cpp \
       fast433.cpp \
       hk332.cpp \
-      strassen.cpp
+      strassen.cpp \
+      fast_lu.cpp
 
 OBJECTS = $(SRC:.cpp=.o)
 TARGETS = $(OBJECTS:.o=)
@@ -53,6 +56,9 @@ default : all
 
 .PHONY : all
 all : $(TARGETS)
+
+fast_lu: fast_lu.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 add_benchmark: add_benchmark.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
