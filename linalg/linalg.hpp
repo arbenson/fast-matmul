@@ -1,23 +1,13 @@
 #ifndef _LINALG_HPP_
 #define _LINALG_HPP_
 
+#include "blas.hpp"
+
 #include <assert.h>
 #include <time.h>
 
 #include <cmath>
 #include <iostream>
-
-extern "C" {
-  void dgemm_(char *transa, char *transb, int *m, int *n, int *k,
-			  double *alpha, double *a, int *lda, double *b, int *ldb,
-			  double *beta, double *c, int *ldc);
-  void sgemm_(char *transa, char *transb, int *m, int *n, int *k,
-			  float *alpha, float *a, int *lda, float *b, int *ldb,
-			  float *beta, float *c, int *ldc);
-
-  void daxpy_(int *n, double *alpha, double *A, int *incx, double *C, int *incy);
-  void saxpy_(int *n, float *alpha, float *A, int *incx, float *C, int *incy);
-}
 
 // This is a basic templated matrix class.
 // It stores the matrix data, the stride, and the dimensions.
@@ -36,7 +26,7 @@ public:
 	m_ = that.m();
 	n_ = that.n();
 	stride_ = that.stride();
-	multiplier_ = that.Multiplier();
+	multiplier_ = that.multiplier();
 	allocate();
 	Scalar *that_data = that.data();
 	for (int i = 0; i < m_ * n_; ++i) {
@@ -189,6 +179,7 @@ void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
   }
 }
 
+
 template <typename Scalar>
 std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
   Scalar *data = mat.data();
@@ -202,6 +193,7 @@ std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
   return os;
 }
 
+
 // Wrapper for dgemm called by templated gemm.
 void GemmWrap(int m, int n, int k, double *A, int lda, double *B, int ldb, double *C,
 			  int ldc, double alpha, double beta) {
@@ -211,6 +203,7 @@ void GemmWrap(int m, int n, int k, double *A, int lda, double *B, int ldb, doubl
 		 C, &ldc);
 }
 
+
 // Wrapper for sgemm called by templated gemm.
 void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb,
 			  float *C, int ldc, float alpha, float beta) {
@@ -219,6 +212,7 @@ void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb,
   sgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
 		 C, &ldc);
 }
+
 
 // C <-- A * B + beta * C
 template <typename Scalar>
@@ -230,21 +224,22 @@ void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, Scalar beta=S
 		   C.data(), C.stride(), alpha, beta);
 }
 
+
 // C <-- alpha * A + C
-//template <typename Scalar>
 void AxpyWrap(double *C, double *A, int n, double alpha) {
   int incx = 1;
   int incy = 1;
   daxpy_(&n, &alpha, A, &incx, C, &incy);
 }
 
+
 // C <-- alpha * A + C
-//template <typename Scalar>
 void AxpyWrap(float *C, float *A, int n, float alpha) {
   int incx = 1;
   int incy = 1;
   saxpy_(&n, &alpha, A, &incx, C, &incy);
 }
+
 
 template<typename Scalar>
 void Axpy(Scalar *C, Scalar *A, int n, Scalar alpha) {
