@@ -2,6 +2,7 @@
 #define _LINALG_HPP_
 
 #include <assert.h>
+#include <time.h>
 
 #include <cmath>
 #include <iostream>
@@ -348,6 +349,7 @@ void UpdateAdd(Matrix<Scalar>& A1,
     }
 }
 
+
 // C += alpha1 * A1
 template <typename Scalar>
 void UpdateAddDaxpy(Matrix<Scalar>& A1,
@@ -366,6 +368,7 @@ void UpdateAddDaxpy(Matrix<Scalar>& A1,
     }
 }
 
+
 // C := 0
 template <typename Scalar>
 void ZeroOut(Matrix<Scalar>& C) {
@@ -378,6 +381,23 @@ void ZeroOut(Matrix<Scalar>& C) {
         }
     }
 }
+
+
+// Generate a matrix with random uniform entries on [0, 1024]
+template <typename Scalar>
+Matrix<Scalar> RandomMatrix(int m, int n) {
+  srand (time(NULL));
+  Matrix<Scalar> A(m, n);
+  // We can use fancier C++11 random number generators, but they are
+  // still slow on some systems.
+  for (int j = 0; j < A.n(); ++j) {
+    for (int i = 0; i < A.m(); ++i) {
+      A.data()[i + j * A.stride()] = ((double) rand() / RAND_MAX) * 1024;
+    }
+  }  
+  return A;
+}
+
 
 // Code-generated additions
 #include "all_at_once_adds.hpp"
