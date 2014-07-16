@@ -146,6 +146,62 @@ def get_suffix(ind, num_rows, num_cols):
         return '_X%d' % (ind - num_rows * num_cols + 1)
 
 
+def is_one(x):
+    return x == 1 or x == 1.0 or x == '1' or x == '1.0'
+
+
+def is_negone(x):
+    return x == -1 or x == -1.0 or x == '-1' or x == '-1.0'
+
+
+def write_add(header, coeffs, index, mat_name):
+    ''' Write the add function for a set of coefficients.  This is a custom add
+    function used for a single multiply in a single fast algorithm.
+
+    coeffs is the set of coefficients used for the add
+    '''
+    nonzero_coeffs = [coeff for coeff in coeffs if is_nonzero(coeff)]
+    nnz = len(nonzero_coeffs)
+    write_line(header, 0, '// C := ')
+    write_line(header, 0, 'template <typename Scalar>')
+    add = '%s_Add%d(' % (mat_name, index + 1)
+    add += ', '.join(['Matrix<Scalar>& %s%d' % (mat_name, i + 1) for i in range(nnz)])
+    add += ', Matrix<Scalar>& C) {'
+    write_line(header, 0, add)
+
+    # All of the strides
+    for i in range(nnz):
+        write_line(header, 1, 'const int stride%s%d = %s%d.stride();' % (mat_name, i + 1, mat_name, i + 1))
+    write_line(header, 1, 'const int strideC = C.stride();\n')
+
+    # All of the data pointers
+    for i in range(nnz):
+        write_line(header, 1, 'const Scalar *data%s%d = %s%d.data();' % (mat_name, i + 1, mat_name, i + 1))
+    write_line(header, 1, 'Scalar *dataC = C.data();\n')
+
+    write_line(header, 1, 'for (int j = 0; j < C.n(); ++j) {')
+    write_line(header, 2, 'for (int i = 0; i < C.m(); ++i) {')
+    add = 'dataC[i + j * strideC] ='
+    for i, coeff in enumerate(nonzero_coeffs):
+        if is_one(coeff):
+            str = ' data%s%d[i + j * stride%s%d]' % (mat_name, i + 1, mat_name, i + 1)
+        elif is_negone(coeff):
+            str = ' -data%s%d[i + j * stride%s%d]' % (mat_name, i + 1, mat_name, i + 1)
+        else:
+            str = ' Scalar(%s) * data%s[i + j * stride%s%d]' % (coeff, mat_name, mat_name, i + 1)
+        if i != 0 and not is_negone(coeff):
+            str  = ' +' + str
+
+        add += str
+    
+    add += ';'
+    write_line(header, 3,add)
+    write_line(header, 2, '}')
+    write_line(header, 1, '}')
+    write_line(header, 0, '}')
+
+
+
 def streaming_additions(header, coeff_set, mat_name, tmp_name, num_rows, num_cols):
     num_subblocks = len(coeff_set)
 
@@ -408,6 +464,16 @@ def write_output(header, ind, coeffs, mat_dims, rank):
     write_line(header, 1, add)
 
 
+def create_add_functions(header, coeffs):
+    for i in xrange(len(coeffs[0][0])):
+        a_coeffs = [c[i] for c in coeffs[0]]
+        b_coeffs = [c[i] for c in coeffs[1]]
+        write_add(header, a_coeffs, i, 'S')
+        write_line(header, 0, '\n')
+        write_add(header, b_coeffs, i, 'T')
+        write_line(header, 0, '\n')
+
+
 def main():
     try:
         coeff_file = sys.argv[1]
@@ -444,6 +510,8 @@ def main():
 
         # Wrap in a namespace
         write_line(header, 0, 'namespace %s {\n' % namespace_name)
+
+        #create_add_functions(header, coeffs)
 
         # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
@@ -559,6 +627,7 @@ def main():
         write_line(header, 0, '}  // namespace %s\n' % namespace_name)
         # end of file
         write_line(header, 0, '#endif  // _%s_HPP_' % namespace_name)
+
 
 if __name__ == '__main__':
     main()
