@@ -14,9 +14,11 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 # for compiling with Linux BLAS
 #BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
+DEFINES := -D_INTEL_MKL_ -DNDEBUG
+
 #DEBUG := -g -Wall
 OPT := -O3
-CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 -DNDEBUG
+CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 $(DEFINES)
 #CFLAGS += -g
 
 ifeq ($(MODE), cilk)
