@@ -3,6 +3,10 @@
 
 #include "blas.hpp"
 
+#ifdef _INTEL_MKL_
+# include <mkl.h>
+#endif
+
 #include <assert.h>
 #include <time.h>
 
@@ -97,16 +101,26 @@ public:
   int m() { return m_; }
   int n() { return n_; }
 
+  //  template <typename Scalar>
   void allocate() {
 	if (n_ > 0 && m_ > 0) {
+#ifdef _INTEL_MKL_
+	  int alignment = 32;
+	  data_ = static_cast<Scalar *>(mkl_malloc(sizeof(Scalar) * m_ * n_, alignment));
+#else
 	  data_ = new Scalar[m_ * n_];
+#endif
 	  assert(data_ != NULL);
 	}
   }
 
   void deallocate() {
 	if (data_ != NULL) {
+#ifdef _INTEL_MKL_
+	  mkl_free(data_);
+#else
 	  delete[] data_;
+#endif
 	  data_ = NULL;
 	}
   }
@@ -134,6 +148,12 @@ private:
 };
 
 
+// Perform one step of dynamic peeling in the multiplication
+//            C = A * B
+// This should be called once at the end of a recursive fast
+// matrix multiplication function.
+// dim1, dim2, and dim3 refer to the <m, k, n> dimensions of
+// the fast algorithm (m x k times k x n base case).
 template<typename Scalar>
 void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 					int dim1, int dim2, int dim3) {
@@ -180,6 +200,7 @@ void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 }
 
 
+// Streams out all entries in the matrix.
 template <typename Scalar>
 std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
   Scalar *data = mat.data();
@@ -241,6 +262,7 @@ void AxpyWrap(float *C, float *A, int n, float alpha) {
 }
 
 
+// C <-- alpha * A + C.  n is the number of entries.
 template<typename Scalar>
 void Axpy(Scalar *C, Scalar *A, int n, Scalar alpha) {
   AxpyWrap(C, A, n, alpha);
@@ -269,6 +291,7 @@ double MaxRelativeDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
   return max_rel_diff;
 }
 
+
 // Frobenius norm difference: \| A - B \|_F
 template<typename Scalar>
 double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
@@ -288,6 +311,7 @@ double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
   }
   return sqrt(diff);
 }
+
 
 // Frobenius norm \| A \|_F
 template<typename Scalar>
@@ -323,6 +347,7 @@ void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
 	}
   }
 }
+
 
 // C += alpha1 * A1
 template <typename Scalar>
@@ -397,15 +422,5 @@ Matrix<Scalar> RandomMatrix(int m, int n) {
 // Code-generated additions
 #include "all_at_once_adds.hpp"
 
-
-// Template declarations
-template void Gemm(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C, double beta);
-template void Gemm(Matrix<float>& A, Matrix<float>& B, Matrix<float>& C, float beta);
-
-template void Negate(Matrix<double>& A, Matrix<double>& C);
-template void Negate(Matrix<float>& A, Matrix<float>& C);
-
-template double FrobeniusDiff(Matrix<double>& A, Matrix<double>& B);
-template double FrobeniusDiff(Matrix<float>& A, Matrix<float>& B);
 
 #endif  // _LINALG_HPP_
