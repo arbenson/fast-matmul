@@ -199,7 +199,7 @@ void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_
   size_t ind = num_trials / 2 + 1;
   std::cout << " " << m << " " << k << " " << n << " "
 			<< numsteps << " " << times[ind] << " "
-			<< "; ...";
+			<< "; ";
 
   if (run_check) {
 	// Test for correctness.
@@ -313,39 +313,39 @@ void OuterProductBenchmark() {
   std::cout << "MKL" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 0, MKL);
 
-  std::cout << "STRASSEN (1)" << std::endl;
+  std::cout << "STRASSEN_1" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, STRASSEN);
-  std::cout << "STRASSEN (2)" << std::endl;
+  std::cout << "STRASSEN_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, STRASSEN);
 
-  std::cout << "FAST323_15_103 (1)" << std::endl;
+  std::cout << "FAST323_15_103_1" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST323_15_103);
-  std::cout << "FAST323_15_103 (2)" << std::endl;
+  std::cout << "FAST323_15_103_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST323_15_103);
 
-  std::cout << "FAST323_15_89 (1)" << std::endl;
+  std::cout << "FAST323_15_89_1" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST323_15_89);
-  std::cout << "FAST323_15_89 (2)" << std::endl;
+  std::cout << "FAST323_15_89_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST323_15_89);
 
-  std::cout << "HK323_15_94 (1)" << std::endl;
+  std::cout << "HK323_15_94_1" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, HK323_15_94);
-  std::cout << "HK323_15_94 (2)" << std::endl;
+  std::cout << "HK323_15_94_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, HK323_15_94);
 
-  std::cout << "HK323_15_84 (1)" << std::endl;
+  std::cout << "HK323_15_84_1" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, HK323_15_84);
-  std::cout << "HK323_15_84 (2)" << std::endl;
+  std::cout << "HK323_15_84_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, HK323_15_84);
 
-  std::cout << "FAST424_26_257 (1)" << std::endl;
+  std::cout << "FAST424_26_257_1" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST424_26_257);
-  std::cout << "FAST424_26_257 (2)" << std::endl;
+  std::cout << "FAST424_26_257_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST424_26_257);
 
-  std::cout << "FAST424_26_206 (1)" << std::endl;
+  std::cout << "FAST424_26_206_1" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST424_26_206);
-  std::cout << "FAST424_26_206 (2)" << std::endl;
+  std::cout << "FAST424_26_206_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST424_26_206);
 }
 
@@ -384,43 +384,43 @@ void SquareBenchmark(int which) {
     BenchmarkSet(dim, dim, dim, 0, MKL);
     break;
   case 2:
-    std::cout << "SMIRNOV333_23_139 (1)" << std::endl;
+    std::cout << "SMIRNOV333_23_139_1" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, SMIRNOV333_23_139);
 	break;
   case 3:
-    std::cout << "SMIRNOV333_23_139 (2)" << std::endl;
+    std::cout << "SMIRNOV333_23_139_2" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, SMIRNOV333_23_139);
     break;
   case 4:
-    std::cout << "FAST333_23_152 (1)" << std::endl;
+    std::cout << "FAST333_23_152_1" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, FAST333_23_152);
 	break;
   case 5:
-    std::cout << "FAST333_23_152 (2)" << std::endl;
+    std::cout << "FAST333_23_152_2" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, FAST333_23_152);
     break;
   case 6:
-    std::cout << "FAST333_23_221 (1)" << std::endl;
+    std::cout << "FAST333_23_221_1" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, FAST333_23_221);
 	break;
   case 7:
-    std::cout << "FAST333_23_221 (2)" << std::endl;
+    std::cout << "FAST333_23_221_2" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, FAST333_23_221);
 	break;
   case 8:
-    std::cout << "FAST333_23_125 (1)" << std::endl;
+    std::cout << "FAST333_23_125_1" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, FAST333_23_125);
 	break;
   case 9:
-    std::cout << "FAST333_23_125 (2)" << std::endl;
+    std::cout << "FAST333_23_125_2" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, FAST333_23_125);
 	break;
   case 10:
-    std::cout << "SMIRNOV333_23_128 (1)" << std::endl;
+    std::cout << "SMIRNOV333_23_128_1" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, SMIRNOV333_23_128);
 	break;
   case 11:
-    std::cout << "SMIRNOV333_23_128 (2)" << std::endl;
+    std::cout << "SMIRNOV333_23_128_2" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, SMIRNOV333_23_128);
 	break;
   }
@@ -429,6 +429,8 @@ void SquareBenchmark(int which) {
 
 
 int main(int argc, char **argv) {
+  //TestSuite();
+  //return 0;
   int which = atoi(argv[1]);
   if (which == 0) {
 	OuterProductBenchmark();
