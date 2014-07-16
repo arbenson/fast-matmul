@@ -56,11 +56,11 @@ void Pivot(Matrix<Scalar>& A, std::vector<int>& pivots) {
 template<typename Scalar>
 void FastLU(Matrix<Scalar>& A, int blocksize) {
   std::vector<int> all_pivots(A.m());
-  for (int i = 0; i < A.m() && A.m() - i >= 2 * blocksize; i += blocksize) {
+  for (int i = 0; i < A.m() && A.m() - i >= blocksize; i += blocksize) {
 	Matrix<double> Panel = A.Submatrix(i, i, A.m() - i, blocksize);
 	std::vector<int> pivots;
 	LU(Panel, pivots);
-	//Pivot(A, pivots);
+	Pivot(A, pivots);
 
 	Matrix<double> L21 = Panel.Submatrix(i, 0, A.m() - i - blocksize, blocksize);
 	Matrix<double> A22 = A.Submatrix(i, i, A.m() - i, A.n() - i);
@@ -94,14 +94,6 @@ int main(int argc, char **argv) {
   Matrix<double> A = RandomMatrix<double>(n, n);
   Matrix<double> B = A;
 
-  auto t3 = std::chrono::high_resolution_clock::now();
-  FastLU(B, 1600);
-  auto t4 = std::chrono::high_resolution_clock::now();
-  std::cout << "Fast LU took "
-			<< std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()
-			<< " milliseconds"
-			<< std::endl;
-
   auto t1 = std::chrono::high_resolution_clock::now();
   std::vector<int> pivots(A.m());
   LU(A, pivots);
@@ -111,4 +103,11 @@ int main(int argc, char **argv) {
 			<< " milliseconds"
 			<< std::endl;
 
+  auto t3 = std::chrono::high_resolution_clock::now();
+  FastLU(B, 1600);
+  auto t4 = std::chrono::high_resolution_clock::now();
+  std::cout << "Fast LU took "
+			<< std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()
+			<< " milliseconds"
+			<< std::endl;
 }
