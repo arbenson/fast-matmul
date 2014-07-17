@@ -38,105 +38,25 @@ The coefficients are listed in row-major order.
 See the file 'strassen' for an example.
 '''
 
-def write_matmul(header, ind, a_coeffs, b_coeffs, dims, streaming_adds=False, c_coeffs=None):
-    ''' Write a matrix multiplication call.
-
-    header is the file to which we are writing
-    ind is which multiplication this is (1, 2, 3, ...)
-    a_coeffs are the coefficients for the A matrix
-    b_coeffs are the coefficients for the B matrix
-    dims is a 3-tuple of the dimensions of the algorithm (m, k, n)
-    streaming_adds is a boolean indicated whether or not we are using streaming
-                   additions
-    c_coeffs is the set of coefficients describing how the temporary M matrix
-             updates the output solution.  This is used for the limited memory version.
-             If c_coeffs is None, then no updates are made(i.e., the updates will be
-             made at the end).  If c_coeffs is not None, then the M matrix will be
-             re-used.
-    '''
-    limited_memory = (c_coeffs != None)
-    comment = '// M%d = (' % (ind + 1)
-    comment += ' + '.join([str(c) + ' * A%s' % get_suffix(i, dims[0], dims[1]) \
-                               for i, c in enumerate(a_coeffs) if is_nonzero(c)])
-    comment += ') * ('
-    comment += ' + '.join([str(c) + ' * B%s' % get_suffix(i, dims[1], dims[2]) \
-                               for i, c in enumerate(b_coeffs) if is_nonzero(c)])
-    comment += ')'
-    write_line(header, 1, comment)
-
-    # Shared memory wrappers (start)
-    write_line(header, 0, '#ifdef _CILK_')
-    write_line(header, 1, 'cilk_spawn [&] {')
-    write_line(header, 0, '#elif defined _OPEN_MP_')
-    write_line(header, 0, '# pragma omp task')
-    write_line(header, 1, '{')
-    write_line(header, 0, '#endif')
-
-    def addition_str(ind, coeffs, mat_name, tmp_name, mat_dims):
-        if need_tmp_mat(coeffs):
-            tmp_mat = '%s%d' % (tmp_name, ind + 1)
-            if limited_memory:
-                tmp_mat = tmp_name
-            return addition(header, tmp_mat, mat_name, mat_dims, coeffs, limited_memory)
-        return None
-
-    if not streaming_adds:
-        add = addition_str(ind, a_coeffs, 'A', 'S', (dims[0], dims[1]))
-        if add != None:
-            write_line(header, 1, add)
-        
-        add = addition_str(ind, b_coeffs, 'B', 'T', (dims[1], dims[2]))
-        if add != None:
-            write_line(header, 1, add)
-
-    def subblock_name(coeffs, mat_name, tmp_name, mat_dims):
-        if need_tmp_mat(coeffs):
-            if limited_memory:
-                return tmp_name
-            return '%s%d' % (tmp_name, ind + 1)
-        else:
-            loc = [i for i, c in enumerate(coeffs) if is_nonzero(c)]
-            return mat_name + get_suffix(loc[0], mat_dims[0], mat_dims[1])
-
-    res_mat = 'M%d' % (ind + 1)
-    if limited_memory:
-        res_mat = 'M'
-
-    # Handle the case where there is one non-zero coefficient and it is
-    # not equal to one.  We need to propagate the multiplier information.
-    a_nonzero_coeffs = filter(is_nonzero, a_coeffs)
-    b_nonzero_coeffs = filter(is_nonzero, b_coeffs)
-    if len(a_nonzero_coeffs) == 1 and a_nonzero_coeffs[0] != 1:
-        write_line(header, 1, '%s.UpdateMultiplier(Scalar(%d));' % (res_mat, a_nonzero_coeffs[0]))
-
-    if len(b_nonzero_coeffs) == 1 and b_nonzero_coeffs[0] != 1:
-        write_line(header, 1, '%s.UpdateMultiplier(Scalar(%d));' % (res_mat, b_nonzero_coeffs[0]))
+def is_one(x):
+    return x == 1 or x == 1.0 or x == '1' or x == '1.0'
 
 
-    # Finally, write the actual call to matrix multiply.
-    write_line(header, 1, 'FastMatmulRecursive(%s, %s, %s, numsteps - 1, x);' % (
-            subblock_name(a_coeffs, 'A', 'S', (dims[0], dims[1])),
-            subblock_name(b_coeffs, 'B', 'T', (dims[1], dims[2])),
-            res_mat))
-    
-    if need_tmp_mat(a_coeffs) and not limited_memory:
-        write_line(header, 1, 'S%d.deallocate();' % (ind + 1))
-    if need_tmp_mat(b_coeffs) and not limited_memory:
-        write_line(header, 1, 'T%d.deallocate();' % (ind + 1))
+def is_negone(x):
+    return x == -1 or x == -1.0 or x == '-1' or x == '-1.0'
 
-    if limited_memory:
-        for i, coeff in enumerate(c_coeffs):
-            if is_nonzero(coeff):
-                out_block = 'C%s' % get_suffix(i, dims[0], dims[2])
-                write_line(header, 1, 'UpdateAddDaxpy(M, Scalar(%d), %s);' % (coeff, out_block))
-    
 
-    # Shared memory wrappers (end)
-    write_line(header, 0, '#ifdef _CILK_')
-    write_line(header, 1, '}();')
-    write_line(header, 0, '#elif defined _OPEN_MP_')
-    write_line(header, 1, '}')
-    write_line(header, 0, '#endif\n')
+def is_nonzero(x):
+    return x != 0 and x != '0'
+
+
+def num_nonzero(arr):
+    ''' Returns number of non-zero entries in the array arr. '''
+    return len(filter(is_nonzero, arr))
+
+
+def need_tmp_mat(coeffs):
+    return num_nonzero(coeffs) > 1
 
 
 def parse_coeff(coeff):
@@ -200,6 +120,10 @@ def write_line(header, num_indent, code):
     header.write(' ' * 4 * num_indent + code + '\n')
 
 
+def write_break(header, num_breaks=1):
+    header.write('\n' * num_breaks)
+
+
 def write_subblocks(header, mat_name, dim1, dim2):
     ''' Write subblocks of matrix of dimensions dim1 x dim2.
     mat_name is the name of the matrix, e.g., 'A' or 'B'
@@ -209,20 +133,6 @@ def write_subblocks(header, mat_name, dim1, dim2):
         for j in xrange(dim2):
             write_line(header, 1, 'Matrix<Scalar> %s%d%d = %s.Subblock(%d, %d, %d, %d);' %
                        (mat_name, i + 1, j + 1, mat_name, dim1, dim2, i + 1, j + 1))
-
-
-
-def is_nonzero(x):
-    return x != 0 and x != '0'
-
-
-def num_nonzero(arr):
-    ''' Returns number of non-zero entries in the array arr. '''
-    return len(filter(is_nonzero, arr))
-
-
-def need_tmp_mat(coeffs):
-    return num_nonzero(coeffs) > 1
 
 
 def linear2cart(ind, cols):
@@ -245,14 +155,6 @@ def get_suffix(ind, num_rows, num_cols):
     else:
         # These correspond to matrices formed by subexpression elimination.
         return '_X%d' % (ind - num_rows * num_cols + 1)
-
-
-def is_one(x):
-    return x == 1 or x == 1.0 or x == '1' or x == '1.0'
-
-
-def is_negone(x):
-    return x == -1 or x == -1.0 or x == '-1' or x == '-1.0'
 
 
 def streaming_additions(header, coeff_set, mat_name, tmp_name, num_rows, num_cols):
@@ -380,7 +282,7 @@ def write_substitutions(header, mat_name, mat_dims, coeffs):
     if len(coeffs) == 0 or len(coeffs[0]) == 0:
         return
 
-    write_line(header, 1, '\n')
+    write_break(header)
     for i, coeff_line in enumerate(coeffs):
         tmp_mat_name = '%s_X%d' % (mat_name, i + 1)
         write_line(header, 1,
@@ -423,7 +325,7 @@ def write_output_add(header, index, coeffs, mat_dims, rank):
     write_line(header, 1, add)
 
 
-def write_add(header, coeffs, index, mat_name):
+def write_add_func(header, coeffs, index, mat_name):
     ''' Write the add function for a set of coefficients.  This is a custom add
     function used for a single multiply in a single fast algorithm.
 
@@ -441,12 +343,12 @@ def write_add(header, coeffs, index, mat_name):
     # All of the strides
     for i in range(nnz):
         write_line(header, 1, 'const int stride%s%d = %s%d.stride();' % (mat_name, i + 1, mat_name, i + 1))
-    write_line(header, 1, 'const int strideC = C.stride();\n')
+    write_line(header, 1, 'const int strideC = C.stride();')
 
     # All of the data pointers
     for i in range(nnz):
         write_line(header, 1, 'const Scalar *data%s%d = %s%d.data();' % (mat_name, i + 1, mat_name, i + 1))
-    write_line(header, 1, 'Scalar *dataC = C.data();\n')
+    write_line(header, 1, 'Scalar *dataC = C.data();')
 
     write_line(header, 1, 'for (int j = 0; j < C.n(); ++j) {')
     write_line(header, 2, 'for (int i = 0; i < C.m(); ++i) {')
@@ -543,40 +445,127 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims):
     write_line(header, 0, '#endif\n')
 
 
-def create_add_functions(header, coeffs):
-    for i in xrange(len(coeffs[0][0])):
-        a_coeffs = [coeff[i] for coeff in coeffs[0]]
-        b_coeffs = [coeff[i] for coeff in coeffs[1]]
-        write_add(header, a_coeffs, i + 1, 'S')
-        write_line(header, 0, '\n')
-        write_add(header, b_coeffs, i + 1, 'T')
-        write_line(header, 0, '\n')
 
-    coeffs_transpose = subexpr_elim.transpose(coeffs[2])
-    for i in xrange(len(coeffs[2])):
-        c_coeffs = [coeff[i] for coeff in coeffs_transpose]
-        write_add(header, c_coeffs, i + 1, 'M')
-        write_line(header, 0, '\n')
+
+def create_add_functions(header, coeffs):
+    ''' Generate all of the custom add functions.
+
+    header is the file to which we are writing
+    coeffs is the set of all coefficients
+    '''
+    
+    def all_adds(coeffs, name):
+        for i, coeff_set in enumerate(coeffs):
+            write_add_func(header, coeff_set, i + 1, name)
+            write_break(header)
+
+    # S matrices formed from A subblocks
+    all_adds(subexpr_elim.transpose(coeffs[0]), 'S')
+
+    # T matrices formed from B subblocks
+    all_adds(subexpr_elim.transpose(coeffs[1]), 'T')
+
+    # Output C formed from multiplications
+    all_adds(coeffs[2], 'M')
+
+    # If there was CSE, create more add functions for the temporary matrices.
+    if len(coeffs) > 3:
+        all_adds(coeffs[3], 'SX')
+
+    if len(coeffs) > 4:
+        all_adds(coeffs[4], 'TX')
+
+    if len(coeffs) > 5:
+        all_adds(coeffs[5], 'MX')
 
 
 def create_multiplications(header, coeffs, dims):
+    ''' Generate all of the recursive multiplication calls.
+
+    header is the file to which we are writing
+    coeffs is the set of all coefficients
+    dims is a 3-tuple (m, k, n) of the dimensions of the problem
+    '''
+
     for i in xrange(len(coeffs[0][0])):
         a_coeffs = [c[i] for c in coeffs[0]]
         b_coeffs = [c[i] for c in coeffs[1]]
         write_multiply(header, i + 1, a_coeffs, b_coeffs, dims)
 
 
+def write_input_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
+    # If it is empty, skip it
+    if len(coeffs) == 0:
+        return
+
+    tmp_mat_name = '%s_X%d' % (mat_name, index)
+    write_line(header, 1, 'Matrix<Scalar> %s(%s11.m(), %s11.n());' % (tmp_mat_name, mat_name, mat_name))
+    add = '%s%d(' % (add_name, index)
+    for i, coeff in enumerate(coeffs):
+        if is_nonzero(coeff):
+            add += '%s%s, ' % (mat_name, get_suffix(i, mat_dims[0], mat_dims[1]))
+    add += tmp_mat_name + ');'
+    write_line(header, 1, add)
+
+
+def write_output_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
+    # If it is empty, skip it
+    if len(coeffs) == 0:
+        return
+
+    tmp_mat_name = '%s_X%d' % (mat_name, index)
+    write_line(header, 1, 'Matrix<Scalar> %s(%s1.m(), %s1.n());' % (tmp_mat_name, mat_name, mat_name))
+    add = '%s%d(' % (add_name, index)
+    for i, coeff in enumerate(coeffs):
+        if is_nonzero(coeff):
+            add += '%s%d, ' % (mat_name, index)
+    add += tmp_mat_name + ');'
+    write_line(header, 1, add)
+
+
+def create_input_cse_subs(header, coeffs, dims):
+    ''' Generate all of the substitutions for CSE for S and T matrices.
+
+    header is the file to which we are writing
+    coeffs is the set of all coefficients
+    dims is a 3-tuple of the algorithm dimensions (m, k, n)
+    '''
+    if len(coeffs) > 3:
+        for i, coeff_line in enumerate(coeffs[3]):
+            write_input_cse_sub(header, coeff_line, i + 1, 'A', 'SX_Add', (dims[0], dims[1]))
+
+    write_break(header)
+    if len(coeffs) > 4:
+        for i, coeff_line in enumerate(coeffs[4]):
+            write_input_cse_sub(header, coeff_line, i + 1, 'B', 'TX_Add', (dims[1], dims[2]))
+
+    write_break(header)
+
+
+def create_output_cse_subs(header, coeffs, dims):
+    ''' Generate all of the substitutions for CSE for M matrices.
+
+    header is the file to which we are writing
+    coeffs is the set of all coefficients
+    dims is a 3-tuple of the algorithm dimensions (m, k, n)
+    '''
+
+    if len(coeffs) > 5:
+        for i, coeff_line in enumerate(coeffs[5]):
+            write_output_cse_sub(header, coeff_line, i + 1, 'M', 'MX_Add', (dims[0], dims[2]))
+
+
 def create_output(header, coeffs, dims):
     # TODO: remove streaming_adds
     streaming_adds = False
     num_multiplies = len(coeffs[0][0])
-    if len(coeffs) >= 6:
-        for i, row in enumerate(coeffs[5]):
-            write_output_sub(header, i + 1, row, (dims[0], dims[2]), num_multiplies)
-            write_line(header, 0, '\n')
+    #if len(coeffs) >= 6:
+    #    for i, row in enumerate(coeffs[5]):
+    #        write_output_sub(header, i + 1, row, (dims[0], dims[2]), num_multiplies)
+    #        write_break(header)
             
     if streaming_adds:
-        write_line(header, 0, '\n')
+        write_break(header)
         streaming_output_additions(header, coeffs[2], 'C', 'M', dims[0], dims[2])
     else:
         for i, row in enumerate(coeffs[2]):
@@ -612,10 +601,10 @@ def main():
         # header information
         write_line(header, 0, '#ifndef _%s_HPP_' % namespace_name)
         write_line(header, 0, '#define _%s_HPP_' % namespace_name)
-        write_line(header, 0, '\n')
+        write_break(header)
         write_line(header, 0, '// This is an automatically generated file from gen.py.')
         write_line(header, 0, '#include "common.hpp"')
-        write_line(header, 0, '\n')
+        write_break(header)
 
         # Wrap in a namespace
         write_line(header, 0, 'namespace %s {\n' % namespace_name)
@@ -649,18 +638,15 @@ def main():
         write_subblocks(header, 'A', dims[0], dims[1])
         write_subblocks(header, 'B', dims[1], dims[2])
         write_subblocks(header, 'C', dims[0], dims[2])
+        write_break(header)
 
         if streaming_adds:
-            write_line(header, 0, '\n')
+            write_break(header)
             streaming_additions(header, coeffs[0], 'A', 'S', dims[0], dims[1])
-            write_line(header, 0, '\n')
+            write_break(header)
             streaming_additions(header, coeffs[1], 'B', 'T', dims[1], dims[2])
     
-        # Generate substitution matrices
-        if len(coeffs) > 3:
-            write_substitutions(header, 'A', (dims[0], dims[1]), coeffs[3])
-            write_substitutions(header, 'B', (dims[1], dims[2]), coeffs[4])
-        
+
         num_multiplies = len(coeffs[0][0])
         print '%d matrix multiplications...' % num_multiplies
 
@@ -670,14 +656,18 @@ def main():
             write_line(header, 1, 'Matrix<Scalar> S(A11.m(), A11.n());')
             write_line(header, 1, 'Matrix<Scalar> T(B11.m(), B11.n());')
         else:
-            write_line(header, 0, '\n')
+            write_break(header)
             write_line(header, 1, '// These are the intermediate matrices.')
             write_line(header, 1, '// We define them here so that they can be used')
             write_line(header, 1, '// inside the lambda functions for Cilk.')
             
             for i in xrange(num_multiplies):
                 write_line(header, 1, 'Matrix<Scalar> M%d(C11.m(), C11.n(), C.multiplier());' % (i + 1))
-            write_line(header, 0, '\n')
+            write_break(header)
+
+        # Handle common subexpression elimination on the S and T matrices.
+        create_input_cse_subs(header, coeffs, dims)
+        write_break(header)
 
         # Write the mutliplication blocks.
         create_multiplications(header, coeffs, dims)
@@ -688,10 +678,13 @@ def main():
         write_line(header, 0, '# pragma omp taskwait')
         write_line(header, 0, '#endif')
 
+        # Handle common subexpression elimination on the M matrices.
+        create_output_cse_subs(header, coeffs, dims)
+
         # Add the multiplication blocks to form the output.
         create_output(header, coeffs, dims)
 
-        write_line(header, 0, '\n')
+        write_break(header)
         write_line(header, 1, '// Handle edge cases with dynamic peeling')
         write_line(header, 1, 'DynamicPeeling(A, B, C, %d, %d, %d);' % dims)
 
