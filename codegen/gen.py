@@ -384,7 +384,7 @@ def write_substitutions(header, mat_name, mat_dims, coeffs):
     for i, coeff_line in enumerate(coeffs):
         tmp_mat_name = '%s_X%d' % (mat_name, i + 1)
         write_line(header, 1,
-                   addition(header, tmp_mat_name, mat_name, mat_dims, coeff_line))
+                   addition(tmp_mat_name, mat_name, mat_dims, coeff_line))
 
 
 def output_addition(output_mat, coeffs, mat_dims, rank):
