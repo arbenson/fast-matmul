@@ -410,8 +410,6 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims):
     write_line(header, 0, '#endif\n')
 
 
-
-
 def create_add_functions(header, coeffs):
     ''' Generate all of the custom add functions.
 
@@ -421,8 +419,9 @@ def create_add_functions(header, coeffs):
     
     def all_adds(coeffs, name):
         for i, coeff_set in enumerate(coeffs):
-            write_add_func(header, coeff_set, i + 1, name)
-            write_break(header)
+            if len(coeff_set) > 0:
+                write_add_func(header, coeff_set, i + 1, name)
+                write_break(header)
 
     # S matrices formed from A subblocks
     all_adds(subexpr_elim.transpose(coeffs[0]), 'S')
@@ -475,7 +474,7 @@ def write_input_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
 
 def write_output_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
     # If it is empty, skip it
-    if len(coeffs) == 0:
+    if len(coeffs) == 0 or num_nonzero(coeffs) == 0:
         return
 
     tmp_mat_name = '%s_X%d' % (mat_name, index)
@@ -637,6 +636,7 @@ def main():
         write_line(header, 0, '#elif defined _OPEN_MP_')
         write_line(header, 0, '# pragma omp taskwait')
         write_line(header, 0, '#endif')
+        write_break(header)
 
         # Handle common subexpression elimination on the M matrices.
         create_output_cse_subs(header, coeffs, dims)
