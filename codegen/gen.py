@@ -263,32 +263,6 @@ def streaming_output_additions(header, coeff_set, mat_name, tmp_name, num_rows, 
     write_line(header, 1, '}')  # end j loop
 
 
-def addition(tmp_mat, mat_name, mat_dims, coeffs, limited_memory=False):
-    #if not limited_memory:
-    #    write_line(header, 1, 'Matrix<Scalar> %s(%s11.m(), %s11.n());' % (
-    #            tmp_mat, mat_name, mat_name))
-    add = 'Add('
-    for i, coeff in enumerate(coeffs):
-        if is_nonzero(coeff):
-            add += mat_name + '%s, ' % get_suffix(i, mat_dims[0], mat_dims[1])
-    for i, coeff in enumerate(coeffs):
-        if is_nonzero(coeff):
-            add += 'Scalar(%s), ' % coeff
-    return add + tmp_mat + ');'
-
-
-def write_substitutions(header, mat_name, mat_dims, coeffs):
-    # If it is empty, skip it
-    if len(coeffs) == 0 or len(coeffs[0]) == 0:
-        return
-
-    write_break(header)
-    for i, coeff_line in enumerate(coeffs):
-        tmp_mat_name = '%s_X%d' % (mat_name, i + 1)
-        write_line(header, 1,
-                   addition(tmp_mat_name, mat_name, mat_dims, coeff_line))
-
-
 def output_addition(output_mat, coeffs, mat_dims, rank):
     add = 'Add('
     for i, coeff in enumerate(coeffs):
@@ -301,15 +275,6 @@ def output_addition(output_mat, coeffs, mat_dims, rank):
         if is_nonzero(coeff):
             add += 'Scalar(%s), ' % coeff
     return add + '%s);' % output_mat
-
-
-def write_output_sub(header, index, coeffs, mat_dims, rank):
-    if len(coeffs) == 0:
-        return
-    tmp_mat = 'M_X%d' % (index)
-    write_line(header, 1, 'Matrix<Scalar> %s(C11.m(), C11.n());' % tmp_mat)
-    add = output_addition(tmp_mat, coeffs, mat_dims, rank)
-    write_line(header, 1, add)
 
 
 def write_output_add(header, index, coeffs, mat_dims, rank):
@@ -518,7 +483,7 @@ def write_output_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
     add = '%s%d(' % (add_name, index)
     for i, coeff in enumerate(coeffs):
         if is_nonzero(coeff):
-            add += '%s%d, ' % (mat_name, index)
+            add += '%s%d, ' % (mat_name, i + 1)
     add += tmp_mat_name + ');'
     write_line(header, 1, add)
 
@@ -549,7 +514,6 @@ def create_output_cse_subs(header, coeffs, dims):
     coeffs is the set of all coefficients
     dims is a 3-tuple of the algorithm dimensions (m, k, n)
     '''
-
     if len(coeffs) > 5:
         for i, coeff_line in enumerate(coeffs[5]):
             write_output_cse_sub(header, coeff_line, i + 1, 'M', 'MX_Add', (dims[0], dims[2]))
@@ -559,10 +523,6 @@ def create_output(header, coeffs, dims):
     # TODO: remove streaming_adds
     streaming_adds = False
     num_multiplies = len(coeffs[0][0])
-    #if len(coeffs) >= 6:
-    #    for i, row in enumerate(coeffs[5]):
-    #        write_output_sub(header, i + 1, row, (dims[0], dims[2]), num_multiplies)
-    #        write_break(header)
             
     if streaming_adds:
         write_break(header)
