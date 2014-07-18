@@ -1,12 +1,1099 @@
 #ifndef _grey333_23_125_HPP_
 #define _grey333_23_125_HPP_
 
-
 // This is an automatically generated file from gen.py.
 #include "common.hpp"
 
-
 namespace grey333_23_125 {
+
+template <typename Scalar>
+void S_Add1(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add2(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add3(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add4(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add5(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add6(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add7(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add8(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add9(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add10(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideS3 = S3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    const Scalar *dataS3 = S3.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] + dataS2[i + j * strideS2] -dataS3[i + j * strideS3];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add11(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add12(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] -dataS2[i + j * strideS2];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add13(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add14(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add15(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add16(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add17(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add18(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add19(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1] -dataS2[i + j * strideS2];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add20(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add21(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideS3 = S3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    const Scalar *dataS3 = S3.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] -dataS2[i + j * strideS2] + dataS3[i + j * strideS3];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add22(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add23(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add1(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add2(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add3(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add4(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add5(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add6(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add7(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add8(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] -dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add9(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add10(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add11(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add12(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add13(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add14(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add15(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add16(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add17(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] -dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add18(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideT3 = T3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    const Scalar *dataT3 = T3.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1] -dataT2[i + j * strideT2] + dataT3[i + j * strideT3];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add19(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] -dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add20(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add21(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add22(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add23(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add1(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3];
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add2(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideM5 = M5.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    const Scalar *dataM5 = M5.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5];
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideM5 = M5.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    const Scalar *dataM5 = M5.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5];
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add5(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add6(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideM5 = M5.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    const Scalar *dataM5 = M5.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + dataM5[i + j * strideM5];
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add7(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] -dataM4[i + j * strideM4];
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add8(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideM5 = M5.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    const Scalar *dataM5 = M5.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5];
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add9(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3];
+        }
+    }
+}
+
+template <typename Scalar>
+void SX_Add1(Matrix<Scalar>& SX1, Matrix<Scalar>& SX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideSX1 = SX1.stride();
+    const int strideSX2 = SX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataSX1 = SX1.data();
+    const Scalar *dataSX2 = SX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataSX1[i + j * strideSX1] + dataSX2[i + j * strideSX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void SX_Add2(Matrix<Scalar>& SX1, Matrix<Scalar>& SX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideSX1 = SX1.stride();
+    const int strideSX2 = SX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataSX1 = SX1.data();
+    const Scalar *dataSX2 = SX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataSX1[i + j * strideSX1] -dataSX2[i + j * strideSX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void SX_Add3(Matrix<Scalar>& SX1, Matrix<Scalar>& SX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideSX1 = SX1.stride();
+    const int strideSX2 = SX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataSX1 = SX1.data();
+    const Scalar *dataSX2 = SX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataSX1[i + j * strideSX1] -dataSX2[i + j * strideSX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void SX_Add4(Matrix<Scalar>& SX1, Matrix<Scalar>& SX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideSX1 = SX1.stride();
+    const int strideSX2 = SX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataSX1 = SX1.data();
+    const Scalar *dataSX2 = SX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataSX1[i + j * strideSX1] -dataSX2[i + j * strideSX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void SX_Add5(Matrix<Scalar>& SX1, Matrix<Scalar>& SX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideSX1 = SX1.stride();
+    const int strideSX2 = SX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataSX1 = SX1.data();
+    const Scalar *dataSX2 = SX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataSX1[i + j * strideSX1] + dataSX2[i + j * strideSX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void SX_Add6(Matrix<Scalar>& SX1, Matrix<Scalar>& SX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideSX1 = SX1.stride();
+    const int strideSX2 = SX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataSX1 = SX1.data();
+    const Scalar *dataSX2 = SX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataSX1[i + j * strideSX1] -dataSX2[i + j * strideSX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void TX_Add1(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideTX1 = TX1.stride();
+    const int strideTX2 = TX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataTX1 = TX1.data();
+    const Scalar *dataTX2 = TX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataTX1[i + j * strideTX1] -dataTX2[i + j * strideTX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void TX_Add2(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideTX1 = TX1.stride();
+    const int strideTX2 = TX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataTX1 = TX1.data();
+    const Scalar *dataTX2 = TX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataTX1[i + j * strideTX1] + dataTX2[i + j * strideTX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void TX_Add3(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideTX1 = TX1.stride();
+    const int strideTX2 = TX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataTX1 = TX1.data();
+    const Scalar *dataTX2 = TX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataTX1[i + j * strideTX1] -dataTX2[i + j * strideTX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void TX_Add4(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideTX1 = TX1.stride();
+    const int strideTX2 = TX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataTX1 = TX1.data();
+    const Scalar *dataTX2 = TX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataTX1[i + j * strideTX1] + dataTX2[i + j * strideTX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void TX_Add5(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideTX1 = TX1.stride();
+    const int strideTX2 = TX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataTX1 = TX1.data();
+    const Scalar *dataTX2 = TX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataTX1[i + j * strideTX1] -dataTX2[i + j * strideTX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void TX_Add6(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideTX1 = TX1.stride();
+    const int strideTX2 = TX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataTX1 = TX1.data();
+    const Scalar *dataTX2 = TX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataTX1[i + j * strideTX1] + dataTX2[i + j * strideTX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void TX_Add7(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideTX1 = TX1.stride();
+    const int strideTX2 = TX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataTX1 = TX1.data();
+    const Scalar *dataTX2 = TX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataTX1[i + j * strideTX1] + dataTX2[i + j * strideTX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void MX_Add1(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideMX1 = MX1.stride();
+    const int strideMX2 = MX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataMX1 = MX1.data();
+    const Scalar *dataMX2 = MX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataMX1[i + j * strideMX1] + dataMX2[i + j * strideMX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void MX_Add2(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideMX1 = MX1.stride();
+    const int strideMX2 = MX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataMX1 = MX1.data();
+    const Scalar *dataMX2 = MX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataMX1[i + j * strideMX1] -dataMX2[i + j * strideMX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void MX_Add3(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideMX1 = MX1.stride();
+    const int strideMX2 = MX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataMX1 = MX1.data();
+    const Scalar *dataMX2 = MX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataMX1[i + j * strideMX1] + dataMX2[i + j * strideMX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void MX_Add4(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideMX1 = MX1.stride();
+    const int strideMX2 = MX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataMX1 = MX1.data();
+    const Scalar *dataMX2 = MX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataMX1[i + j * strideMX1] -dataMX2[i + j * strideMX2];
+        }
+    }
+}
+
+template <typename Scalar>
+void MX_Add5(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double x=1e-8) {
+    const int strideMX1 = MX1.stride();
+    const int strideMX2 = MX2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataMX1 = MX1.data();
+    const Scalar *dataMX2 = MX2.data();
+    Scalar *dataC = C.data();
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataMX1[i + j * strideMX1] + dataMX2[i + j * strideMX2];
+        }
+    }
+}
 
 template <typename Scalar>
 void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int numsteps, double x=1e-8) {
@@ -48,36 +1135,6 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     Matrix<Scalar> C31 = C.Subblock(3, 3, 3, 1);
     Matrix<Scalar> C32 = C.Subblock(3, 3, 3, 2);
     Matrix<Scalar> C33 = C.Subblock(3, 3, 3, 3);
-    
-
-    Matrix<Scalar> A_X1(A11.m(), A11.n());
-    Add(A13, A21, Scalar(1.0), Scalar(1.0), A_X1);
-    Matrix<Scalar> A_X2(A11.m(), A11.n());
-    Add(A21, A22, Scalar(1.0), Scalar(-1.0), A_X2);
-    Matrix<Scalar> A_X3(A11.m(), A11.n());
-    Add(A31, A32, Scalar(1.0), Scalar(-1.0), A_X3);
-    Matrix<Scalar> A_X4(A11.m(), A11.n());
-    Add(A11, A31, Scalar(-1.0), Scalar(-1.0), A_X4);
-    Matrix<Scalar> A_X5(A11.m(), A11.n());
-    Add(A11, A12, Scalar(-1.0), Scalar(1.0), A_X5);
-    Matrix<Scalar> A_X6(A11.m(), A11.n());
-    Add(A23, A33, Scalar(-1.0), Scalar(-1.0), A_X6);
-    
-
-    Matrix<Scalar> B_X1(B11.m(), B11.n());
-    Add(B11, B21, Scalar(-1.0), Scalar(-1.0), B_X1);
-    Matrix<Scalar> B_X2(B11.m(), B11.n());
-    Add(B13, B23, Scalar(1.0), Scalar(1.0), B_X2);
-    Matrix<Scalar> B_X3(B11.m(), B11.n());
-    Add(B32, B33, Scalar(1.0), Scalar(-1.0), B_X3);
-    Matrix<Scalar> B_X4(B11.m(), B11.n());
-    Add(B23, B32, Scalar(-1.0), Scalar(1.0), B_X4);
-    Matrix<Scalar> B_X5(B11.m(), B11.n());
-    Add(B11, B12, Scalar(-1.0), Scalar(-1.0), B_X5);
-    Matrix<Scalar> B_X6(B11.m(), B11.n());
-    Add(B12, B22, Scalar(1.0), Scalar(1.0), B_X6);
-    Matrix<Scalar> B_X7(B11.m(), B11.n());
-    Add(B22, B23, Scalar(-1.0), Scalar(1.0), B_X7);
 
 
     // These are the intermediate matrices.
@@ -106,6 +1163,34 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     Matrix<Scalar> M21(C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M22(C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M23(C11.m(), C11.n(), C.multiplier());
+
+    Matrix<Scalar> A_X1(A11.m(), A11.n());
+    SX_Add1(A13, A21, A_X1);
+    Matrix<Scalar> A_X2(A11.m(), A11.n());
+    SX_Add2(A21, A22, A_X2);
+    Matrix<Scalar> A_X3(A11.m(), A11.n());
+    SX_Add3(A31, A32, A_X3);
+    Matrix<Scalar> A_X4(A11.m(), A11.n());
+    SX_Add4(A11, A31, A_X4);
+    Matrix<Scalar> A_X5(A11.m(), A11.n());
+    SX_Add5(A11, A12, A_X5);
+    Matrix<Scalar> A_X6(A11.m(), A11.n());
+    SX_Add6(A23, A33, A_X6);
+
+    Matrix<Scalar> B_X1(B11.m(), B11.n());
+    TX_Add1(B11, B21, B_X1);
+    Matrix<Scalar> B_X2(B11.m(), B11.n());
+    TX_Add2(B13, B23, B_X2);
+    Matrix<Scalar> B_X3(B11.m(), B11.n());
+    TX_Add3(B32, B33, B_X3);
+    Matrix<Scalar> B_X4(B11.m(), B11.n());
+    TX_Add4(B23, B32, B_X4);
+    Matrix<Scalar> B_X5(B11.m(), B11.n());
+    TX_Add5(B11, B12, B_X5);
+    Matrix<Scalar> B_X6(B11.m(), B11.n());
+    TX_Add6(B12, B22, B_X6);
+    Matrix<Scalar> B_X7(B11.m(), B11.n());
+    TX_Add7(B22, B23, B_X7);
 
 
     // M1 = (-1.0 * A12) * (1.0 * B_X1)
@@ -147,7 +1232,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> T3(B11.m(), B11.n());
-    Add(B_X2, B_X3, Scalar(1.0), Scalar(1.0), T3);
+    T_Add3(B_X2, B_X3, T3, x);
     FastMatmulRecursive(A_X1, T3, M3, numsteps - 1, x);
     T3.deallocate();
 #ifdef _CILK_
@@ -164,7 +1249,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S4(A11.m(), A11.n());
-    Add(A_X2, A_X3, Scalar(1.0), Scalar(1.0), S4);
+    S_Add4(A_X2, A_X3, S4, x);
     FastMatmulRecursive(S4, B11, M4, numsteps - 1, x);
     S4.deallocate();
 #ifdef _CILK_
@@ -181,7 +1266,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S5(A11.m(), A11.n());
-    Add(A13, A_X4, Scalar(-1.0), Scalar(1.0), S5);
+    S_Add5(A13, A_X4, S5, x);
     FastMatmulRecursive(S5, B_X2, M5, numsteps - 1, x);
     S5.deallocate();
 #ifdef _CILK_
@@ -198,7 +1283,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S6(A11.m(), A11.n());
-    Add(A33, A_X2, Scalar(1.0), Scalar(1.0), S6);
+    S_Add6(A33, A_X2, S6, x);
     FastMatmulRecursive(S6, B_X4, M6, numsteps - 1, x);
     S6.deallocate();
 #ifdef _CILK_
@@ -215,7 +1300,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> T7(B11.m(), B11.n());
-    Add(B13, B_X5, Scalar(1.0), Scalar(1.0), T7);
+    T_Add7(B13, B_X5, T7, x);
     FastMatmulRecursive(A31, T7, M7, numsteps - 1, x);
     T7.deallocate();
 #ifdef _CILK_
@@ -232,7 +1317,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> T8(B11.m(), B11.n());
-    Add(B33, B_X2, Scalar(1.0), Scalar(-1.0), T8);
+    T_Add8(B33, B_X2, T8, x);
     FastMatmulRecursive(A13, T8, M8, numsteps - 1, x);
     T8.deallocate();
 #ifdef _CILK_
@@ -264,7 +1349,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S10(A11.m(), A11.n());
-    Add(A22, A23, A_X1, Scalar(1.0), Scalar(1.0), Scalar(-1.0), S10);
+    S_Add10(A22, A23, A_X1, S10, x);
     FastMatmulRecursive(S10, B32, M10, numsteps - 1, x);
     S10.deallocate();
 #ifdef _CILK_
@@ -281,7 +1366,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> T11(B11.m(), B11.n());
-    Add(B23, B33, Scalar(-1.0), Scalar(1.0), T11);
+    T_Add11(B23, B33, T11, x);
     M11.UpdateMultiplier(Scalar(-1));
     FastMatmulRecursive(A33, T11, M11, numsteps - 1, x);
     T11.deallocate();
@@ -299,7 +1384,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S12(A11.m(), A11.n());
-    Add(A12, A21, Scalar(1.0), Scalar(-1.0), S12);
+    S_Add12(A12, A21, S12, x);
     FastMatmulRecursive(S12, B_X6, M12, numsteps - 1, x);
     S12.deallocate();
 #ifdef _CILK_
@@ -316,7 +1401,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S13(A11.m(), A11.n());
-    Add(A21, A_X6, Scalar(-1.0), Scalar(1.0), S13);
+    S_Add13(A21, A_X6, S13, x);
     M13.UpdateMultiplier(Scalar(-1));
     FastMatmulRecursive(S13, B_X3, M13, numsteps - 1, x);
     S13.deallocate();
@@ -334,9 +1419,9 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S14(A11.m(), A11.n());
-    Add(A32, A_X2, Scalar(-1.0), Scalar(1.0), S14);
+    S_Add14(A32, A_X2, S14, x);
     Matrix<Scalar> T14(B11.m(), B11.n());
-    Add(B11, B_X7, Scalar(1.0), Scalar(1.0), T14);
+    T_Add14(B11, B_X7, T14, x);
     FastMatmulRecursive(S14, T14, M14, numsteps - 1, x);
     S14.deallocate();
     T14.deallocate();
@@ -384,7 +1469,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> T17(B11.m(), B11.n());
-    Add(B21, B_X7, Scalar(1.0), Scalar(-1.0), T17);
+    T_Add17(B21, B_X7, T17, x);
     FastMatmulRecursive(A32, T17, M17, numsteps - 1, x);
     T17.deallocate();
 #ifdef _CILK_
@@ -401,7 +1486,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> T18(B11.m(), B11.n());
-    Add(B_X2, B_X3, B_X6, Scalar(-1.0), Scalar(-1.0), Scalar(1.0), T18);
+    T_Add18(B_X2, B_X3, B_X6, T18, x);
     FastMatmulRecursive(A21, T18, M18, numsteps - 1, x);
     T18.deallocate();
 #ifdef _CILK_
@@ -418,9 +1503,9 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S19(A11.m(), A11.n());
-    Add(A12, A_X4, Scalar(-1.0), Scalar(-1.0), S19);
+    S_Add19(A12, A_X4, S19, x);
     Matrix<Scalar> T19(B11.m(), B11.n());
-    Add(B23, B_X5, Scalar(1.0), Scalar(-1.0), T19);
+    T_Add19(B23, B_X5, T19, x);
     FastMatmulRecursive(S19, T19, M19, numsteps - 1, x);
     S19.deallocate();
     T19.deallocate();
@@ -438,7 +1523,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> T20(B11.m(), B11.n());
-    Add(B22, B32, Scalar(-1.0), Scalar(1.0), T20);
+    T_Add20(B22, B32, T20, x);
     FastMatmulRecursive(A_X2, T20, M20, numsteps - 1, x);
     T20.deallocate();
 #ifdef _CILK_
@@ -455,7 +1540,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S21(A11.m(), A11.n());
-    Add(A33, A_X3, A_X5, Scalar(1.0), Scalar(-1.0), Scalar(1.0), S21);
+    S_Add21(A33, A_X3, A_X5, S21, x);
     FastMatmulRecursive(S21, B23, M21, numsteps - 1, x);
     S21.deallocate();
 #ifdef _CILK_
@@ -472,7 +1557,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> S22(A11.m(), A11.n());
-    Add(A22, A32, Scalar(1.0), Scalar(1.0), S22);
+    S_Add22(A22, A32, S22, x);
     M22.UpdateMultiplier(Scalar(-1));
     FastMatmulRecursive(S22, B_X1, M22, numsteps - 1, x);
     S22.deallocate();
@@ -490,7 +1575,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     Matrix<Scalar> T23(B11.m(), B11.n());
-    Add(B31, B_X4, Scalar(1.0), Scalar(1.0), T23);
+    T_Add23(B31, B_X4, T23, x);
     FastMatmulRecursive(A33, T23, M23, numsteps - 1, x);
     T23.deallocate();
 #ifdef _CILK_
@@ -502,38 +1587,28 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #ifdef _CILK_
     cilk_sync;
 #elif defined _OPEN_MP_
-        # pragma omp taskwait
+# pragma omp taskwait
 #endif
-    Matrix<Scalar> M_X1(C11.m(), C11.n());
-    Add(M3, M8, Scalar(1.0), Scalar(1.0), M_X1);
 
-
-    Matrix<Scalar> M_X2(C11.m(), C11.n());
-    Add(M7, M9, Scalar(-1.0), Scalar(-1.0), M_X2);
-
-
-    Matrix<Scalar> M_X3(C11.m(), C11.n());
-    Add(M6, M14, Scalar(1.0), Scalar(1.0), M_X3);
-
-
-    Matrix<Scalar> M_X4(C11.m(), C11.n());
-    Add(M17, M20, Scalar(-1.0), Scalar(-1.0), M_X4);
-
-
-    Matrix<Scalar> M_X5(C11.m(), C11.n());
-    Add(M19, M21, Scalar(1.0), Scalar(1.0), M_X5);
-
-
-    Add(M1, M2, M16, Scalar(1.0), Scalar(1.0), Scalar(1.0), C11);
-    Add(M9, M12, M16, M18, M_X1, Scalar(-1.0), Scalar(1.0), Scalar(-1.0), Scalar(1.0), Scalar(1.0), C12);
-    Add(M5, M8, M19, M_X2, Scalar(-1.0), Scalar(1.0), Scalar(-1.0), Scalar(1.0), C13);
-    Add(M15, M22, M23, M_X3, M_X4, Scalar(1.0), Scalar(1.0), Scalar(-1.0), Scalar(1.0), Scalar(1.0), C21);
-    Add(M10, M18, M20, M_X1, Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(1.0), C22);
-    Add(M6, M10, M11, M13, M_X1, Scalar(1.0), Scalar(1.0), Scalar(1.0), Scalar(-1.0), Scalar(1.0), C23);
-    Add(M4, M23, M_X3, M_X4, Scalar(1.0), Scalar(1.0), Scalar(-1.0), Scalar(-1.0), C31);
-    Add(M4, M9, M20, M_X3, M_X5, Scalar(-1.0), Scalar(1.0), Scalar(-1.0), Scalar(1.0), Scalar(1.0), C32);
-    Add(M11, M_X2, M_X5, Scalar(-1.0), Scalar(-1.0), Scalar(1.0), C33);
-
+    Matrix<Scalar> M_X1(M11.m(), M11.n());
+    MX_Add1(M3, M8, M_X1);
+    Matrix<Scalar> M_X2(M11.m(), M11.n());
+    MX_Add2(M7, M9, M_X2);
+    Matrix<Scalar> M_X3(M11.m(), M11.n());
+    MX_Add3(M6, M14, M_X3);
+    Matrix<Scalar> M_X4(M11.m(), M11.n());
+    MX_Add4(M17, M20, M_X4);
+    Matrix<Scalar> M_X5(M11.m(), M11.n());
+    MX_Add5(M19, M21, M_X5);
+    M_Add1(M1, M2, M16, C11, x);
+    M_Add2(M9, M12, M16, M18, M_X1, C12, x);
+    M_Add3(M5, M8, M19, M_X2, C13, x);
+    M_Add4(M15, M22, M23, M_X3, M_X4, C21, x);
+    M_Add5(M10, M18, M20, M_X1, C22, x);
+    M_Add6(M6, M10, M11, M13, M_X1, C23, x);
+    M_Add7(M4, M23, M_X3, M_X4, C31, x);
+    M_Add8(M4, M9, M20, M_X3, M_X5, C32, x);
+    M_Add9(M11, M_X2, M_X5, C33, x);
 
     // Handle edge cases with dynamic peeling
     DynamicPeeling(A, B, C, 3, 3, 3);
