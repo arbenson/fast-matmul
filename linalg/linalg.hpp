@@ -419,8 +419,4 @@ Matrix<Scalar> RandomMatrix(int m, int n) {
 }
 
 
-// Code-generated additions
-#include "all_at_once_adds.hpp"
-
-
 #endif  // _LINALG_HPP_
