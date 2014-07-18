@@ -347,14 +347,14 @@ def streaming_additions(header, coeff_set, mat_name, tmp_name, mat_dims, is_outp
 def create_streaming_input_adds(header, coeffs, dims):
     num_multiplies = len(coeffs[0][0])
     write_break(header)
-    if len(coeffs) > 4:
+    if len(coeffs) > 3 and len(coeffs[3][0]) > 0:
         sub_coeffs = coeffs[3]
     else:
         sub_coeffs = None
     streaming_additions(header, coeffs[0], 'A', 'S', (dims[0], dims[1]), False,
                         num_multiplies, sub_coeffs)
 
-    if len(coeffs) > 5:
+    if len(coeffs) > 4  and len(coeffs[4][0]) > 0:
         sub_coeffs = coeffs[4]
     else:
         sub_coeffs = None
@@ -627,7 +627,7 @@ def create_output(header, coeffs, dims, streaming_adds):
     num_multiplies = len(coeffs[0][0])
 
     if streaming_adds:
-        if len(coeffs) > 5:
+        if len(coeffs) > 5 and len(coeffs[5][0]) > 0:
             sub_coeffs = coeffs[5]
         else:
             sub_coeffs = None
