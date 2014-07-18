@@ -81,19 +81,10 @@ enum {
 // The median of five trials is printed to std::cout.
 // If run_check is true, then it also
 void SingleBenchmark(int m, int k, int n, int numsteps, int algorithm, bool run_check=false) {
-  Matrix<double> A(m, k);
-  Matrix<double> B(k, n);
+  Matrix<double> A = RandomMatrix<double>(m, k);
+  Matrix<double> B = RandomMatrix<double>(k, n);
   Matrix<double> C1(m, n);
-  for (int j = 0; j < A.n(); ++j) {
-	for (int i = 0; i < A.m(); ++i) {
-	  A.data()[i + j * A.stride()] = ((double) rand() / RAND_MAX) * 1024;
-	}
-  }
-  for (int j = 0; j < B.n(); ++j) {
-	for (int i = 0; i < B.m(); ++i) {
-	  B.data()[i + j * B.stride()] = ((double) rand() / RAND_MAX) * 1024;
-	}
-  }
+
   // Run a set number of trials and pick the median time.
   int num_trials = 5;
   std::vector<double> times(num_trials);
@@ -305,11 +296,12 @@ void RectangularBenchmarks() {
 
 void OuterProductBenchmark() {
   std::vector<int> m_vals;
-  for (int i = 1600; i <= 8000; i += 100) {
+  for (int i = 1600; i <= 12000; i += 400) {
 	m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 1600);
 
+#if 0
   std::cout << "MKL" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 0, MKL);
 
@@ -337,16 +329,28 @@ void OuterProductBenchmark() {
   BenchmarkSet(m_vals, k_vals, m_vals, 1, HK323_15_84);
   std::cout << "HK323_15_84_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, HK323_15_84);
+#endif
+
+#if 0
+  std::cout << "FAST424_26_257_lm_1" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST424_26_257_lm);
 
   std::cout << "FAST424_26_257_1" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST424_26_257);
+
+  std::cout << "FAST424_26_257_lm_2" << std::endl;
+  BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST424_26_257_lm);
+
   std::cout << "FAST424_26_257_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST424_26_257);
+#endif
 
+#if 0
   std::cout << "FAST424_26_206_1" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 1, FAST424_26_206);
   std::cout << "FAST424_26_206_2" << std::endl;
   BenchmarkSet(m_vals, k_vals, m_vals, 2, FAST424_26_206);
+#endif
 }
 
 void DgemmCurve() {
@@ -370,67 +374,30 @@ void ShortFatSquareBenchmark() {
 
 
 void SquareBenchmark(int which) {
-#if 0
   std::vector<int> dim;
-  for (int i = 6200; i <= 8000; i += 200) {
+  for (int i = 2000; i <= 7600; i += 400) {
 	dim.push_back(i);
   }
-#endif
-  std::vector<int> dim = {4000};
+#if 0
+    std::cout << "FAST333_23_152_lm_1" << std::endl;
+    BenchmarkSet(dim, dim, dim, 1, FAST333_23_152_lm);
 
-  switch (which) {
-  case 1:
-    std::cout << "MKL" << std::endl;
-    BenchmarkSet(dim, dim, dim, 0, MKL);
-    break;
-  case 2:
-    std::cout << "SMIRNOV333_23_139_1" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, SMIRNOV333_23_139);
-	break;
-  case 3:
-    std::cout << "SMIRNOV333_23_139_2" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, SMIRNOV333_23_139);
-    break;
-  case 4:
     std::cout << "FAST333_23_152_1" << std::endl;
     BenchmarkSet(dim, dim, dim, 1, FAST333_23_152);
-	break;
-  case 5:
+
+    std::cout << "FAST333_23_152_lm_2" << std::endl;
+    BenchmarkSet(dim, dim, dim, 2, FAST333_23_152_lm);
+
     std::cout << "FAST333_23_152_2" << std::endl;
     BenchmarkSet(dim, dim, dim, 2, FAST333_23_152);
-    break;
-  case 6:
-    std::cout << "FAST333_23_221_1" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST333_23_221);
-	break;
-  case 7:
-    std::cout << "FAST333_23_221_2" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST333_23_221);
-	break;
-  case 8:
-    std::cout << "FAST333_23_125_1" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, FAST333_23_125);
-	break;
-  case 9:
-    std::cout << "FAST333_23_125_2" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, FAST333_23_125);
-	break;
-  case 10:
-    std::cout << "SMIRNOV333_23_128_1" << std::endl;
-    BenchmarkSet(dim, dim, dim, 1, SMIRNOV333_23_128);
-	break;
-  case 11:
-    std::cout << "SMIRNOV333_23_128_2" << std::endl;
-    BenchmarkSet(dim, dim, dim, 2, SMIRNOV333_23_128);
-	break;
-  }
+#endif
 }
 
 
 
 int main(int argc, char **argv) {
-  //TestSuite();
-  //return 0;
+  TestSuite();
+  return 0;
   int which = atoi(argv[1]);
   if (which == 0) {
 	OuterProductBenchmark();
