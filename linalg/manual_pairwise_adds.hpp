@@ -1,6 +1,9 @@
 #ifndef _ALL_SLOW_ADDS_HPP_
 #define _ALL_SLOW_ADDS_HPP_
 
+#include "all_at_once_adds.hpp"
+#include "linalg.hpp"
+
 template <typename Scalar>
 void SlowAdd(Matrix<Scalar>& A1,
          Scalar alpha1,
