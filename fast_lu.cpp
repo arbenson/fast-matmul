@@ -1,14 +1,10 @@
 #include "blas.hpp"
 #include "linalg.hpp"
+#include "mkl.h"
 #include "fast424_26_257.hpp"
 
 #include <chrono>
 #include <vector>
-
-extern "C" {
-  void dgetrf_(int *m, int *n, double *A, int *lda, int *ipiv, int *info);
-  void sgetrf_(int *m, int *n, float *A, int *lda, int *ipiv, int *info);
-}
 
 void GetrfWrap(double *data, int m, int n, int lda, std::vector<int>& pivots) {
   int info;
