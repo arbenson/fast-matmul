@@ -1,10 +1,14 @@
-# Re-generate all of the header files.  This can be useful for changes to the code generator.
+# Re-generate all of the header files.  This can be useful for changes to the
+# code generator.
 
 SCRIPT=gen.py
 OUT_DIR=../algorithms
-# Set options to 1 to generate streaming additions.
+# OPTIONS:
+#    1: streaming additions
+#    2: pairwise additions
 OPTIONS=
 #OPTIONS=1
+#OPTIONS=2
 
 
 # 3,3,6
