@@ -113,7 +113,10 @@ def parse_coeff(coeff):
 
 def read_coeffs(filename):
     ''' Read the coefficient file.  There is one group of coefficients for each
-    of the three matrices.  '''
+    of the three matrices.
+
+    filename is the name of the file from which coefficients are read
+    '''
     coeffs = []
     with open(filename, 'r') as coeff_file:
         curr_group = []
@@ -424,9 +427,40 @@ def write_add_func(header, coeffs, index, mat_name):
         add += arith_expression(coeff, data_access(mat_name + str(ind)), j)
     
     add += ';'
-    write_line(header, 3,add)
+    write_line(header, 3, add)
     write_line(header, 2, '}')
     write_line(header, 1, '}')
+    write_line(header, 0, '}')
+
+
+def write_pairwise_add_func(header, coeffs, index, mat_name):
+    ''' Write the add function for a set of coefficients.  This is a custom add
+    function used for a single multiply in a single fast algorithm.
+
+    coeffs is the set of coefficients used for the add
+    '''
+    nonzero_coeffs = [coeff for coeff in coeffs if is_nonzero(coeff)]
+    nnz = len(nonzero_coeffs)
+    # TODO(arbenson): put in a code-generated comment here
+    write_line(header, 0, 'template <typename Scalar>')
+    add = 'void %s_Add%d(' % (mat_name, index)
+    add += ', '.join(['Matrix<Scalar>& %s%d' % (mat_name, i + 1) for i in range(nnz)])
+    add += ', Matrix<Scalar>& C, double x=1e-8) {'
+    write_line(header, 0, add)
+
+    for j, coeff in enumerate(nonzero_coeffs):
+        ind = j + 1
+        if ind == 1:
+            if is_one(coeff):
+                write_line(header, 1, 'Copy(%s, C);' % (mat_name + str(ind)))
+            elif is_negone(coeff):
+                write_line(header, 1, 'Negate(%s, C);' % (mat_name + str(ind)))
+            else:
+                write_line(header, 1, 'Copy(%s, %s, C);' % (mat_name + str(ind), coeff))
+        else:
+            write_line(header, 1, 'UpdateAddDaxpy(%s, Scalar(%s), C);' % (
+                    mat_name + str(ind), coeff))
+
     write_line(header, 0, '}')
 
 
@@ -504,7 +538,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds):
     write_line(header, 0, '#endif\n')
 
 
-def create_add_functions(header, coeffs):
+def create_add_functions(header, coeffs, pairwise):
     ''' Generate all of the custom add functions.
 
     header is the file to which we are writing
@@ -513,7 +547,10 @@ def create_add_functions(header, coeffs):
     def all_adds(coeffs, name):
         for i, coeff_set in enumerate(coeffs):
             if len(coeff_set) > 0:
-                write_add_func(header, coeff_set, i + 1, name)
+                if pairwise:
+                    write_pairwise_add_func(header, coeff_set, i + 1, name)
+                else:
+                    write_add_func(header, coeff_set, i + 1, name)
                 write_break(header)
 
     # S matrices formed from A subblocks
@@ -648,11 +685,17 @@ def main():
             outfile = sys.argv[3]
 
         streaming_adds = False
+        pairwise_adds = False
         if len(sys.argv) > 4:
-            streaming_adds = int(sys.argv[4])
-        limited_memory = False
-        if len(sys.argv) > 5:
-            limited_memory = int(sys.argv[5])
+            arg = int(sys.argv[4])
+            if arg == 1:
+                streaming_adds = True
+            elif arg == 2:
+                pairwise_adds = True
+            else:
+                raise Exception('Unknown fourth argument.')
+
+
 
         print 'Generating code for %d x %d x %d' % dims
     except:
@@ -677,16 +720,12 @@ def main():
         write_line(header, 0, 'namespace %s {\n' % namespace_name)
 
         if not streaming_adds:
-            create_add_functions(header, coeffs)
+            create_add_functions(header, coeffs, pairwise_adds)
 
         # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
                    'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
-        if limited_memory:
-            # TODO: There are more efficient ways to handle zero-ing out C.
-            # For example, we could just overwrite C the first time we add to it.
-            write_line(header, 1, 'ZeroOut(C);')
 
         # Handle the multipliers
         write_line(header, 1, '// Update multipliers')
@@ -716,19 +755,14 @@ def main():
         print '%d matrix multiplications...' % num_multiplies
 
         # Declaration of all of the intermediate multiplication results.
-        if limited_memory:
-            write_line(header, 1, 'Matrix<Scalar> M(C11.m(), C11.n(), C.multiplier());')
-            write_line(header, 1, 'Matrix<Scalar> S(A11.m(), A11.n());')
-            write_line(header, 1, 'Matrix<Scalar> T(B11.m(), B11.n());')
-        else:
-            write_break(header)
-            write_line(header, 1, '// These are the intermediate matrices.')
-            write_line(header, 1, '// We define them here so that they can be used')
-            write_line(header, 1, '// inside the lambda functions for Cilk.')
+        write_break(header)
+        write_line(header, 1, '// These are the intermediate matrices.')
+        write_line(header, 1, '// We define them here so that they can be used')
+        write_line(header, 1, '// inside the lambda functions for Cilk.')
             
-            for i in xrange(num_multiplies):
-                write_line(header, 1, 'Matrix<Scalar> M%d(C11.m(), C11.n(), C.multiplier());' % (i + 1))
-            write_break(header)
+        for i in xrange(num_multiplies):
+            write_line(header, 1, 'Matrix<Scalar> M%d(C11.m(), C11.n(), C.multiplier());' % (i + 1))
+        write_break(header)
 
         # Handle common subexpression elimination on the S and T matrices.
         create_input_cse_subs(header, coeffs, dims, streaming_adds)
