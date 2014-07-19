@@ -349,6 +349,47 @@ void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
 }
 
 
+// C <-- A
+template<typename Scalar>
+void Copy(Matrix<Scalar>& A, Matrix<Scalar>& C) {
+  assert(A.m() == C.m() && A.n() == C.n());
+  const int strideA = A.stride();
+  const int strideC = C.stride();
+  const Scalar *dataA = A.data();
+  Scalar *dataC = C.data();
+#ifdef _OPEN_MP_ADDS_
+# pragma omp parallel for collapse(2)
+#endif
+  for (int j = 0; j < C.n(); ++j) {
+	for (int i = 0; i < C.m(); ++i) {
+	  Scalar a = dataA[i + j * strideA];
+	  dataC[i + j * strideC] = a;
+	}
+  }
+}
+
+
+// C = alpha1 * A1
+template <typename Scalar>
+void Copy(Matrix<Scalar>& A1,
+		  Scalar alpha1,
+		  Matrix<Scalar>& C) {
+    const int strideA1 = A1.stride();
+    Scalar *dataA1 = A1.data();
+
+    const int strideC = C.stride();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        const Scalar *dataA_curr = dataA1 + j * strideA1;
+		Scalar *dataC_curr = dataC + j * strideC;
+        for (int i = 0; i < C.m(); ++i) {
+            dataC_curr[i] = alpha1 * dataA_curr[i];
+        }
+    }
+}
+
+
 // C += alpha1 * A1
 template <typename Scalar>
 void UpdateAdd(Matrix<Scalar>& A1,
@@ -365,6 +406,44 @@ void UpdateAdd(Matrix<Scalar>& A1,
 		Scalar *dataC_curr = dataC + j * strideC;
         for (int i = 0; i < C.m(); ++i) {
             dataC_curr[i] += alpha1 * dataA_curr[i];
+        }
+    }
+}
+
+// C += A1
+template <typename Scalar>
+void UpdateAdd(Matrix<Scalar>& A1,
+			   Matrix<Scalar>& C) {
+    const int strideA1 = A1.stride();
+    Scalar *dataA1 = A1.data();
+
+    const int strideC = C.stride();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        const Scalar *dataA_curr = dataA1 + j * strideA1;
+		Scalar *dataC_curr = dataC + j * strideC;
+        for (int i = 0; i < C.m(); ++i) {
+            dataC_curr[i] += dataA_curr[i];
+        }
+    }
+}
+
+// C -= A1
+template <typename Scalar>
+void UpdateSub(Matrix<Scalar>& A1,
+			   Matrix<Scalar>& C) {
+    const int strideA1 = A1.stride();
+    Scalar *dataA1 = A1.data();
+
+    const int strideC = C.stride();
+    Scalar *dataC = C.data();
+
+    for (int j = 0; j < C.n(); ++j) {
+        const Scalar *dataA_curr = dataA1 + j * strideA1;
+		Scalar *dataC_curr = dataC + j * strideC;
+        for (int i = 0; i < C.m(); ++i) {
+            dataC_curr[i] -= dataA_curr[i];
         }
     }
 }
