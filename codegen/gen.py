@@ -282,7 +282,7 @@ def streaming_additions(header, coeff_set, mat_name, tmp_name, mat_dims, is_outp
                 write_line(header, 1, stride_call(tmp_mat))
                 write_line(header, 1, data_call(tmp_mat))
 
-    write_line(header, 0, '#ifdef _OPEN_MP_ADDS_')
+    write_line(header, 0, '#if defined(_BFS_PAR_) || defined(_DFS_PAR_) || defined(_HYBRID_PAR_)')
     write_line(header, 0, '# pragma omp parallel for collapse(2)')
     write_line(header, 0, '#endif')
     write_line(header, 1, 'for (int j = 0; j < %s11.n(); ++j) {' % mat_name)
@@ -393,7 +393,7 @@ def write_output_add(header, index, coeffs, mat_dims, rank):
     write_line(header, 1, add)
 
 
-def write_add_func(header, coeffs, index, mat_name):
+def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
     ''' Write the add function for a set of coefficients.  This is a custom add
     function used for a single multiply in a single fast algorithm.
 
@@ -419,6 +419,12 @@ def write_add_func(header, coeffs, index, mat_name):
                 mat_name, i + 1, mat_name, i + 1))
     write_line(header, 1, 'Scalar *dataC = C.data();')
 
+    if bfs_par_avail:
+        write_line(header, 0, '#if defined(_DFS_PAR_) || defined(_BFS_PAR_)')
+    else:
+        write_line(header, 0, '#ifdef _DFS_PAR_')
+    write_line(header, 0, '# pragma omp parallel for collapse(2)')
+    write_line(header, 0, '#endif')
     write_line(header, 1, 'for (int j = 0; j < C.n(); ++j) {')
     write_line(header, 2, 'for (int i = 0; i < C.m(); ++i) {')
     add = data_access('C') + ' ='
@@ -464,7 +470,7 @@ def write_pairwise_add_func(header, coeffs, index, mat_name):
     write_line(header, 0, '}')
 
 
-def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds):
+def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_multiplies):
     comment = '// M%d = (' % (index)
     comment += ' + '.join([str(c) + ' * A%s' % get_suffix(i, dims[0], dims[1]) \
                                for i, c in enumerate(a_coeffs) if is_nonzero(c)])
@@ -475,10 +481,11 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds):
     write_line(header, 1, comment)
 
     # Shared memory wrappers (start)
-    write_line(header, 0, '#ifdef _CILK_')
-    write_line(header, 1, 'cilk_spawn [&] {')
-    write_line(header, 0, '#elif defined _OPEN_MP_')
-    write_line(header, 0, '# pragma omp task')
+    write_line(header, 0, '#if defined(_BFS_PAR_) || defined(_HYBRID_PAR_)')
+    task = '# pragma omp task '
+    task += 'if(should_launch_task(%d, total_steps, steps_left, %d, num_threads))' % (
+        num_multiplies, index)
+    write_line(header, 0, task)
     write_line(header, 1, '{')
     write_line(header, 0, '#endif')
 
@@ -520,7 +527,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds):
             return mat_name + get_suffix(loc[0], mat_dims[0], mat_dims[1])
 
     # Finally, write the actual call to matrix multiply.
-    write_line(header, 1, 'FastMatmulRecursive(%s, %s, %s, numsteps - 1, x);' % (
+    write_line(header, 1, 'FastMatmulRecursive(%s, %s, %s, steps_left - 1, x, num_threads);' % (
             subblock_name(a_coeffs, 'A', 'S', (dims[0], dims[1])),
             subblock_name(b_coeffs, 'B', 'T', (dims[1], dims[2])),
             res_mat))
@@ -531,9 +538,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds):
         write_line(header, 1, 'T%d.deallocate();' % (index))
 
     # Shared memory wrappers (end)
-    write_line(header, 0, '#ifdef _CILK_')
-    write_line(header, 1, '}();')
-    write_line(header, 0, '#elif defined _OPEN_MP_')
+    write_line(header, 0, '#if defined(_BFS_PAR_) || defined(_HYBRID_PAR_)')
     write_line(header, 1, '}')
     write_line(header, 0, '#endif\n')
 
@@ -544,36 +549,36 @@ def create_add_functions(header, coeffs, pairwise):
     header is the file to which we are writing
     coeffs is the set of all coefficients
     '''
-    def all_adds(coeffs, name):
+    def all_adds(coeffs, name, bfs_par_avail):
         for i, coeff_set in enumerate(coeffs):
             if len(coeff_set) > 0:
                 if pairwise:
                     write_pairwise_add_func(header, coeff_set, i + 1, name)
                 else:
-                    write_add_func(header, coeff_set, i + 1, name)
+                    write_add_func(header, coeff_set, i + 1, name, bfs_par_avail)
                 write_break(header)
 
     # S matrices formed from A subblocks
-    all_adds(subexpr_elim.transpose(coeffs[0]), 'S')
+    all_adds(subexpr_elim.transpose(coeffs[0]), 'S', False)
 
     # T matrices formed from B subblocks
-    all_adds(subexpr_elim.transpose(coeffs[1]), 'T')
+    all_adds(subexpr_elim.transpose(coeffs[1]), 'T', False)
 
     # Output C formed from multiplications
-    all_adds(coeffs[2], 'M')
+    all_adds(coeffs[2], 'M', True)
 
     # If there was CSE, create more add functions for the temporary matrices.
     if len(coeffs) > 3:
-        all_adds(coeffs[3], 'SX')
+        all_adds(coeffs[3], 'SX', True)
 
     if len(coeffs) > 4:
-        all_adds(coeffs[4], 'TX')
+        all_adds(coeffs[4], 'TX', True)
 
     if len(coeffs) > 5:
-        all_adds(coeffs[5], 'MX')
+        all_adds(coeffs[5], 'MX', True)
 
 
-def create_multiplications(header, coeffs, dims, streaming_adds):
+def create_multiplications(header, coeffs, dims, streaming_adds, num_multiplies):
     ''' Generate all of the recursive multiplication calls.
 
     header is the file to which we are writing
@@ -585,7 +590,7 @@ def create_multiplications(header, coeffs, dims, streaming_adds):
     for i in xrange(len(coeffs[0][0])):
         a_coeffs = [c[i] for c in coeffs[0]]
         b_coeffs = [c[i] for c in coeffs[1]]
-        write_multiply(header, i + 1, a_coeffs, b_coeffs, dims, streaming_adds)
+        write_multiply(header, i + 1, a_coeffs, b_coeffs, dims, streaming_adds, num_multiplies)
 
 
 def write_input_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
@@ -676,6 +681,35 @@ def create_output(header, coeffs, dims, streaming_adds):
                              num_multiplies)
 
 
+def create_wrapper_func(header, num_multiplies):
+    # Wrapper to deal with OpenMP
+    write_line(header, 0, 'template <typename Scalar>')
+    write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
+               'Matrix<Scalar>& C, int steps_left, double x=1e-8) {')
+    write_line(header, 1, 'int num_multiplies_per_step = %d;' % num_multiplies)
+    write_line(header, 1, 'int total_multiplies = pow(num_multiplies_per_step, steps_left);')
+
+    write_line(header, 0, '#if defined(_BFS_PAR_) || defined(_DFS_PAR_) || defined(_HYBRID_PAR_)')
+    write_line(header, 1, 'int num_threads = omp_get_num_threads();')
+    write_line(header, 0, '#else')
+    write_line(header, 1, 'int num_threads = 0;')
+    write_line(header, 0, '#endif')
+
+    write_line(header, 0, '#ifdef _BFS_PAR_')
+    write_line(header, 0, '# pragma omp parallel')
+    write_line(header, 1, '{')
+    write_line(header, 0, '# pragma omp single')
+    write_line(header, 0, '#endif')
+
+    write_line(header, 2, 'FastMatmulRecursive(A, B, C, steps_left, x, num_threads);')
+
+    write_line(header, 0, '#ifdef _BFS_PAR_')
+    write_line(header, 1, '}')
+    write_line(header, 0, '#endif')
+
+    write_line(header, 0, '}\n')
+
+
 def main():
     try:
         coeff_file = sys.argv[1]
@@ -725,7 +759,7 @@ def main():
         # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
-                   'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
+                   'Matrix<Scalar>& C, int steps_left, double x, int num_threads) {')
 
         # Handle the multipliers
         write_line(header, 1, '// Update multipliers')
@@ -736,7 +770,7 @@ def main():
 
         # Handle base case
         write_line(header, 1, '// Base case for recursion')
-        write_line(header, 1, 'if (numsteps == 0) {')
+        write_line(header, 1, 'if (steps_left == 0) {')
         write_line(header, 2, 'Gemm(A, B, C);')
         write_line(header, 2, 'return;')
         write_line(header, 1, '}\n')
@@ -756,27 +790,37 @@ def main():
 
         # Declaration of all of the intermediate multiplication results.
         write_break(header)
-        write_line(header, 1, '// These are the intermediate matrices.')
-        write_line(header, 1, '// We define them here so that they can be used')
-        write_line(header, 1, '// inside the lambda functions for Cilk.')
+        write_line(header, 1, '// Matrices to store the results of multiplications.')
             
         for i in xrange(num_multiplies):
             write_line(header, 1, 'Matrix<Scalar> M%d(C11.m(), C11.n(), C.multiplier());' % (i + 1))
-        write_break(header)
 
         # Handle common subexpression elimination on the S and T matrices.
         create_input_cse_subs(header, coeffs, dims, streaming_adds)
         write_break(header)
 
-        # Write the mutliplication blocks.
-        create_multiplications(header, coeffs, dims, streaming_adds)
+        '''
+        write_line(header, 0, '#ifdef _BFS_PAR_')
+        write_line(header, 0, '# pragma omp parallel sections')
+        write_line(header, 1, '{')
+        write_line(header, 0, '#endif')
+        '''
 
-        write_line(header, 0, '#ifdef _CILK_')
-        write_line(header, 1, 'cilk_sync;')
-        write_line(header, 0, '#elif defined _OPEN_MP_')
+        # Write the mutliplication blocks.
+        create_multiplications(header, coeffs, dims, streaming_adds, num_multiplies)
+
+        write_line(header, 0, '#ifdef _BFS_PAR_')
         write_line(header, 0, '# pragma omp taskwait')
         write_line(header, 0, '#endif')
         write_break(header)
+
+        '''
+        write_line(header, 0, '#ifdef _BFS_PAR_')
+        write_line(header, 0, '}')
+        write_line(header, 0, '#endif')
+        write_break(header)
+        '''
+
 
         # Handle common subexpression elimination on the M matrices.
         create_output_cse_subs(header, coeffs, dims, streaming_adds)
@@ -791,20 +835,7 @@ def main():
         # end of function
         write_line(header, 0, '}\n')
 
-        # Wrapper to deal with OpenMP
-        write_line(header, 0, 'template <typename Scalar>')
-        write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
-                   'Matrix<Scalar>& C, int numsteps, double x=1e-8) {')
-        write_line(header, 0, '#ifdef _OPEN_MP_')
-        write_line(header, 0, '# pragma omp parallel')
-        write_line(header, 1, '{')
-        write_line(header, 0, '# pragma omp single')
-        write_line(header, 0, '#endif')
-	write_line(header, 2, 'FastMatmulRecursive(A, B, C, numsteps, x);')
-        write_line(header, 0, '#ifdef _OPEN_MP_')
-        write_line(header, 1, '}')
-        write_line(header, 0, '#endif')
-        write_line(header, 0, '}\n')
+        create_wrapper_func(header, num_multiplies)
 
         # end of namespace
         write_line(header, 0, '}  // namespace %s\n' % namespace_name)
