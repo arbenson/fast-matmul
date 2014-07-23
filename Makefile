@@ -59,6 +59,9 @@ default : all
 .PHONY : all
 all : $(TARGETS)
 
+par_util_test: par_util_test.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
 fast_lu: fast_lu.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
