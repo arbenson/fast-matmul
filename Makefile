@@ -14,9 +14,9 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 #BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
 DEFINES := -D_INTEL_MKL_ -DNDEBUG
-#DEFINES += -D_DFS_PAR_
-#DEFINES += -D_BFS_PAR_
-#DEFINES += -D_HYBRID_PAR_
+DEFINES += -D_PARALLELISM_=1  # DFS
+#DEFINES += -D_PARALLELISM_=2  # BFS
+#DEFINES += -D_PARALLELISM_=3  # HYBRID
 
 #DEBUG := -g -Wall
 OPT := -O3
