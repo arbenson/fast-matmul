@@ -6,8 +6,8 @@ OUT_DIR=../algorithms
 # OPTIONS:
 #    1: streaming additions
 #    2: pairwise additions
-OPTIONS=
-#OPTIONS=1
+#OPTIONS=
+OPTIONS=1
 #OPTIONS=2
 
 

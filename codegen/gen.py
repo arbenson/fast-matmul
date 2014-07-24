@@ -282,7 +282,7 @@ def streaming_additions(header, coeff_set, mat_name, tmp_name, mat_dims, is_outp
                 write_line(header, 1, stride_call(tmp_mat))
                 write_line(header, 1, data_call(tmp_mat))
 
-    write_line(header, 0, '#if defined(_BFS_PAR_) || defined(_DFS_PAR_) || defined(_HYBRID_PAR_)')
+    write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 0, '# pragma omp parallel for collapse(2)')
     write_line(header, 0, '#endif')
     write_line(header, 1, 'for (int j = 0; j < %s11.n(); ++j) {' % mat_name)
@@ -419,10 +419,7 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
                 mat_name, i + 1, mat_name, i + 1))
     write_line(header, 1, 'Scalar *dataC = C.data();')
 
-    if bfs_par_avail:
-        write_line(header, 0, '#if defined(_DFS_PAR_) || defined(_BFS_PAR_)')
-    else:
-        write_line(header, 0, '#ifdef _DFS_PAR_')
+    write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 0, '# pragma omp parallel for collapse(2)')
     write_line(header, 0, '#endif')
     write_line(header, 1, 'for (int j = 0; j < C.n(); ++j) {')
@@ -481,10 +478,11 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
     write_line(header, 1, comment)
 
     # Shared memory wrappers (start)
-    write_line(header, 0, '#if defined(_BFS_PAR_) || defined(_HYBRID_PAR_)')
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)')
     task = '# pragma omp task '
-    task += 'if(should_launch_task(%d, total_steps, steps_left, %d, num_threads))' % (
+    task += 'if(should_launch_task(%d, total_steps, steps_left, start_index, %d, num_threads)) ' % (
         num_multiplies, index)
+    task += 'untied'
     write_line(header, 0, task)
     write_line(header, 1, '{')
     write_line(header, 0, '#endif')
@@ -527,10 +525,10 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
             return mat_name + get_suffix(loc[0], mat_dims[0], mat_dims[1])
 
     # Finally, write the actual call to matrix multiply.
-    write_line(header, 1, 'FastMatmulRecursive(%s, %s, %s, steps_left - 1, x, num_threads);' % (
+    write_line(header, 1, 'FastMatmulRecursive(%s, %s, %s, total_steps, steps_left - 1, %s, x, num_threads);' % (
             subblock_name(a_coeffs, 'A', 'S', (dims[0], dims[1])),
             subblock_name(b_coeffs, 'B', 'T', (dims[1], dims[2])),
-            res_mat))
+            res_mat, '(start_index + %d - 1) * %d' % (index, num_multiplies)))
     
     if need_tmp_mat(a_coeffs) and not streaming_adds:
         write_line(header, 1, 'S%d.deallocate();' % (index))
@@ -538,7 +536,15 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
         write_line(header, 1, 'T%d.deallocate();' % (index))
 
     # Shared memory wrappers (end)
-    write_line(header, 0, '#if defined(_BFS_PAR_) || defined(_HYBRID_PAR_)')
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 1, '}')
+    write_line(header, 1, 'if (should_task_wait(%d, total_steps, steps_left, start_index, %d, num_threads)) {' % (
+            num_multiplies, index))
+    write_line(header, 0, '# pragma omp taskwait')
+    if index != num_multiplies:
+        write_line(header, 0, '# if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)')
+        write_line(header, 1, 'mkl_set_num_threads_local(num_threads);')
+        write_line(header, 0, '# endif')
     write_line(header, 1, '}')
     write_line(header, 0, '#endif\n')
 
@@ -689,21 +695,28 @@ def create_wrapper_func(header, num_multiplies):
     write_line(header, 1, 'int num_multiplies_per_step = %d;' % num_multiplies)
     write_line(header, 1, 'int total_multiplies = pow(num_multiplies_per_step, steps_left);')
 
-    write_line(header, 0, '#if defined(_BFS_PAR_) || defined(_DFS_PAR_) || defined(_HYBRID_PAR_)')
-    write_line(header, 1, 'int num_threads = omp_get_num_threads();')
+    write_line(header, 0, '#ifdef _PARALLEL_')
+    write_line(header, 1, 'int num_threads = -1;')
+    write_line(header, 0, '# pragma omp parallel')
+    write_line(header, 1,  '{')
+    write_line(header, 2, 'if (omp_get_thread_num() == 0) { num_threads = omp_get_num_threads(); }')
+    write_line(header, 1,  '}')
     write_line(header, 0, '#else')
     write_line(header, 1, 'int num_threads = 0;')
     write_line(header, 0, '#endif')
 
-    write_line(header, 0, '#ifdef _BFS_PAR_')
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 1, 'if (num_threads > total_multiplies) {')
+    write_line(header, 2, 'mkl_set_dynamic(0);')
+    write_line(header, 1, '}')
     write_line(header, 0, '# pragma omp parallel')
     write_line(header, 1, '{')
     write_line(header, 0, '# pragma omp single')
     write_line(header, 0, '#endif')
 
-    write_line(header, 2, 'FastMatmulRecursive(A, B, C, steps_left, x, num_threads);')
+    write_line(header, 2, 'FastMatmulRecursive(A, B, C, steps_left, steps_left, 0, x, num_threads);')
 
-    write_line(header, 0, '#ifdef _BFS_PAR_')
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
     write_line(header, 1, '}')
     write_line(header, 0, '#endif')
 
@@ -759,7 +772,7 @@ def main():
         # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
-                   'Matrix<Scalar>& C, int steps_left, double x, int num_threads) {')
+                   'Matrix<Scalar>& C, int total_steps, int steps_left, int start_index, double x, int num_threads) {')
 
         # Handle the multipliers
         write_line(header, 1, '// Update multipliers')
@@ -799,28 +812,8 @@ def main():
         create_input_cse_subs(header, coeffs, dims, streaming_adds)
         write_break(header)
 
-        '''
-        write_line(header, 0, '#ifdef _BFS_PAR_')
-        write_line(header, 0, '# pragma omp parallel sections')
-        write_line(header, 1, '{')
-        write_line(header, 0, '#endif')
-        '''
-
         # Write the mutliplication blocks.
         create_multiplications(header, coeffs, dims, streaming_adds, num_multiplies)
-
-        write_line(header, 0, '#ifdef _BFS_PAR_')
-        write_line(header, 0, '# pragma omp taskwait')
-        write_line(header, 0, '#endif')
-        write_break(header)
-
-        '''
-        write_line(header, 0, '#ifdef _BFS_PAR_')
-        write_line(header, 0, '}')
-        write_line(header, 0, '#endif')
-        write_break(header)
-        '''
-
 
         # Handle common subexpression elimination on the M matrices.
         create_output_cse_subs(header, coeffs, dims, streaming_adds)
