@@ -1,5 +1,5 @@
-#CC = g++ 
-CC = icpc
+#CXX = g++ 
+CXX = icpc
 
 MODE = sequential
 MODE = openmp
@@ -14,30 +14,27 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 #BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
 DEFINES := -D_INTEL_MKL_ -DNDEBUG
-#DEFINES += -D_PARALLELISM_=1  # DFS
+DEFINES += -D_PARALLELISM_=1  # DFS
 #DEFINES += -D_PARALLELISM_=2  # BFS
 #DEFINES += -D_PARALLELISM_=3  # HYBRID
 
 #DEBUG := -g -Wall
 OPT := -O3
-CFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 $(DEFINES)
-#CFLAGS += -g
+CXXFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 $(DEFINES)
+#CXXFLAGS += -g
 
 LDFLAGS := -O3
 
-
 ifeq ($(MODE), openmp)
-  CFLAGS += -fopenmp
+  CXXFLAGS += -fopenmp
   LDLIBS := $(MKLPAR)
 else
   LDLIBS := $(BLAS_LAPACK_LIB)  
 endif
 
-SRC = benchmark.cpp \
-      add_benchmark.cpp \
-      daxpy_benchmark.cpp \
-      dgemm_curves.cpp \
-      bini322.cpp \
+vpath %.cpp examples benchmarks
+
+EXAMPLES_SRC = bini322.cpp \
       classical.cpp \
       fast322.cpp \
       fast323.cpp \
@@ -50,73 +47,34 @@ SRC = benchmark.cpp \
       strassen.cpp \
       fast_lu.cpp
 
-OBJECTS = $(SRC:.cpp=.o)
-TARGETS = $(OBJECTS:.o=)
+BENCHMARKS_SRC = benchmark.cpp \
+      add_benchmark.cpp \
+      daxpy_benchmark.cpp \
+      dgemm_curves.cpp
 
-.PHONY : default
+OBJ_DIR = obj
+OUTPUT_DIR = out
+ALL_SRC = $(EXAMPLES_SRC) $(BENCHMARKS_SRC)
+OBJECTS = $(patsubst %.cpp, obj/%.o, $(ALL_SRC)) 
+TARGETS = $(patsubst %.cpp, %, $(ALL_SRC))
+
+$(OBJECTS): | obj out
+
+obj:
+	mkdir -p $(OBJ_DIR)
+
+out:
+	mkdir -p $(OUTPUT_DIR)
+
+obj/%.o : %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+% : obj/%.o
+	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $(OUTPUT_DIR)/$@
+
+.PHONY : default all clean
+
 default : all
-
-.PHONY : all
 all : $(TARGETS)
-
-par_util_test: par_util_test.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-fast_lu: fast_lu.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-add_benchmark: add_benchmark.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-daxpy_benchmark: daxpy_benchmark.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-benchmark: benchmark.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-benchmark_par: benchmark_par.o
-	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
-
-bini322: bini322.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-classical: classical.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-dgemm_curves: dgemm_curves.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-fast322: fast322.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-fast323: fast323.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-fast332: fast332.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-fast333: fast333.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-fast424: fast424.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-fast432: fast432.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-fast433: fast433.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-hk332: hk332.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-strassen: strassen.o
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-
-%.o: %.cpp
-	$(CC) -c $(CFLAGS) $<
-
-.PHONY : clean
 clean :
-	rm -rf $(OBJECTS) $(TARGETS) *~
+	rm -rf obj out *~
