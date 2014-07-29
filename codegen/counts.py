@@ -64,16 +64,19 @@ def main():
     counts_X = [(0, 0, 0) for i in range(3, 6)]
     if len(coeffs) > 3:
         counts_X = [elim_counts(coeffs[i]) for i in range(3, 6)]
+    xtotal = tuple([sum(cnts) for cnts in zip(*(counts_X))])
     total = tuple([sum(cnts) for cnts in zip(*(counts + counts_X))])
 
+
     print '      +   r   w'
-    print 'A   %3d %3d %3d' % counts[0]
-    print 'B   %3d %3d %3d' % counts[1]
-    print 'C   %3d %3d %3d' % counts[2]
-    print 'AX  %3d %3d %3d' % counts_X[0]
-    print 'BX  %3d %3d %3d' % counts_X[1]
-    print 'CX  %3d %3d %3d' % counts_X[2]
-    print 'tot %3d %3d %3d' % total 
+    print 'A    %3d %3d %3d' % counts[0]
+    print 'B    %3d %3d %3d' % counts[1]
+    print 'C    %3d %3d %3d' % counts[2]
+    print 'AX   %3d %3d %3d' % counts_X[0]
+    print 'BX   %3d %3d %3d' % counts_X[1]
+    print 'CX   %3d %3d %3d' % counts_X[2]
+    print 'xtot %3d %3d %3d' % xtotal
+    print 'tot  %3d %3d %3d' % total 
 
 if __name__ == '__main__':
     main()
