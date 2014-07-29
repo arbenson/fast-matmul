@@ -2,14 +2,18 @@ import sys
 import subexpr_elim
 
 '''
-How to use this program:
+This is the main code generation script.  How to use this program:
 
-  python gen.py coeff_file m,n,p out_file
+  python gen.py coeff_file M,K,N out_file [adds_type]
 
 coeff_file is the path to the coefficients file.
-m,n,p are the matrix dimensions:
-   multiplying an m x n matrix A by a n x p matrix B and storing in a m x p matrix C
+M,K,N are the matrix dimensions:
+   multiplying an M x K matrix A by a K x N matrix B and storing in a M x N matrix C
 out_file is the name of the output file
+adds_type is the type of matrix additions to use.  It is one of {0, 1, 2}:
+   0: write-once additions
+   1: streaming additions
+   2: pairwise additions
 
 Suppose there are R matrix multiplications in the subproblem.
 Let alpha_{ij}_r and be the coefficients for submatrix A_{ij} in the r-th
@@ -17,7 +21,7 @@ matrix multiplication, i = 1, ..., m, j = 1, ..., n, r = 1, ..., R.
 Similarly, let beta_{ij}_r and be the coefficients for submatrix B_{ij} in the r-th
 matrix multiplication, i = 1, ..., n, j = 1, ..., p, r = 1, ..., R.
 Finally, let gamma_{ij}_r be the coefficients for r-th matrix multiplication in C_{ij}.
-The file format for m = n = p = 2 with r = 7 is:
+The file format for M = K = N = 2 with R = 7 is:
 
 alpha_{11}_1 alpha_{11}_2 alpha_{11}_3 alpha_{11}_4 alpha_{11}_5 alpha_{11}_6 alpha_{11}_7
 alpha_{12}_1 alpha_{12}_2 alpha_{12}_3 alpha_{12}_4 alpha_{12}_5 alpha_{12}_6 alpha_{12}_7
@@ -735,14 +739,14 @@ def main():
         pairwise_adds = False
         if len(sys.argv) > 4:
             arg = int(sys.argv[4])
-            if arg == 1:
+            if arg == 0:
+                write_once_adds = True
+            elif arg == 1:
                 streaming_adds = True
             elif arg == 2:
                 pairwise_adds = True
             else:
                 raise Exception('Unknown fourth argument.')
-
-
 
         print 'Generating code for %d x %d x %d' % dims
     except:
