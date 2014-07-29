@@ -1,4 +1,4 @@
-CC = g++ 
+#CC = g++ 
 CC = icpc
 
 MODE = sequential
@@ -14,7 +14,7 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 #BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
 DEFINES := -D_INTEL_MKL_ -DNDEBUG
-DEFINES += -D_PARALLELISM_=1  # DFS
+#DEFINES += -D_PARALLELISM_=1  # DFS
 #DEFINES += -D_PARALLELISM_=2  # BFS
 #DEFINES += -D_PARALLELISM_=3  # HYBRID
 
@@ -36,9 +36,9 @@ endif
 SRC = benchmark.cpp \
       add_benchmark.cpp \
       daxpy_benchmark.cpp \
+      dgemm_curves.cpp \
       bini322.cpp \
       classical.cpp \
-      dgemm_curve_par.cpp \
       fast322.cpp \
       fast323.cpp \
       fast332.cpp \
@@ -83,11 +83,8 @@ bini322: bini322.o
 classical: classical.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-dgemm_curve: dgemm_curve.o
+dgemm_curves: dgemm_curves.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-dgemm_curve_par: dgemm_curve_par.o
-	$(CC) $(LDFLAGS) $^ $(MKLPAR) -o $@
 
 fast322: fast322.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
