@@ -2,12 +2,16 @@ Fast matrix multiplication
 --------
 Austin R. Benson and Grey Ballard
 
-
-The codes here are implementations of fast matrix multiplication algorithms.
+This software contains implementations of fast matrix multiplication algorithms for
+sequential and shared memory.
 
 Building examples
 --------
-Some simple fast algorithm examples are located in the `examples` directory.
+Some simple codes that use the fast algorithms are in the `examples` directory.
+For example, you can build and run the (4, 3, 3) algorithm:
+
+	make fast433
+	./out/fast433
 
 Building benchmarks
 --------
@@ -25,3 +29,7 @@ Run the dgemm curves:
 To run without dynamic threads (mkl_set_dynamic(0)), append a second argument, e.g.:
 
 	./out/dgemm_curves 1 1  # Square timings without dynamic thread allocation
+
+
+LU and QR
+--------
