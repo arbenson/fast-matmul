@@ -641,7 +641,7 @@ void T_Add18(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
 }
 
 template <typename Scalar>
-void M_Add1(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x=1e-8) {
+void M_Add1(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideM3 = M3.stride();
@@ -652,18 +652,29 @@ void M_Add1(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     const Scalar *dataM3 = M3.data();
     const Scalar *dataM4 = M4.data();
     Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+            }
         }
     }
 }
 
 template <typename Scalar>
-void M_Add2(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& C, double x=1e-8) {
+void M_Add2(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideM3 = M3.stride();
@@ -676,18 +687,29 @@ void M_Add2(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     const Scalar *dataM4 = M4.data();
     const Scalar *dataM5 = M5.data();
     Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + dataM5[i + j * strideM5];
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + dataM5[i + j * strideM5];
+            }
         }
     }
 }
 
 template <typename Scalar>
-void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& M6, Matrix<Scalar>& C, double x=1e-8) {
+void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& M6, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideM3 = M3.stride();
@@ -702,18 +724,29 @@ void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     const Scalar *dataM5 = M5.data();
     const Scalar *dataM6 = M6.data();
     Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6];
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6];
+            }
         }
     }
 }
 
 template <typename Scalar>
-void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& C, double x=1e-8) {
+void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideM3 = M3.stride();
@@ -722,112 +755,87 @@ void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     const Scalar *dataM2 = M2.data();
     const Scalar *dataM3 = M3.data();
     Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3];
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3];
+            }
         }
     }
 }
 
 template <typename Scalar>
-void M_Add5(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=1e-8) {
+void M_Add5(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideC = C.stride();
     const Scalar *dataM1 = M1.data();
     const Scalar *dataM2 = M2.data();
     Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataM1[i + j * strideM1] -dataM2[i + j * strideM2];
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = -dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = -dataM1[i + j * strideM1] -dataM2[i + j * strideM2];
+            }
         }
     }
 }
 
 template <typename Scalar>
-void M_Add6(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=1e-8) {
+void M_Add6(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideC = C.stride();
     const Scalar *dataM1 = M1.data();
     const Scalar *dataM2 = M2.data();
     Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2];
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2];
+            }
         }
     }
 }
 
 template <typename Scalar>
-void M_Add7(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x=1e-8) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideM3 = M3.stride();
-    const int strideM4 = M4.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    const Scalar *dataM3 = M3.data();
-    const Scalar *dataM4 = M4.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
-        }
-    }
-}
-
-template <typename Scalar>
-void M_Add8(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=1e-8) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2];
-        }
-    }
-}
-
-template <typename Scalar>
-void M_Add9(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=1e-8) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2];
-        }
-    }
-}
-
-template <typename Scalar>
-void M_Add10(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x=1e-8) {
+void M_Add7(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideM3 = M3.stride();
@@ -838,18 +846,120 @@ void M_Add10(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<
     const Scalar *dataM3 = M3.data();
     const Scalar *dataM4 = M4.data();
     Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+            }
         }
     }
 }
 
 template <typename Scalar>
-void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int total_steps, int steps_left, int start_index, double x, int num_threads) {
+void M_Add8(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add9(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add10(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for collapse(2)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int total_steps, int steps_left, int start_index, double x, int num_threads, Scalar beta) {
     // Update multipliers
     C.UpdateMultiplier(A.multiplier());
     C.UpdateMultiplier(B.multiplier());
@@ -915,7 +1025,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     M1.UpdateMultiplier(Scalar(-1));
-    FastMatmulRecursive(A32, B21, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(A32, B21, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 18, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 1, num_threads)) {
@@ -935,7 +1045,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add2(A41, A52, S2, x);
     Matrix<Scalar> T2(B11.m(), B11.n());
     T_Add2(B11, B22, T2, x);
-    FastMatmulRecursive(S2, T2, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S2, T2, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 18, x, num_threads, Scalar(0.0));
     S2.deallocate();
     T2.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
@@ -954,7 +1064,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     M3.UpdateMultiplier(Scalar(-1));
-    FastMatmulRecursive(A31, B11, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(A31, B11, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 18, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 3, num_threads)) {
@@ -972,7 +1082,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
     Matrix<Scalar> T4(B11.m(), B11.n());
     T_Add4(B11, B21, T4, x);
-    FastMatmulRecursive(A52, T4, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(A52, T4, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 18, x, num_threads, Scalar(0.0));
     T4.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
@@ -993,7 +1103,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add5(A11, A12, A21, A22, S5, x);
     Matrix<Scalar> T5(B11.m(), B11.n());
     T_Add5(B11, B12, T5, x);
-    FastMatmulRecursive(S5, T5, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S5, T5, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 18, x, num_threads, Scalar(0.0));
     S5.deallocate();
     T5.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
@@ -1013,7 +1123,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
     Matrix<Scalar> T6(B11.m(), B11.n());
     T_Add6(B12, B22, T6, x);
-    FastMatmulRecursive(A41, T6, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(A41, T6, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 18, x, num_threads, Scalar(0.0));
     T6.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
@@ -1034,7 +1144,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add7(A41, A51, S7, x);
     Matrix<Scalar> T7(B11.m(), B11.n());
     T_Add7(B11, B12, T7, x);
-    FastMatmulRecursive(S7, T7, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S7, T7, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 18, x, num_threads, Scalar(0.0));
     S7.deallocate();
     T7.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
@@ -1052,7 +1162,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 8, num_threads)) untied
     {
 #endif
-    FastMatmulRecursive(A31, B12, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(A31, B12, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 18, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 8, num_threads)) {
@@ -1072,7 +1182,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add9(A12, A22, S9, x);
     Matrix<Scalar> T9(B11.m(), B11.n());
     T_Add9(B11, B12, B21, B22, T9, x);
-    FastMatmulRecursive(S9, T9, M9, total_steps, steps_left - 1, (start_index + 9 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S9, T9, M9, total_steps, steps_left - 1, (start_index + 9 - 1) * 18, x, num_threads, Scalar(0.0));
     S9.deallocate();
     T9.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
@@ -1094,7 +1204,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add10(A42, A52, S10, x);
     Matrix<Scalar> T10(B11.m(), B11.n());
     T_Add10(B21, B22, T10, x);
-    FastMatmulRecursive(S10, T10, M10, total_steps, steps_left - 1, (start_index + 10 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S10, T10, M10, total_steps, steps_left - 1, (start_index + 10 - 1) * 18, x, num_threads, Scalar(0.0));
     S10.deallocate();
     T10.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
@@ -1114,7 +1224,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
     Matrix<Scalar> S11(A11.m(), A11.n());
     S_Add11(A12, A32, S11, x);
-    FastMatmulRecursive(S11, B21, M11, total_steps, steps_left - 1, (start_index + 11 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S11, B21, M11, total_steps, steps_left - 1, (start_index + 11 - 1) * 18, x, num_threads, Scalar(0.0));
     S11.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
@@ -1133,7 +1243,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
     Matrix<Scalar> S12(A11.m(), A11.n());
     S_Add12(A21, A22, A31, S12, x);
-    FastMatmulRecursive(S12, B22, M12, total_steps, steps_left - 1, (start_index + 12 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S12, B22, M12, total_steps, steps_left - 1, (start_index + 12 - 1) * 18, x, num_threads, Scalar(0.0));
     S12.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
@@ -1152,7 +1262,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
     Matrix<Scalar> S13(A11.m(), A11.n());
     S_Add13(A41, A42, S13, x);
-    FastMatmulRecursive(S13, B22, M13, total_steps, steps_left - 1, (start_index + 13 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S13, B22, M13, total_steps, steps_left - 1, (start_index + 13 - 1) * 18, x, num_threads, Scalar(0.0));
     S13.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
@@ -1173,7 +1283,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add14(A12, A21, A22, A31, S14, x);
     Matrix<Scalar> T14(B11.m(), B11.n());
     T_Add14(B11, B12, B22, T14, x);
-    FastMatmulRecursive(S14, T14, M14, total_steps, steps_left - 1, (start_index + 14 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S14, T14, M14, total_steps, steps_left - 1, (start_index + 14 - 1) * 18, x, num_threads, Scalar(0.0));
     S14.deallocate();
     T14.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
@@ -1193,7 +1303,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
     Matrix<Scalar> S15(A11.m(), A11.n());
     S_Add15(A11, A31, S15, x);
-    FastMatmulRecursive(S15, B11, M15, total_steps, steps_left - 1, (start_index + 15 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S15, B11, M15, total_steps, steps_left - 1, (start_index + 15 - 1) * 18, x, num_threads, Scalar(0.0));
     S15.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
@@ -1214,7 +1324,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add16(A21, A31, S16, x);
     Matrix<Scalar> T16(B11.m(), B11.n());
     T_Add16(B12, B22, T16, x);
-    FastMatmulRecursive(S16, T16, M16, total_steps, steps_left - 1, (start_index + 16 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S16, T16, M16, total_steps, steps_left - 1, (start_index + 16 - 1) * 18, x, num_threads, Scalar(0.0));
     S16.deallocate();
     T16.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
@@ -1233,7 +1343,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     {
 #endif
     M17.UpdateMultiplier(Scalar(-1));
-    FastMatmulRecursive(A32, B22, M17, total_steps, steps_left - 1, (start_index + 17 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(A32, B22, M17, total_steps, steps_left - 1, (start_index + 17 - 1) * 18, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 17, num_threads)) {
@@ -1251,7 +1361,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
     Matrix<Scalar> S18(A11.m(), A11.n());
     S_Add18(A51, A52, S18, x);
-    FastMatmulRecursive(S18, B11, M18, total_steps, steps_left - 1, (start_index + 18 - 1) * 18, x, num_threads);
+    FastMatmulRecursive(S18, B11, M18, total_steps, steps_left - 1, (start_index + 18 - 1) * 18, x, num_threads, Scalar(0.0));
     S18.deallocate();
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
     }
@@ -1260,25 +1370,28 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     }
 #endif
 
-    M_Add1(M1, M3, M11, M15, C11, x);
-    M_Add2(M5, M8, M12, M14, M15, C12, x);
-    M_Add3(M1, M3, M9, M11, M14, M16, C21, x);
-    M_Add4(M8, M12, M16, C22, x);
-    M_Add5(M1, M3, C31, x);
-    M_Add6(M8, M17, C32, x);
-    M_Add7(M2, M4, M10, M13, C41, x);
-    M_Add8(M6, M13, C42, x);
-    M_Add9(M4, M18, C51, x);
-    M_Add10(M2, M6, M7, M18, C52, x);
+    M_Add1(M1, M3, M11, M15, C11, x, beta);
+    M_Add2(M5, M8, M12, M14, M15, C12, x, beta);
+    M_Add3(M1, M3, M9, M11, M14, M16, C21, x, beta);
+    M_Add4(M8, M12, M16, C22, x, beta);
+    M_Add5(M1, M3, C31, x, beta);
+    M_Add6(M8, M17, C32, x, beta);
+    M_Add7(M2, M4, M10, M13, C41, x, beta);
+    M_Add8(M6, M13, C42, x, beta);
+    M_Add9(M4, M18, C51, x, beta);
+    M_Add10(M2, M6, M7, M18, C52, x, beta);
 
     // Handle edge cases with dynamic peeling
-    DynamicPeeling(A, B, C, 5, 2, 2);
+    DynamicPeeling(A, B, C, 5, 2, 2, beta);
 }
 
+// C := alpha * A * B + beta * C
 template <typename Scalar>
-void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int steps_left, double x=1e-8) {
+void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
+    int num_steps, double x=1e-8, Scalar alpha=Scalar(1.0), Scalar beta=Scalar(0.0)) {
+    A.set_multiplier(alpha);
     int num_multiplies_per_step = 18;
-    int total_multiplies = pow(num_multiplies_per_step, steps_left);
+    int total_multiplies = pow(num_multiplies_per_step, num_steps);
 #ifdef _PARALLEL_
     int num_threads = -1;
 # pragma omp parallel
@@ -1289,6 +1402,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int ste
     int num_threads = 0;
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+    omp_set_nested(1);
     if (num_threads > total_multiplies) {
         mkl_set_dynamic(0);
     }
@@ -1296,7 +1410,7 @@ void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int ste
     {
 # pragma omp single
 #endif
-        FastMatmulRecursive(A, B, C, steps_left, steps_left, 0, x, num_threads);
+        FastMatmulRecursive(A, B, C, num_steps, num_steps, 0, x, num_threads, beta);
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
 #endif

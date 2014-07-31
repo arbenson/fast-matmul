@@ -286,70 +286,82 @@ def streaming_additions(header, coeff_set, mat_name, tmp_name, mat_dims, is_outp
                 write_line(header, 1, stride_call(tmp_mat))
                 write_line(header, 1, data_call(tmp_mat))
 
-    write_line(header, 0, '#ifdef _PARALLEL_')
-    write_line(header, 0, '# pragma omp parallel for collapse(2)')
-    write_line(header, 0, '#endif')
-    write_line(header, 1, 'for (int j = 0; j < %s11.n(); ++j) {' % mat_name)
-    write_line(header, 2, 'for (int i = 0; i < %s11.m(); ++i) {' % mat_name)
-
-    # Deal with substitutions from CSE
-    if sub_coeffs != None:
-        for i, col in enumerate(sub_coeffs):
-            if i + mat_dims[0] * mat_dims[1] in additional_tmps:
-                add = data_access('%s_X%d' % (mat_name, i + 1)) + ' ='
-            else:
-                if is_output:
-                    curr_name = tmp_name
-                else:
-                    curr_name = mat_name
-                add = 'Scalar %s_X%d = ' % (curr_name, i + 1)
-
-            data = [(k, coeff) for k, coeff in enumerate(col) if is_nonzero(coeff)]
-            for j, (ind, coeff) in enumerate(data):
-                if is_output:
-                    data_name = tmp_mat_name(ind)
-                else:
-                    data_name = subblock_name(ind)
-                add += arith_expression(coeff, data_access(data_name), j)
-            
-            add += ';'
-            write_line(header, 3, add)
-                
-
     if not is_output:
         coeff_set = subexpr_elim.transpose(coeff_set)
 
-    for i, col in enumerate(coeff_set):
-        if need_tmp_mat(col):
-            if is_output:
-                add = data_access(subblock_name(i))
-            else:
-                add = data_access(tmp_mat_name(i))
-            add += ' = '
-
-            data = [(k, coeff) for k, coeff in enumerate(col) if is_nonzero(coeff)]
-            for j, (ind, coeff) in enumerate(data):
-                if is_output:
-                    if ind >= num_multiplies:
-                        data_name = 'M_X' + str(ind + 1 - num_multiplies)
+    def inner_loop(handle_beta=False):
+        write_line(header, 0, '#ifdef _PARALLEL_')
+        write_line(header, 0, '# pragma omp parallel for collapse(2)')
+        write_line(header, 0, '#endif')
+        write_line(header, 1, 'for (int j = 0; j < %s11.n(); ++j) {' % mat_name)
+        write_line(header, 2, 'for (int i = 0; i < %s11.m(); ++i) {' % mat_name)
+    
+        # Deal with substitutions from CSE
+        if sub_coeffs != None:
+            for i, col in enumerate(sub_coeffs):
+                if i + mat_dims[0] * mat_dims[1] in additional_tmps:
+                    add = data_access('%s_X%d' % (mat_name, i + 1)) + ' ='
+                else:
+                    if is_output:
+                        curr_name = tmp_name
                     else:
+                        curr_name = mat_name
+                    add = 'Scalar %s_X%d = ' % (curr_name, i + 1)
+    
+                data = [(k, coeff) for k, coeff in enumerate(col) if is_nonzero(coeff)]
+                for j, (ind, coeff) in enumerate(data):
+                    if is_output:
                         data_name = tmp_mat_name(ind)
-                else:
-                    data_name = subblock_name(ind)
-
-                # Deal with subexpression elimination
-                if (ind >= mat_dims[0] * mat_dims[1] and not is_output and ind not in additional_tmps) or \
-                        (ind >= num_multiplies and is_output):
-                    add += arith_expression(coeff, data_name, j)
-                else:
+                    else:
+                        data_name = subblock_name(ind)
                     add += arith_expression(coeff, data_access(data_name), j)
-            
-            add += ';'
-            write_line(header, 3, add)
+                
+                add += ';'
+                write_line(header, 3, add)
+                    
+    
+        for i, col in enumerate(coeff_set):
+            if need_tmp_mat(col):
+                if is_output:
+                    add = data_access(subblock_name(i))
+                else:
+                    add = data_access(tmp_mat_name(i))
+                add += ' = '
+    
+                data = [(k, coeff) for k, coeff in enumerate(col) if is_nonzero(coeff)]
+                for j, (ind, coeff) in enumerate(data):
+                    if is_output:
+                        if ind >= num_multiplies:
+                            data_name = 'M_X' + str(ind + 1 - num_multiplies)
+                        else:
+                            data_name = tmp_mat_name(ind)
+                    else:
+                        data_name = subblock_name(ind)
+    
+                    # Deal with subexpression elimination
+                    if (ind >= mat_dims[0] * mat_dims[1] and not is_output and ind not in additional_tmps) or \
+                            (ind >= num_multiplies and is_output):
+                        add += arith_expression(coeff, data_name, j)
+                    else:
+                        add += arith_expression(coeff, data_access(data_name), j)
+                
+                if is_output and handle_beta:
+                    add += ' + beta * ' + data_access(subblock_name(i))
+                add += ';'
+                write_line(header, 3, add)
+    
+        write_line(header, 2, '}')  # end i loop
+        write_line(header, 1, '}')  # end j loop
 
-    write_line(header, 2, '}')  # end i loop
-    write_line(header, 1, '}')  # end j loop
-
+    if not is_output:
+        inner_loop()
+    else:
+        write_line(header, 1, 'if (beta != Scalar(0.0)) {')
+        inner_loop()
+        write_line(header, 1, '} else {')
+        inner_loop(True)
+        write_line(header, 1, '}')
+    
 
 def create_streaming_input_adds(header, coeffs, dims):
     num_multiplies = len(coeffs[0][0])
@@ -393,7 +405,7 @@ def write_output_add(header, index, coeffs, mat_dims, rank):
                 suffix = '_X%d' % (suffix - rank)
             add += 'M%s, ' % suffix
     output_mat = 'C' + get_suffix(index - 1, mat_dims[0], mat_dims[1])
-    add += '%s, x);' % output_mat
+    add += '%s, x, beta);' % output_mat
     write_line(header, 1, add)
 
 
@@ -409,7 +421,11 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
     write_line(header, 0, 'template <typename Scalar>')
     add = 'void %s_Add%d(' % (mat_name, index)
     add += ', '.join(['Matrix<Scalar>& %s%d' % (mat_name, i + 1) for i in range(nnz)])
-    add += ', Matrix<Scalar>& C, double x=1e-8) {'
+    add += ', Matrix<Scalar>& C, double x=1e-8'
+    # Handle the C := alpha A * B + beta C
+    if mat_name == 'M':
+        add += ', Scalar beta=Scalar(0.0)'
+    add += ') {'
     write_line(header, 0, add)
 
     # All of the strides
@@ -423,21 +439,55 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
                 mat_name, i + 1, mat_name, i + 1))
     write_line(header, 1, 'Scalar *dataC = C.data();')
 
-    write_line(header, 0, '#ifdef _PARALLEL_')
-    write_line(header, 0, '# pragma omp parallel for collapse(2)')
-    write_line(header, 0, '#endif')
-    write_line(header, 1, 'for (int j = 0; j < C.n(); ++j) {')
-    write_line(header, 2, 'for (int i = 0; i < C.m(); ++i) {')
-    add = data_access('C') + ' ='
-    for j, coeff in enumerate(nonzero_coeffs):
-        ind = j + 1
-        add += arith_expression(coeff, data_access(mat_name + str(ind)), j)
+    # Handle the C := alpha A * B + beta C
+    if mat_name == 'M':
+        write_line(header, 1, 'if (beta != Scalar(0.0)) {')
+        write_line(header, 0, '#ifdef _PARALLEL_')
+        write_line(header, 0, '# pragma omp parallel for collapse(2)')
+        write_line(header, 0, '#endif')
+        write_line(header, 2, 'for (int j = 0; j < C.n(); ++j) {')
+        write_line(header, 3, 'for (int i = 0; i < C.m(); ++i) {')
+        add = data_access('C') + ' ='
+        for j, coeff in enumerate(nonzero_coeffs):
+            ind = j + 1
+            add += arith_expression(coeff, data_access(mat_name + str(ind)), j)
+        add += ' + beta * %s;' % (data_access('C'))
+
+        write_line(header, 4, add)
+        write_line(header, 3, '}')
+        write_line(header, 2, '}')
+        write_line(header, 1, '} else {')
+        write_line(header, 0, '#ifdef _PARALLEL_')
+        write_line(header, 0, '# pragma omp parallel for collapse(2)')
+        write_line(header, 0, '#endif')
+        write_line(header, 2, 'for (int j = 0; j < C.n(); ++j) {')
+        write_line(header, 3, 'for (int i = 0; i < C.m(); ++i) {')
+        add = data_access('C') + ' ='
+        for j, coeff in enumerate(nonzero_coeffs):
+            ind = j + 1
+            add += arith_expression(coeff, data_access(mat_name + str(ind)), j)
+        add += ';'
+        write_line(header, 4, add)
+        write_line(header, 3, '}')
+        write_line(header, 2, '}')
+        write_line(header, 1, '}')
+    else:
+        write_line(header, 0, '#ifdef _PARALLEL_')
+        write_line(header, 0, '# pragma omp parallel for collapse(2)')
+        write_line(header, 0, '#endif')
+        write_line(header, 1, 'for (int j = 0; j < C.n(); ++j) {')
+        write_line(header, 2, 'for (int i = 0; i < C.m(); ++i) {')
+        add = data_access('C') + ' ='
+        for j, coeff in enumerate(nonzero_coeffs):
+            ind = j + 1
+            add += arith_expression(coeff, data_access(mat_name + str(ind)), j)
     
-    add += ';'
-    write_line(header, 3, add)
-    write_line(header, 2, '}')
-    write_line(header, 1, '}')
-    write_line(header, 0, '}')
+        add += ';'
+        write_line(header, 3, add)
+        write_line(header, 2, '}')
+        write_line(header, 1, '}')
+
+    write_line(header, 0, '}')  # end of function
 
 
 def write_pairwise_add_func(header, coeffs, index, mat_name):
@@ -452,7 +502,7 @@ def write_pairwise_add_func(header, coeffs, index, mat_name):
     write_line(header, 0, 'template <typename Scalar>')
     add = 'void %s_Add%d(' % (mat_name, index)
     add += ', '.join(['Matrix<Scalar>& %s%d' % (mat_name, i + 1) for i in range(nnz)])
-    add += ', Matrix<Scalar>& C, double x=1e-8) {'
+    add += ', Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {'
     write_line(header, 0, add)
 
     for j, coeff in enumerate(nonzero_coeffs):
@@ -467,6 +517,11 @@ def write_pairwise_add_func(header, coeffs, index, mat_name):
         else:
             write_line(header, 1, 'UpdateAddDaxpy(%s, Scalar(%s), C);' % (
                     mat_name + str(ind), coeff))
+    
+    # Handle += beta
+    write_line(header, 1, 'if (beta != Scalar(0.0)) {')
+    write_line(header, 2, 'UpdateAddDaxpy(C, beta, C);')
+    write_line(header, 1, '}')
 
     write_line(header, 0, '}')
 
@@ -529,7 +584,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
             return mat_name + get_suffix(loc[0], mat_dims[0], mat_dims[1])
 
     # Finally, write the actual call to matrix multiply.
-    write_line(header, 1, 'FastMatmulRecursive(%s, %s, %s, total_steps, steps_left - 1, %s, x, num_threads);' % (
+    write_line(header, 1, 'FastMatmulRecursive(%s, %s, %s, total_steps, steps_left - 1, %s, x, num_threads, Scalar(0.0));' % (
             subblock_name(a_coeffs, 'A', 'S', (dims[0], dims[1])),
             subblock_name(b_coeffs, 'B', 'T', (dims[1], dims[2])),
             res_mat, '(start_index + %d - 1) * %d' % (index, num_multiplies)))
@@ -693,11 +748,15 @@ def create_output(header, coeffs, dims, streaming_adds):
 
 def create_wrapper_func(header, num_multiplies):
     # Wrapper to deal with OpenMP
+    write_line(header, 0, '// C := alpha * A * B + beta * C')
     write_line(header, 0, 'template <typename Scalar>')
     write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
-               'Matrix<Scalar>& C, int steps_left, double x=1e-8) {')
+               'Matrix<Scalar>& C,')
+    write_line(header, 1, 'int num_steps, double x=1e-8, Scalar alpha=Scalar(1.0), ' +
+               'Scalar beta=Scalar(0.0)) {')
+    write_line(header, 1, 'A.set_multiplier(alpha);')
     write_line(header, 1, 'int num_multiplies_per_step = %d;' % num_multiplies)
-    write_line(header, 1, 'int total_multiplies = pow(num_multiplies_per_step, steps_left);')
+    write_line(header, 1, 'int total_multiplies = pow(num_multiplies_per_step, num_steps);')
 
     write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 1, 'int num_threads = -1;')
@@ -710,6 +769,7 @@ def create_wrapper_func(header, num_multiplies):
     write_line(header, 0, '#endif')
 
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 1, 'omp_set_nested(1);')
     write_line(header, 1, 'if (num_threads > total_multiplies) {')
     write_line(header, 2, 'mkl_set_dynamic(0);')
     write_line(header, 1, '}')
@@ -718,7 +778,7 @@ def create_wrapper_func(header, num_multiplies):
     write_line(header, 0, '# pragma omp single')
     write_line(header, 0, '#endif')
 
-    write_line(header, 2, 'FastMatmulRecursive(A, B, C, steps_left, steps_left, 0, x, num_threads);')
+    write_line(header, 2, 'FastMatmulRecursive(A, B, C, num_steps, num_steps, 0, x, num_threads, beta);')
 
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
     write_line(header, 1, '}')
@@ -776,7 +836,7 @@ def main():
         # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
         write_line(header, 0, 'void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
-                   'Matrix<Scalar>& C, int total_steps, int steps_left, int start_index, double x, int num_threads) {')
+                   'Matrix<Scalar>& C, int total_steps, int steps_left, int start_index, double x, int num_threads, Scalar beta) {')
 
         # Handle the multipliers
         write_line(header, 1, '// Update multipliers')
@@ -827,7 +887,7 @@ def main():
 
         write_break(header)
         write_line(header, 1, '// Handle edge cases with dynamic peeling')
-        write_line(header, 1, 'DynamicPeeling(A, B, C, %d, %d, %d);' % dims)
+        write_line(header, 1, 'DynamicPeeling(A, B, C, %d, %d, %d, beta);' % dims)
 
         # end of function
         write_line(header, 0, '}\n')
