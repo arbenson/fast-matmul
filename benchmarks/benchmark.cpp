@@ -359,5 +359,4 @@ int main(int argc, char **argv) {
   SquareBenchmark();
   OuterProductBenchmark();
   InnerSquareBenchmark();
-
 }
