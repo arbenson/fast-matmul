@@ -1,17 +1,17 @@
+#include "common.hpp"
+#include "daxpy_pairwise_adds.hpp"
+#include "linalg.hpp"
+#include "manual_pairwise_adds.hpp"
+#include "timing.hpp"
+
+#include "mkl.h"
+
 #include <stdlib.h>
 #include <time.h>
 
 #include <algorithm>
-#include <chrono>
 #include <random>
 #include <vector>
-
-#include "common.hpp"
-#include "mkl.h"
-
-#include "linalg.hpp"
-#include "daxpy_pairwise_adds.hpp"
-#include "manual_pairwise_adds.hpp"
 
 enum {
   ADD = 0,
@@ -716,17 +716,18 @@ double benchmark(int m, int n, int add_length, int add_type) {
   }
 
   int num_trials = 10;
-  auto t1 = std::chrono::high_resolution_clock::now();
-  for (int i = 0; i < num_trials; ++i) {
-    add_call(C, A_matrices, add_type);
+  auto func = [&] {
+	for (int i = 0; i < num_trials; ++i) {
+	  add_call(C, A_matrices, add_type);
+	}
   }
-  auto t2 = std::chrono::high_resolution_clock::now();
+  double time = Time(func);
 
   for (Matrix<double> *A : A_matrices) {
     delete A;
   }
 
-  return std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count();
+  return time;
 }
 
 void benchmark_all(int m, int n) {

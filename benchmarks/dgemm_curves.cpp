@@ -1,6 +1,6 @@
 #include "linalg.hpp"
+#include "timing.hpp"
 
-#include <chrono>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -26,28 +26,20 @@ enum {
 // is the number of trials used for timing, and TIME is the time to do
 // NUM_TRIALS matrix multiplies.
 void RunSingleTest(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C) {
-  // A floating point milliseconds type
-  using FpMilliseconds =
-      std::chrono::duration<float, std::chrono::milliseconds::period>;
- 
-  static_assert(std::chrono::treat_as_floating_point<FpMilliseconds::rep>::value, 
-		"Rep required to be floating point");
-
 #ifdef _PARALLEL_
   mkl_set_num_threads(mkl_get_max_threads());
 #endif
 
   int num_trials = 5;
-  auto t1 = std::chrono::high_resolution_clock::now();
-  for (int trial = 0; trial < num_trials; ++trial) {
-    Gemm(A, B, C);
-  }
-  auto t2 = std::chrono::high_resolution_clock::now();
-  auto time_ms = FpMilliseconds(t2 - t1);
+  auto func = [&] {
+	for (int trial = 0; trial < num_trials; ++trial) {
+	  Gemm(A, B, C);
+	}
+  };
+  double time = Time(func);
   
   std::cout << " " << A.m() << " " << A.n() << " " << B.n()
-	    << " " << num_trials << " " << time_ms.count()
-	    << ";";
+	    << " " << num_trials << " " << time << ";";
 }
 
 

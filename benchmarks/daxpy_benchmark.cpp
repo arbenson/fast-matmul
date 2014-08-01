@@ -1,13 +1,13 @@
+#include "common.hpp"
+#include "mkl.h"
+#include "timing.hpp"
+
 #include <stdlib.h>
 #include <time.h>
 
 #include <algorithm>
-#include <chrono>
 #include <random>
 #include <vector>
-
-#include "common.hpp"
-#include "mkl.h"
 
 enum {
   MANUAL=0,
@@ -50,20 +50,22 @@ double benchmark(int m, int n, int type) {
 
   int num_trials = 10;
 
-  auto t1 = std::chrono::high_resolution_clock::now();
-  for (int i = 0; i < num_trials; ++i) {
-	if (type == MANUAL) {
-	  manual_add(vec1, vec2, m, n);
-	} else {
-	  daxpy_add(vec1, vec2, m, n);
+  auto func = [&] {
+	for (int i = 0; i < num_trials; ++i) {
+	  if (type == MANUAL) {
+		manual_add(vec1, vec2, m, n);
+	  } else {
+		daxpy_add(vec1, vec2, m, n);
+	  }
 	}
   }
-  auto t2 = std::chrono::high_resolution_clock::now();
+
+  double time = Time(func);
 
   delete [] vec1;
   delete [] vec2;
 
-  return std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count();
+  return time;
 }
 
 void benchmark_all(int m, int n) {
