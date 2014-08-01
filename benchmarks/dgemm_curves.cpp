@@ -33,7 +33,7 @@ void RunSingleTest(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C) {
   static_assert(std::chrono::treat_as_floating_point<FpMilliseconds::rep>::value, 
 		"Rep required to be floating point");
 
-#ifdef _PARALLELISM_
+#ifdef _PARALLEL_
   mkl_set_num_threads(mkl_get_max_threads());
 #endif
 
@@ -56,7 +56,7 @@ void RunSingleTest(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C) {
 // (N, N, N), (N, N / 4, N), or (N / 4, N, N) computations.
 void RunAllDimensions(int type) {
   std::vector<int> N_vals;
-#ifdef _PARALLELISM_
+#ifdef _PARALLEL_
   for (int i = 200; i <= 9000; i += 100) {
     N_vals.push_back(i);
   }
