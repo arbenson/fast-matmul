@@ -22,10 +22,12 @@ Geqrf(int m, int n, float *A, int lda, float *tau) {
   delete [] work;
   work = new float[lwork];
   
+  // QR routine that does the work.
   sgeqrf_(&m, &n, A, &lda, tau, work, lwork, &info);  
   if (info != 0) {
 	throw std::exception("Bad sgeqrf_ call");
   }
+  delete [] work;
 }
 
 
@@ -43,11 +45,13 @@ Geqrf(int m, int n, double *A, int lda, double *tau) {
   lwork = static_cast<int>(work[0]);
   delete [] work;
   work = new double[lwork];
-  
+
+  // QR routine that does the work.
   dgeqrf_(&m, &n, A, &lda, tau, work, lwork, &info);  
   if (info != 0) {
 	throw std::exception("Bad dgeqrf_ call");
   }
+  delete [] work;
 }
 
 
@@ -59,6 +63,37 @@ void QR (Matrix<Scalar>& A, std::vector<Scalar>& tau, int pos) {
   Scalar *A_data = A.data();
   Scalar *curr_tau = &tau[pos];
   Geqrf(m, n, A_data, lda, curr_tau);
+}
+
+void Larft(char direct, char storev, int m, int n, double *V, int ldv,
+		   double *tau, double *T, int ldt) {
+  dlarft_(&direct, &storev, &m, &n, V, &ldv, tau, T, &ldt);
+}
+
+void Larft(char direct, char storev, int m, int n, float *V, int ldv,
+		   float *tau, float *T, int ldt) {
+  slarft_(&direct, &storev, &m, &n, V, &ldv, tau, T, &ldt);
+}
+
+template <typename Scalar>
+Matrix<Scalar> TriangFactor(Matrix<Scalar>& A, std::vector<Scalar>& tau,
+							int pos) {
+  char direct = 'F';  // Forward direction of householder reflectors.
+  char storev = 'C';  // Columns of V are stored columnwise.
+  Scalar *A_data = A.data();
+  int M = A.m();
+  int N = A.n();
+  int lda = A.stride();
+  Scalar *tau = &tau[pos];
+
+  // Triangular matrix for storing data.
+  int ldt = N;
+  Matrix<Scalar> T(ldt, N);
+  Scalar *T_data = T.data();
+
+  Larft(direct, storev, M, N, A_data, lda, tau, T_data, ldt);
+
+  return T;
 }
 
 
@@ -74,24 +109,13 @@ void FastQR(Matrix<Scalar>& A, std::vector<Scalar>& tau, int blocksize) {
 	//     A = (A1 A2)
 	// and compute QR on A1
 	Matrix<Scalar> A1 = A.Submatrix(i, i, A.m() - i, blocksize);
+	Matrix<Scalar> A2 = A.Submatrix(i, i + blocksize, A.m() - i, A.n() - i - blocksize);
 	QR(A1, tau, i);
-	// Compute LU on the panel.
-	Matrix<Scalar> Panel = A.Submatrix(i, i, A.m() - i, blocksize);
-	LU(Panel, pivots, i);
-	Pivot(A, pivots, i, blocksize);
-	
-	// Solve for L11U12 = A12
-	Matrix<Scalar> L11 = Panel.Submatrix(0, 0, blocksize, blocksize);
-	Matrix<Scalar> A12 = A.Submatrix(i, i + blocksize, blocksize, A.n() - i - blocksize);
-	TriangSolve(L11, A12);
 
-	// Update with schur complement using fast algorithm.
-	Matrix<Scalar> L21 = Panel.Submatrix(i, 0, A.m() - i - blocksize, blocksize);
-	Matrix<Scalar> A22 = A.Submatrix(i, i, A.m() - i, A.n() - i);
-	int num_steps = 1;
-	strassen::FastMatmul(L21, A12, A22, num_steps, 0, 1.0, 1.0);
+	// Form the triangular factor of the reflectors
+	Matrix<Scalar> T = TriangFactor(A1, tau, pos);
+
   }
-
   // Now deal with the leftovers
   int start_ind = (A.m() / blocksize) * blocksize;
   int num_left = A.m() - start_ind;
