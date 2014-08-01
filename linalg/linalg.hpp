@@ -77,14 +77,16 @@ public:
   // Get a view of a subblock of the matrix.
   // num_block_rows and num_block_cols are the number of block rows and columns
   // row_ind and col_ind are the indices (1-indexed) of the block
-  Matrix<Scalar> Subblock(int num_block_rows, int num_block_cols, int row_ind, int col_ind) {
+  Matrix<Scalar> Subblock(int num_block_rows, int num_block_cols, int row_ind,
+						  int col_ind) {
 	std::pair<int, int> row_data = IndexData(m_, num_block_rows, row_ind);
 	std::pair<int, int> col_data = IndexData(n_, num_block_cols, col_ind);
 	return Submatrix(row_data.first, col_data.first, row_data.second, col_data.second);
   }
 
 
-  Matrix<Scalar> Submatrix(int start_row, int start_col, int num_rows, int num_cols) {
+  Matrix<Scalar> Submatrix(int start_row, int start_col, int num_rows,
+						   int num_cols) {
 	return Matrix<Scalar>(data(start_row, start_col), stride_, num_rows, num_cols, multiplier_);
   }
 
@@ -149,14 +151,14 @@ private:
 
 
 // Perform one step of dynamic peeling in the multiplication
-//            C = A * B
+//            C = A * B + beta C
 // This should be called once at the end of a recursive fast
 // matrix multiplication function.
-// dim1, dim2, and dim3 refer to the <m, k, n> dimensions of
-// the fast algorithm (m x k times k x n base case).
+// dim1, dim2, and dim3 refer to the (M, K, N) dimensions of
+// the fast algorithm (M x K times K x N base case).
 template<typename Scalar>
 void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
-					int dim1, int dim2, int dim3) {
+					int dim1, int dim2, int dim3, Scalar beta) {
   assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
   assert(A.m() > 0 && A.n() > 0);
   int extra_rows_A = A.m() - (A.m() / dim1) * dim1;
@@ -184,7 +186,7 @@ void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 	int start_ind = B.n() - extra_cols_B;
 	Matrix<Scalar> B_extra = B.Submatrix(0, start_ind, B.m(), extra_cols_B);
 	Matrix<Scalar> C_extra = C.Submatrix(0, start_ind, C.m(), extra_cols_B);
-	Gemm(A, B_extra, C_extra);
+	Gemm(A, B_extra, C_extra, beta);
   }
 
   // Adjust for bottom rows of C
@@ -195,7 +197,7 @@ void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 	Matrix<Scalar> A_extra = A.Submatrix(start_ind, 0, extra_rows_A, A.n());
 	Matrix<Scalar> B_extra = B.Submatrix(0, 0, B.m(), num_cols);
 	Matrix<Scalar> C_extra = C.Submatrix(start_ind, 0, extra_rows_A, num_cols);
-	Gemm(A_extra, B_extra, C_extra);
+	Gemm(A_extra, B_extra, C_extra, beta);
   }
 }
 
@@ -337,7 +339,7 @@ void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
   const int strideC = C.stride();
   const Scalar *dataA = A.data();
   Scalar *dataC = C.data();
-#ifdef _OPEN_MP_ADDS_
+#ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
   for (int j = 0; j < C.n(); ++j) {
@@ -357,7 +359,7 @@ void Copy(Matrix<Scalar>& A, Matrix<Scalar>& C) {
   const int strideC = C.stride();
   const Scalar *dataA = A.data();
   Scalar *dataC = C.data();
-#ifdef _OPEN_MP_ADDS_
+#ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
   for (int j = 0; j < C.n(); ++j) {
