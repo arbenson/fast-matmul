@@ -5,6 +5,12 @@ Austin R. Benson and Grey Ballard
 This software contains implementations of fast matrix multiplication algorithms for
 sequential and shared memory.
 
+Setup
+--------
+The code requires:
+* Intel MKL
+* Compiler supporting C++11
+
 Building examples
 --------
 Some simple codes that use the fast algorithms are in the `examples` directory.
@@ -33,3 +39,6 @@ To run without dynamic threads (mkl_set_dynamic(0)), append a second argument, e
 
 LU and QR
 --------
+Build with:
+
+    make fast_lu fast_qr
