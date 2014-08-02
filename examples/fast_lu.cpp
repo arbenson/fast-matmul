@@ -22,7 +22,8 @@ void LU(Matrix<Scalar>& A, std::vector<int>& pivots, int pos) {
 
 
 template<typename Scalar>
-void Pivot(Matrix<Scalar>& A, std::vector<int>& pivots, int start, int num_pivs) {
+void Pivot(Matrix<Scalar>& A, std::vector<int>& pivots, int start,
+		   int num_pivs) {
   int N = A.n();
   Scalar *data = A.data();
   int stride = A.stride();
@@ -54,34 +55,34 @@ void FastLU(Matrix<Scalar>& A, int blocksize) {
 	throw std::logic_error("Only supporting m == n");
   }
   std::vector<int> pivots(A.m());
-  
-  for (int i = 0; i < A.m() && A.m() - i > blocksize; i += blocksize) {
+
+  int i;
+  for (int i = 0; i + blocksize <= A.m(); i += blocksize) {
 	// Compute LU on the panel.
 	Matrix<Scalar> Panel = A.Submatrix(i, i, A.m() - i, blocksize);
 	LU(Panel, pivots, i);
 	Pivot(A, pivots, i, blocksize);
 	
-	// Solve for L11U12 = A12
-	Matrix<Scalar> L11 = Panel.Submatrix(0, 0, blocksize, blocksize);
-	Matrix<Scalar> A12 = A.Submatrix(i, i + blocksize, blocksize, A.n() - i - blocksize);
-	TriangSolve(L11, A12);
+	if (i + blocksize < A.m()) {
+	  // Solve for L11U12 = A12
+	  Matrix<Scalar> L11 = Panel.Submatrix(0, 0, blocksize, blocksize);
+	  Matrix<Scalar> A12 = A.Submatrix(i, i + blocksize, blocksize, A.n() - i - blocksize);
+	  TriangSolve(L11, A12);
 
-	// Update with schur complement using fast algorithm.
-	Matrix<Scalar> L21 = Panel.Submatrix(i, 0, A.m() - i - blocksize, blocksize);
-	Matrix<Scalar> A22 = A.Submatrix(i, i, A.m() - i, A.n() - i);
-	int num_steps = 1;
-	strassen::FastMatmul(L21, A12, A22, num_steps, 0, 1.0, 1.0);
+	  // Update with schur complement using fast algorithm.
+	  Matrix<Scalar> L21 = Panel.Submatrix(i, 0, A.m() - i - blocksize, blocksize);
+	  Matrix<Scalar> A22 = A.Submatrix(i, i, A.m() - i, A.n() - i);
+	  int num_steps = 1;
+	  strassen::FastMatmul(L21, A12, A22, num_steps, 0, 1.0, 1.0);
+	}
   }
 
-  // Now deal with the leftovers
-  int start_ind = (A.m() / blocksize) * blocksize;
-  int num_left = A.m() - start_ind;
-  if (num_left == 0) {
-	return;
+  // Now deal with any leftovers
+  if (i != A.m()) {
+	Matrix<Scalar> A_end = A.Submatrix(i, i, A.m() - i, A.n() - i);
+	LU(A_end, pivots, i);
+	Pivot(A,  pivots, i, A.m() - i);
   }
-  Matrix<Scalar> A_end = A.Submatrix(start_ind, start_ind, num_left, A.n() - start_ind);
-  LU(A_end, pivots, start_ind);
-  Pivot(A,  pivots, start_ind, num_left);
 }
 
 

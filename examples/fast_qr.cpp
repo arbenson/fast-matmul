@@ -79,33 +79,33 @@ void FastQR(Matrix<Scalar>& A, std::vector<Scalar>& tau, int blocksize) {
   }
   tau.resize(A.n());
   
-  for (int i = 0; i < A.m() && A.m() - i > blocksize; i += blocksize) {
+  int i;
+  for (i = 0; i + blocksize <= A.m(); i += blocksize) {
 	// Split A as A = (A1 A2) and compute QR on A1.
 	Matrix<Scalar> A1 = A.Submatrix(i, i, A.m() - i, blocksize);
 	Matrix<Scalar> A2 = A.Submatrix(i, i + blocksize, A.m() - i, A.n() - i - blocksize);
 	QR(A1, tau, i);
 
-	// Form the triangular factor of the reflectors
-	Matrix<Scalar> T = TriangFactor(A1, tau, i);
+	if (i + blocksize < A.m()) {
+	  // Form the triangular factor of the reflectors
+	  Matrix<Scalar> T = TriangFactor(A1, tau, i);
 
-	// A2 := (I - VT'V')A2
-	UpdateTrailing(A1, T, A2);
+	  // A2 := (I - VT'V')A2
+	  UpdateTrailing(A1, T, A2);
+	}
   }
 
-  // Now deal with the leftovers
-  int start_ind = (A.m() / blocksize) * blocksize;
-  int num_left = A.m() - start_ind;
-  if (num_left == 0) {
-	return;
+  // Now deal with any leftovers
+  if (i != A.m()) {
+	Matrix<Scalar> A_end = A.Submatrix(i, i, A.m() - i, A.n() - i);
+	QR(A_end, tau, i);
   }
-  Matrix<Scalar> A_end = A.Submatrix(start_ind, start_ind, num_left, A.n() - start_ind);
-  QR(A_end, tau, start_ind);
 }
 
 
 int main(int argc, char **argv) {
   int n = 8000;
-  int blocksize = 4000;
+  int blocksize = 8000;
   Matrix<double> A = RandomMatrix<double>(n, n);
   Matrix<double> B = A;
 
