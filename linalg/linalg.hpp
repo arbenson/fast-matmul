@@ -1,7 +1,7 @@
 #ifndef _LINALG_HPP_
 #define _LINALG_HPP_
 
-#include "blas.hpp"
+#include "lapack_wrap.hpp"
 
 #ifdef _INTEL_MKL_
 # include <mkl.h>
@@ -61,7 +61,7 @@ public:
 
   Matrix(Scalar *data, int stride, int m, int n, Scalar multiplier=Scalar(1)):
 	data_(data), stride_(stride), m_(m), n_(n), is_view_(true), multiplier_(multiplier) {
-	assert(stride > m);
+	assert(stride >= m);
   }
 
   Matrix(int m, int n) : m_(m), n_(n), stride_(m), is_view_(false), multiplier_(Scalar(1)) {
@@ -239,7 +239,8 @@ void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb,
 
 // C <-- A * B + beta * C
 template <typename Scalar>
-void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, Scalar beta=Scalar(0.0)) {
+void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
+		  Scalar beta=Scalar(0.0)) {
   assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
   assert(A.m() > 0 && A.n() > 0);
   Scalar alpha = C.multiplier();
@@ -499,5 +500,21 @@ Matrix<Scalar> RandomMatrix(int m, int n) {
   return A;
 }
 
+
+// Return A^T as a copy.
+template <typename Scalar>
+Matrix<Scalar> TransposedCopy(Matrix<Scalar>& A) {
+  Matrix<Scalar> At(A.n(), A.m());
+  Scalar *A_data = A.data();
+  Scalar *At_data = A.data();
+  int A_stride = A.stride();
+  int At_stride = At.stride();
+  for (int j = 0; j < A.n(); ++j) {
+	for (int i = 0; i < A.m(); ++i) {
+	  At_data[j + i * At_stride] = A_data[i + j * A_stride];
+	}
+  }
+  return At;
+}
 
 #endif  // _LINALG_HPP_
