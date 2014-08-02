@@ -7,6 +7,7 @@
 #include "strassen.hpp"
 #include "timing.hpp"
 
+#include <algorithm>
 #include <stdexcept>
 #include <vector>
 
@@ -51,13 +52,13 @@ void TriangSolve(Matrix<Scalar>& L, Matrix<Scalar>& B) {
 
 template<typename Scalar>
 void FastLU(Matrix<Scalar>& A, int blocksize) {
-  if (A.m() != A.n()) {
-	throw std::logic_error("Only supporting m == n");
+  if (A.m() < A.n()) {
+	throw std::logic_error("Only supporting m >= n");
   }
   std::vector<int> pivots(A.m());
 
   int i;
-  for (int i = 0; i + blocksize <= A.m(); i += blocksize) {
+  for (int i = 0; i + blocksize <= std::min(A.m(), A.n()); i += blocksize) {
 	// Compute LU on the panel.
 	Matrix<Scalar> Panel = A.Submatrix(i, i, A.m() - i, blocksize);
 	LU(Panel, pivots, i);
@@ -78,7 +79,7 @@ void FastLU(Matrix<Scalar>& A, int blocksize) {
   }
 
   // Now deal with any leftovers
-  if (i != A.m()) {
+  if (i != std::min(A.m(), A.n())) {
 	Matrix<Scalar> A_end = A.Submatrix(i, i, A.m() - i, A.n() - i);
 	LU(A_end, pivots, i);
 	Pivot(A,  pivots, i, A.m() - i);
@@ -87,12 +88,17 @@ void FastLU(Matrix<Scalar>& A, int blocksize) {
 
 
 int main(int argc, char **argv) {
-  int n = 10000;
-  int blocksize = 1600;
-  Matrix<double> A = RandomMatrix<double>(n, n);
+  auto opts = GetOpts(argc, argv);
+  int m = GetIntOpt(opts, "m", 10000);
+  int n = GetIntOpt(opts, "n", m);
+  int blocksize = GetIntOpt(opts, "blocksize", 1600);
+  std::cout << "Factoring " << m << " x " << n << " matrix with blocksize "
+			<< blocksize << std::endl;
+
+  Matrix<double> A = RandomMatrix<double>(m, n);
   Matrix<double> B = A;
 
   std::vector<int> pivots(A.m());
   Time([&] { LU(A, pivots, 0); }, "Classical LU");
-  Time([&] { FastLU(B, 1600); }, "Fast LU");
+  Time([&] { FastLU(B, blocksize); }, "Fast LU");
 }

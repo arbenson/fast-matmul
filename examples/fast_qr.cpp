@@ -104,9 +104,14 @@ void FastQR(Matrix<Scalar>& A, std::vector<Scalar>& tau, int blocksize) {
 
 
 int main(int argc, char **argv) {
-  int n = 8000;
-  int blocksize = 8000;
-  Matrix<double> A = RandomMatrix<double>(n, n);
+  auto opts = GetOpts(argc, argv);
+  int m = GetIntOpt(opts, "m", 10000);
+  int n = GetIntOpt(opts, "n", m);
+  int blocksize = GetIntOpt(opts, "blocksize", 1600);
+  std::cout << "Factoring " << m << " x " << n << " matrix with blocksize "
+			<< blocksize << std::endl;
+
+  Matrix<double> A = RandomMatrix<double>(m, n);
   Matrix<double> B = A;
 
   std::vector<double> tau(A.n());
