@@ -3,4 +3,4 @@
 *.o
 *.pyc
 obj
-out
+build
