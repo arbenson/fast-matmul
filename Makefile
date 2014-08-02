@@ -2,7 +2,7 @@
 CXX = icpc
 
 MODE = sequential
-MODE = openmp
+#MODE = openmp
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
@@ -32,7 +32,7 @@ else
   LDLIBS := $(BLAS_LAPACK_LIB)  
 endif
 
-vpath %.cpp examples benchmarks
+vpath %.cpp examples benchmarks tests
 
 EXAMPLES_SRC = bini322.cpp \
       classical.cpp \
@@ -48,23 +48,26 @@ EXAMPLES_SRC = bini322.cpp \
       fast_lu.cpp \
       fast_qr.cpp
 
-BENCHMARKS_SRC = benchmark.cpp \
+BENCHMARKS_SRC = matmul_benchmarks.cpp \
       add_benchmark.cpp \
       daxpy_benchmark.cpp \
       dgemm_curves.cpp
 
+TESTS_SRC = all_tests.cpp
+
+
 OBJ_DIR = obj
-OUTPUT_DIR = out
-ALL_SRC = $(EXAMPLES_SRC) $(BENCHMARKS_SRC)
+OUTPUT_DIR = build
+ALL_SRC = $(EXAMPLES_SRC) $(BENCHMARKS_SRC) $(TESTS_SRC)
 OBJECTS = $(patsubst %.cpp, obj/%.o, $(ALL_SRC)) 
 TARGETS = $(patsubst %.cpp, %, $(ALL_SRC))
 
-$(OBJECTS): | obj out
+$(OBJECTS): | obj build
 
 obj:
 	mkdir -p $(OBJ_DIR)
 
-out:
+build:
 	mkdir -p $(OUTPUT_DIR)
 
 obj/%.o : %.cpp
@@ -78,4 +81,4 @@ obj/%.o : %.cpp
 default : all
 all : $(TARGETS)
 clean :
-	rm -rf obj out *~
+	rm -rf $(OBJ_DIR) $(OUTPUT_DIR) out *~

@@ -7,6 +7,9 @@
 # include "par_util.hpp"
 #endif
 
+#include "options.hpp"
+#include "timing.hpp"
+
 #define _DFS_PAR_ 1
 #define _BFS_PAR_ 2
 #define _HYBRID_PAR_ 3
