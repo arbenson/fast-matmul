@@ -15,7 +15,7 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 
 DEFINES := -D_INTEL_MKL_ -DNDEBUG
 #DEFINES += -D_PARALLEL_=1  # DFS
-DEFINES += -D_PARALLEL_=2  # BFS
+#DEFINES += -D_PARALLEL_=2  # BFS
 #DEFINES += -D_PARALLEL_=3  # HYBRID
 
 #DEBUG := -g -Wall
@@ -45,7 +45,8 @@ EXAMPLES_SRC = bini322.cpp \
       fast433.cpp \
       hk332.cpp \
       strassen.cpp \
-      fast_lu.cpp
+      fast_lu.cpp \
+      fast_qr.cpp
 
 BENCHMARKS_SRC = benchmark.cpp \
       add_benchmark.cpp \
