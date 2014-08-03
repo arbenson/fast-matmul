@@ -356,7 +356,7 @@ def streaming_additions(header, coeff_set, mat_name, tmp_name, mat_dims, is_outp
     if not is_output:
         inner_loop()
     else:
-        write_line(header, 1, 'if (beta != Scalar(0.0)) {')
+        write_line(header, 1, 'if (beta == Scalar(0.0)) {')
         inner_loop()
         write_line(header, 1, '} else {')
         inner_loop(True)
@@ -423,7 +423,8 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
     add += ', '.join(['Matrix<Scalar>& %s%d' % (mat_name, i + 1) for i in range(nnz)])
     add += ', Matrix<Scalar>& C, double x=1e-8'
     # Handle the C := alpha A * B + beta C
-    if mat_name == 'M':
+    is_output = (mat_name == 'M')
+    if is_output:
         add += ', Scalar beta=Scalar(0.0)'
     add += ') {'
     write_line(header, 0, add)
@@ -440,7 +441,7 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
     write_line(header, 1, 'Scalar *dataC = C.data();')
 
     # Handle the C := alpha A * B + beta C
-    if mat_name == 'M':
+    if is_output:
         write_line(header, 1, 'if (beta != Scalar(0.0)) {')
         write_line(header, 0, '#ifdef _PARALLEL_')
         write_line(header, 0, '# pragma omp parallel for collapse(2)')
@@ -496,14 +497,26 @@ def write_pairwise_add_func(header, coeffs, index, mat_name):
 
     coeffs is the set of coefficients used for the add
     '''
+    is_output = (mat_name == 'M')
+
     nonzero_coeffs = [coeff for coeff in coeffs if is_nonzero(coeff)]
     nnz = len(nonzero_coeffs)
     # TODO(arbenson): put in a code-generated comment here
     write_line(header, 0, 'template <typename Scalar>')
     add = 'void %s_Add%d(' % (mat_name, index)
     add += ', '.join(['Matrix<Scalar>& %s%d' % (mat_name, i + 1) for i in range(nnz)])
-    add += ', Matrix<Scalar>& C, double x=1e-8, Scalar beta=Scalar(0.0)) {'
+    add += ', Matrix<Scalar>& C, double x=1e-8'
+    if is_output:
+        add += ', Scalar beta=Scalar(0.0)'
+    add += ') {'
     write_line(header, 0, add)
+
+    if is_output:
+        write_line(header, 1, 'Matrix<Scalar> C_orig;')
+        write_line(header, 1, 'if (beta != Scalar(0.0)) {')
+        write_line(header, 2, 'C_orig = C;  // copy')
+        write_line(header, 1, '}')
+    
 
     for j, coeff in enumerate(nonzero_coeffs):
         ind = j + 1
@@ -518,10 +531,10 @@ def write_pairwise_add_func(header, coeffs, index, mat_name):
             write_line(header, 1, 'UpdateAddDaxpy(%s, Scalar(%s), C);' % (
                     mat_name + str(ind), coeff))
     
-    # Handle += beta
-    write_line(header, 1, 'if (beta != Scalar(0.0)) {')
-    write_line(header, 2, 'UpdateAddDaxpy(C, beta, C);')
-    write_line(header, 1, '}')
+    if is_output:
+        write_line(header, 1, 'if (beta != Scalar(0.0)) {')
+        write_line(header, 2, 'UpdateAddDaxpy(C_orig, beta, C);')
+        write_line(header, 1, '}')
 
     write_line(header, 0, '}')
 
