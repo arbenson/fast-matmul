@@ -1,9 +1,10 @@
-#include <stdexcept>
-#include <vector>
-
 #include "all_algorithms.hpp"
 #include "common.hpp"
 #include "mkl.h"
+
+#include <algorithm>
+#include <stdexcept>
+#include <vector>
 
 
 // Run a single benchmark for multiplying m x k x n with num_steps of recursion.
