@@ -53,7 +53,7 @@ BENCHMARKS_SRC = matmul_benchmarks.cpp \
       daxpy_benchmark.cpp \
       dgemm_curves.cpp
 
-TESTS_SRC = all_tests.cpp
+TESTS_SRC = matmul_tests.cpp
 
 
 OBJ_DIR = obj
