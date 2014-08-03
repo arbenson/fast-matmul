@@ -92,7 +92,7 @@ public:
 
 
   ~Matrix() {
-	if (data_ != NULL && !is_view_ && m_ > 0 & n_ > 0) {
+	if (data_ != NULL && !is_view_ && m_ > 0 && n_ > 0) {
 	  deallocate();
 	}
   }
