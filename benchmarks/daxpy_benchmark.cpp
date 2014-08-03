@@ -58,7 +58,7 @@ double benchmark(int m, int n, int type) {
 		daxpy_add(vec1, vec2, m, n);
 	  }
 	}
-  }
+  };
 
   double time = Time(func);
 

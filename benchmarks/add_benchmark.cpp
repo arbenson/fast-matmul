@@ -720,7 +720,7 @@ double benchmark(int m, int n, int add_length, int add_type) {
 	for (int i = 0; i < num_trials; ++i) {
 	  add_call(C, A_matrices, add_type);
 	}
-  }
+  };
   double time = Time(func);
 
   for (Matrix<double> *A : A_matrices) {
