@@ -80,7 +80,25 @@ void RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
       classical222_8_24::FastMatmul(A, B, C1, 0);
       break;
     case BINI332:
-      bini322::FastMatmul(A, B, C1, num_steps);
+	  double x;
+	  // These values of x provide the minimum error, on average.
+	  switch (num_steps) {
+	  case 2:
+		x = 1e-4;
+		break;
+	  case 3:
+		x = 1e-2;
+		break;
+	  case 4:
+		x = 1e-1;
+		break;
+	  case 0:
+	  case 1:
+	  default:
+		x = 1e-8;
+		break;
+	  }
+      bini322::FastMatmul(A, B, C1, num_steps, x);
       break;
     case CLASSICAL222:
       classical222_8_24::FastMatmul(A, B, C1, num_steps);
