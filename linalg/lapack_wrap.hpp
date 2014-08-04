@@ -3,6 +3,7 @@
 
 #include "mkl.h"
 
+#include <functional>
 #include <stdexcept>
 
 extern "C" {
@@ -32,8 +33,26 @@ extern "C" {
 
 
 // These are wrappers around lapack routines.
-
 namespace lapack {
+  // This is a wrapper around workspace queries.  The query function takes
+  // the work, lwork, and info variables and performs a workspace query.
+  // After the query, the work array is allocated.
+  template <typename Scalar>
+  void WorkspaceQueryAndAlloc(std::function<void (Scalar* &, int&, int&)> query_func,
+							  Scalar* &work, int& lwork, int& info) {
+	work = new Scalar[1];
+	lwork = -1;
+	query_func(work, lwork, info);
+	if (info != 0) {
+	  throw std::runtime_error("Bad workspace query");
+	}
+	
+	// Now allocate the work array.
+	lwork = static_cast<int>(work[0]);
+	delete [] work;
+	work = new Scalar[lwork];
+  }
+
 
   void Trmm(char side, char uplo, char transt, char diag, int m, int n,
 			double alpha, double *T, int ldt, double *B, int ldb) {
@@ -61,18 +80,15 @@ namespace lapack {
 
   void Geqrf(int m, int n, float *A, int lda, float *tau) {
 	// First perform the workspace query.
-	float *work = new float[1];
-	int lwork = -1;
+	std::function<void (float* &, int&, int&)> query = [&] (float *work,
+															int& lwork,
+															int& info) {
+	  sgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+	};
+	float *work;
+	int lwork;
 	int info;
-	sgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
-	if (info != 0) {
-	  throw std::runtime_error("Bad sgeqrf_ call");
-	}
-  
-	// Now allocate the work array.
-	lwork = static_cast<int>(work[0]);
-	delete [] work;
-	work = new float[lwork];
+	WorkspaceQueryAndAlloc(query, work, lwork, info);
   
 	// QR routine that does the work.
 	sgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);  
@@ -85,18 +101,15 @@ namespace lapack {
 
   void Geqrf(int m, int n, double *A, int lda, double *tau) {
 	// First perform the workspace query.
-	double *work = new double[1];
-	int lwork = -1;
+	std::function<void (double* &, int&, int&)> query = [&] (double *work,
+															 int& lwork,
+															 int& info) {
+	  dgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+	};
+	double *work;
+	int lwork;
 	int info;
-	dgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
-	if (info != 0) {
-	  throw std::runtime_error("Bad dgeqrf_ call");
-	}
-  
-	// Now allocate the work array.
-	lwork = static_cast<int>(work[0]);
-	delete [] work;
-	work = new double[lwork];
+	WorkspaceQueryAndAlloc(query, work, lwork, info);
 
 	// QR routine that does the work.
 	dgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);  
@@ -157,6 +170,7 @@ namespace lapack {
 	}
   }
 
+
   void Getrs(char trans, int n, int nrhs, float *A, int lda, int *ipiv, float *b, int ldb) {
 	int info;
 	sgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, b, &ldb, &info);
@@ -165,6 +179,49 @@ namespace lapack {
 	}
   }
 
+
+  void Ormqr(char side, char trans, int m, int n, int k, double *A, int lda,
+			 double *tau, double *C, int ldc) {
+	std::function<void (double* &, int&, int&)> query = [&] (double *work,
+															 int& lwork,
+															 int& info) {
+	  dormqr_(&side, &trans, &m, &n, &k, A, &lda, tau, C, &ldc,
+			  work, &lwork, &info);
+	};
+	double *work;
+	int lwork;
+	int info;
+	WorkspaceQueryAndAlloc(query, work, lwork, info);
+	
+	dormqr_(&side, &trans, &m, &n, &k, A, &lda, tau, C, &ldc,
+			work, &lwork, &info);
+	if (info != 0) {
+	  throw std::runtime_error("Bad dormqr_ call");
+	}
+	delete [] work;
+  }
+
+
+  void Ormqr(char side, char trans, int m, int n, int k, float *A, int lda,
+			 float *tau, float *C, int ldc) {
+	std::function<void (float* &, int&, int&)> query = [&] (float *work,
+															 int& lwork,
+															 int& info) {
+	  sormqr_(&side, &trans, &m, &n, &k, A, &lda, tau, C, &ldc,
+			  work, &lwork, &info);
+	};
+	float *work;
+	int lwork;
+	int info;
+	WorkspaceQueryAndAlloc(query, work, lwork, info);
+	
+	sormqr_(&side, &trans, &m, &n, &k, A, &lda, tau, C, &ldc,
+			work, &lwork, &info);
+	if (info != 0) {
+	  throw std::runtime_error("Bad dormqr_ call");
+	}
+	delete [] work;
+  }
 }  // end namespace lapack
 
 
