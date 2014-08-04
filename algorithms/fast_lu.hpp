@@ -22,16 +22,6 @@ void LU(Matrix<Scalar>& A, std::vector<int>& pivots, int pos=0) {
 }
 
 
-template<typename Scalar>
-void Pivot(Matrix<Scalar>& A, std::vector<int>& pivots, int start,
-		   int num_pivs) {
-  int N = A.n();
-  Scalar *data = A.data();
-  int stride = A.stride();
-  lapack::Laswp(N, data, stride, start, start + num_pivs, &pivots[0], 1);
-}
-
-
 // Solve LX = B and store X in B.  L is lower triangular.
 template<typename Scalar>
 void TriangSolve(Matrix<Scalar>& L, Matrix<Scalar>& B) {
@@ -55,34 +45,53 @@ void FastLU(Matrix<Scalar>& A, std::vector<int>& pivots, int blocksize) {
   if (A.m() != A.n()) {
 	throw std::logic_error("Only supporting square matrices.");
   }
-  pivots.resize(A.m());
+  pivots.resize(A.m(), -1);
 
-  int i;
-  for (int i = 0; i + blocksize <= std::min(A.m(), A.n()); i += blocksize) {
+  int j;
+  for (j = 0; j + blocksize <= std::min(A.m(), A.n()); j += blocksize) {
 	// Compute LU on the panel.
-	Matrix<Scalar> Panel = A.Submatrix(i, i, A.m() - i, blocksize);
-	LU(Panel, pivots, i);
-	Pivot(A, pivots, i, blocksize);
-	
-	if (i + blocksize < A.m()) {
+	Matrix<Scalar> Panel = A.Submatrix(j, j, A.m() - j, blocksize);
+	LU(Panel, pivots, j);
+
+	// Adjust the pivots, since our panel actually started at row j
+	for (int i = j; i < j + blocksize; ++i) {
+	  pivots[i] += j;
+	}
+
+	// Apply the pivots to the j columns
+	lapack::Laswp(j, A.data(), A.stride(), j, j + blocksize - 1, &pivots[0], 1);
+
+	if (j + blocksize < A.m()) {
+	  // Apply pivots to the rest of the matrix.
+	  int start = j + blocksize;
+	  lapack::Laswp(A.m() - start, A.data() + start * A.stride(),
+					A.stride(), j, j + blocksize - 1, &pivots[0], 1);
+
 	  // Solve for L11U12 = A12
 	  Matrix<Scalar> L11 = Panel.Submatrix(0, 0, blocksize, blocksize);
-	  Matrix<Scalar> A12 = A.Submatrix(i, i + blocksize, blocksize, A.n() - i - blocksize);
+	  Matrix<Scalar> A12 = A.Submatrix(j, j + blocksize, blocksize, A.n() - j - blocksize);
 	  TriangSolve(L11, A12);
 
 	  // Update with schur complement using fast algorithm.
-	  Matrix<Scalar> L21 = Panel.Submatrix(i, 0, A.m() - i - blocksize, blocksize);
-	  Matrix<Scalar> A22 = A.Submatrix(i, i, A.m() - i, A.n() - i);
+	  Matrix<Scalar> L21 = A.Submatrix(start, j, A.m() - start, blocksize);
+	  Matrix<Scalar> A22 = A.Submatrix(start, start, A.m() - start, A.n() - start);
+
 	  int num_steps = 1;
-	  strassen::FastMatmul(L21, A12, A22, num_steps, 0, 1.0, 1.0);
+	  strassen::FastMatmul(L21, A12, A22, num_steps, 0, -1.0, 1.0);
 	}
   }
 
   // Now deal with any leftovers
-  if (i != std::min(A.m(), A.n())) {
-	Matrix<Scalar> A_end = A.Submatrix(i, i, A.m() - i, A.n() - i);
-	LU(A_end, pivots, i);
-	Pivot(A,  pivots, i, A.m() - i);
+  if (j != std::min(A.m(), A.n())) {
+	Matrix<Scalar> A_end = A.Submatrix(j, j, A.m() - j, A.n() - j);
+	LU(A_end, pivots, j);
+
+	// Adjust the pivots
+	for (int i = j; i < j + blocksize; ++i) {
+	  pivots[i] += j;
+	}
+
+	// Apply the pivots to the j columns
+	lapack::Laswp(j, A.data(), A.stride(), j, std::min(A.m(), A.n()) - 1, &pivots[0], 1);
   }
 }
-

@@ -40,7 +40,7 @@ Matrix<Scalar> TriangFactor(Matrix<Scalar>& A, std::vector<Scalar>& tau,
   return T;
 }
 
-
+// B <- T * B
 template <typename Scalar>
 void TriangMatmul(char side, char uplo, char transt, char diag,
 				  Scalar alpha, Matrix<Scalar>& T, Matrix<Scalar>& B) {
@@ -68,7 +68,8 @@ void UpdateTrailing(Matrix<Scalar>& V, Matrix<Scalar>& T, Matrix<Scalar>& A2) {
   TriangMatmul('L', 'U', 'T', 'N', Scalar(1.0), T, W);
 
   // A2 := A2 - VW
-  strassen::FastMatmul(V, W, A2, num_steps, 0.0, -1.0, 1.0);
+  //strassen::FastMatmul(V, W, A2, num_steps, 0.0, -1.0, 1.0);
+  
 }
 
 
@@ -93,6 +94,7 @@ void FastQR(Matrix<Scalar>& A, std::vector<Scalar>& tau, int blocksize) {
 	  // A2 := (I - VT'V')A2
 	  UpdateTrailing(A1, T, A2);
 	}
+
   }
 
   // Now deal with any leftovers
