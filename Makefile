@@ -35,25 +35,27 @@ endif
 vpath %.cpp examples benchmarks tests
 
 EXAMPLES_SRC = bini322.cpp \
-      classical.cpp \
-      fast322.cpp \
-      fast323.cpp \
-      fast332.cpp \
-      fast333.cpp \
-      fast424.cpp \
-      fast432.cpp \
-      fast433.cpp \
-      hk332.cpp \
-      strassen.cpp \
-      fast_lu.cpp \
-      fast_qr.cpp
+    classical.cpp \
+    fast322.cpp \
+    fast323.cpp \
+    fast332.cpp \
+    fast333.cpp \
+    fast424.cpp \
+    fast432.cpp \
+    fast433.cpp \
+    hk332.cpp \
+    strassen.cpp \
+    fast_lu.cpp \
+    fast_qr.cpp
 
 BENCHMARKS_SRC = matmul_benchmarks.cpp \
-      add_benchmark.cpp \
-      daxpy_benchmark.cpp \
-      dgemm_curves.cpp
+    add_benchmark.cpp \
+    daxpy_benchmark.cpp \
+    dgemm_curves.cpp
 
-TESTS_SRC = matmul_tests.cpp
+TESTS_SRC = matmul_tests.cpp \
+    fast_lu_test.cpp \
+    fast_qr_test.cpp
 
 
 OBJ_DIR = obj

@@ -416,6 +416,7 @@ void UpdateAdd(Matrix<Scalar>& A1,
     }
 }
 
+
 // C += A1
 template <typename Scalar>
 void UpdateAdd(Matrix<Scalar>& A1,
@@ -434,6 +435,7 @@ void UpdateAdd(Matrix<Scalar>& A1,
         }
     }
 }
+
 
 // C -= A1
 template <typename Scalar>
