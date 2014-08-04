@@ -511,7 +511,7 @@ template <typename Scalar>
 Matrix<Scalar> TransposedCopy(Matrix<Scalar>& A) {
   Matrix<Scalar> At(A.n(), A.m());
   Scalar *A_data = A.data();
-  Scalar *At_data = A.data();
+  Scalar *At_data = At.data();
   int A_stride = A.stride();
   int At_stride = At.stride();
   for (int j = 0; j < A.n(); ++j) {
