@@ -10,7 +10,11 @@ void QRSolve(Matrix<double>& A, std::vector<double>& tau, Matrix<double>& RHS) {
   char side = 'L';   // Apply Q' on left-hand-side
   char trans = 'T';  // Apply Q'
   // Apply Q' to RHS and store in RHS
-  lapack::Ormqr(side, trans, A.m(), A.n(), tau.size(), A.data(), A.stride(),
+  int M = RHS.m();
+  int N = RHS.n();
+  int K = A.n();
+  assert(tau.size() <= K);
+  lapack::Ormqr(side, trans, M, N, K, A.data(), A.stride(),
 				&tau[0], RHS.data(), RHS.stride());
 
   // Solve with R and store in RHS
@@ -18,7 +22,10 @@ void QRSolve(Matrix<double>& A, std::vector<double>& tau, Matrix<double>& RHS) {
   char uplo = 'U';    // R is uppper triangular
   char transa = 'N';  // no transpose
   char diag = 'N';    // not unit triangular
-  lapack::Trsm(side, uplo, transa, diag, RHS.m(), RHS.n(), 1.0,
+  M = K;
+  N = RHS.n();
+  
+  lapack::Trsm(side, uplo, transa, diag, M, N, 1.0,
 			   A.data(), A.stride(), RHS.data(), RHS.stride());
 }
 
@@ -27,8 +34,9 @@ void Compare(Matrix<double>& A, std::vector<double>& tau_A,
 			 Matrix<double>& B, std::vector<double>& tau_B) {
   Matrix<double> rhs_A = RandomMatrix<double>(A.m(), 1);
   Matrix<double> rhs_B = rhs_A;
+
   QRSolve(A, tau_A, rhs_A);
-  QRSolve(B, tau_B, rhs_B);
+  QRSolve(A, tau_A, rhs_B);
   std::cout << "Max. rel. diff. (solution): " << MaxRelativeDiff(rhs_A, rhs_B)
 			<< std::endl;
 }
