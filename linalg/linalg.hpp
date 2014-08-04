@@ -493,13 +493,14 @@ void ZeroOut(Matrix<Scalar>& C) {
 // Generate a matrix with random uniform entries on [0, 1024]
 template <typename Scalar>
 Matrix<Scalar> RandomMatrix(int m, int n) {
-  srand (time(NULL));
   Matrix<Scalar> A(m, n);
   // We can use fancier C++11 random number generators, but they are
   // still slow on some systems.
   for (int j = 0; j < A.n(); ++j) {
     for (int i = 0; i < A.m(); ++i) {
-      A.data()[i + j * A.stride()] = ((double) rand() / RAND_MAX) * 1024;
+	  double val = static_cast<double>(rand());
+	  val -= (RAND_MAX / 2);
+      A.data()[i + j * A.stride()] = val / RAND_MAX;
     }
   }  
   return A;
