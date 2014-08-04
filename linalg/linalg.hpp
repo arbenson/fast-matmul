@@ -29,12 +29,15 @@ public:
   Matrix(Matrix<Scalar>& that) {
 	m_ = that.m();
 	n_ = that.n();
-	stride_ = that.stride();
+	stride_ = m_;
 	multiplier_ = that.multiplier();
 	allocate();
 	Scalar *that_data = that.data();
-	for (int i = 0; i < m_ * n_; ++i) {
-	  data_[i] = that_data[i];
+	int that_stride = that.stride();
+	for (int j = 0; j < n_; ++j) {
+	  for (int i = 0; i < m_; ++i) {
+		data_[i + j * stride_] = that_data[i + j * that_stride];
+	  }
 	}
   }
 
