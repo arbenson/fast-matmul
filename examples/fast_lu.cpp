@@ -16,6 +16,6 @@ int main(int argc, char **argv) {
   Matrix<double> B = A;
 
   std::vector<int> pivots(A.m());
-  Time([&] { LU(A, pivots, 0); }, "Classical LU");
-  Time([&] { FastLU(B, blocksize, pivots); }, "Fast LU");
+  Time([&] { LU(A, pivots); }, "Classical LU");
+  Time([&] { FastLU(B, pivots, blocksize); }, "Fast LU");
 }

@@ -24,7 +24,7 @@ void RunTest(int m, int blocksize) {
   Matrix<double> B = A;
   std::vector<int> pivots_A(A.m()), pivots_B(B.m());
   LU(A, pivots_A);
-  FastLU(B, blocksize, pivots_B);
+  FastLU(B, pivots_B, blocksize);
   Compare(A, pivots_A, B, pivots_B);
 }
 

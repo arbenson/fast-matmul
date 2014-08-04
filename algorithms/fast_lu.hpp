@@ -51,7 +51,7 @@ void TriangSolve(Matrix<Scalar>& L, Matrix<Scalar>& B) {
 
 
 template<typename Scalar>
-void FastLU(Matrix<Scalar>& A, int blocksize, std::vector<int>& pivots) {
+void FastLU(Matrix<Scalar>& A, std::vector<int>& pivots, int blocksize) {
   if (A.m() != A.n()) {
 	throw std::logic_error("Only supporting square matrices.");
   }
@@ -85,3 +85,4 @@ void FastLU(Matrix<Scalar>& A, int blocksize, std::vector<int>& pivots) {
 	Pivot(A,  pivots, i, A.m() - i);
   }
 }
+
