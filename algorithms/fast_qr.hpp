@@ -74,13 +74,13 @@ void UpdateTrailing(Matrix<Scalar>& V, Matrix<Scalar>& T, Matrix<Scalar>& A2) {
 
 template<typename Scalar>
 void FastQR(Matrix<Scalar>& A, std::vector<Scalar>& tau, int blocksize) {
-  if (A.m() != A.n()) {
-	throw std::logic_error("Only supporting m == n for now.");
+  if (A.m() < A.n()) {
+	throw std::logic_error("Only supporting m >= n for now.");
   }
   tau.resize(A.n());
   
   int i;
-  for (i = 0; i + blocksize <= A.m(); i += blocksize) {
+  for (i = 0; i + blocksize <= std::min(A.m(), A.n()); i += blocksize) {
 	// Split A as A = (A1 A2) and compute QR on A1.
 	Matrix<Scalar> A1 = A.Submatrix(i, i, A.m() - i, blocksize);
 	Matrix<Scalar> A2 = A.Submatrix(i, i + blocksize, A.m() - i, A.n() - i - blocksize);
@@ -96,7 +96,7 @@ void FastQR(Matrix<Scalar>& A, std::vector<Scalar>& tau, int blocksize) {
   }
 
   // Now deal with any leftovers
-  if (i != A.m()) {
+  if (i != std::min(A.m(), A.n())) {
 	Matrix<Scalar> A_end = A.Submatrix(i, i, A.m() - i, A.n() - i);
 	QR(A_end, tau, i);
   }
