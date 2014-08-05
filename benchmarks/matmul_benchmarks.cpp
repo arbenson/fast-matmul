@@ -39,11 +39,12 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
 
   assert(m_vals.size() == k_vals.size() && k_vals.size() == n_vals.size());
 
-  for (int i = 0; i < m_vals.size(); ++i) {
-    for (int curr_num_steps : num_steps) {
-	  std::cout << Alg2Str(algorithm) << "_" << curr_num_steps << std::endl;
+  for (int curr_num_steps : num_steps) {
+	std::cout << Alg2Str(algorithm) << "_" << curr_num_steps << std::endl;
+	for (int i = 0; i < m_vals.size(); ++i) {
       SingleBenchmark(m_vals[i], k_vals[i], n_vals[i], curr_num_steps, algorithm);
     }
+	std::cout << std::endl;
   }
   std::cout << std::endl << std::endl;
 }
@@ -74,6 +75,24 @@ void SquareBenchmark() {
   return;
 }
 
+void TSSquareBenchmark() {
+  std::vector<int> m_vals;
+  for (int i = 6000; i <= 12000; i += 400) {
+	m_vals.push_back(i);
+  }
+  std::vector<int> k_vals(m_vals.size(), 1600);
+
+  std::vector<int> num_levels = {0};
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, MKL);
+
+  num_levels = {1, 2};
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST522_18_99);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST433_29_234);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, STRASSEN);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST424_26_257);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST323_15_103);
+}
+
 
 int main(int argc, char **argv) {
   auto opts = GetOpts(argc, argv);
@@ -85,6 +104,9 @@ int main(int argc, char **argv) {
   }
   if (OptExists(opts, "inner_square")) {
 	InnerSquareBenchmark();
+  }
+  if (OptExists(opts, "ts_square")) {
+	TSSquareBenchmark();
   }
   return 0;
 }
