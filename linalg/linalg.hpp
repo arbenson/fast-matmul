@@ -20,10 +20,17 @@
 template <typename Scalar>
 class Matrix {
 public:
-  // Default constructor
-  Matrix(int n=0) : m_(n), n_(n), stride_(n), is_view_(false), multiplier_(Scalar(1)) {
+  Matrix(int m, int n, Scalar multiplier) : m_(m), n_(n), stride_(m), is_view_(false),
+											multiplier_(multiplier), data_(NULL) {
 	allocate();
   }
+
+  Matrix(int m, int n) : Matrix(m, n, Scalar(1)) {}
+
+  Matrix(int n) : Matrix(n, n) {}
+
+  // Default constructor
+  Matrix() : Matrix(0) {}
 
   // Copy constructor
   Matrix(Matrix<Scalar>& that) {
@@ -63,19 +70,10 @@ public:
 
 
   Matrix(Scalar *data, int stride, int m, int n, Scalar multiplier=Scalar(1)):
-	data_(data), stride_(stride), m_(m), n_(n), is_view_(true), multiplier_(multiplier) {
+	data_(data), stride_(stride), m_(m), n_(n), is_view_(true),
+	multiplier_(multiplier) {
 	assert(stride >= m);
   }
-
-  Matrix(int m, int n) : m_(m), n_(n), stride_(m), is_view_(false), multiplier_(Scalar(1)) {
-	allocate();
-  }
-
-
-  Matrix(int m, int n, Scalar multiplier) : m_(m), n_(n), stride_(m), is_view_(false), multiplier_(multiplier) {
-	allocate();
-  }
-
 
   // Get a view of a subblock of the matrix.
   // num_block_rows and num_block_cols are the number of block rows and columns
