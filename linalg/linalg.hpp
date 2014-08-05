@@ -8,6 +8,7 @@
 #endif
 
 #include <assert.h>
+#include <cstddef>
 #include <time.h>
 
 #include <cmath>
@@ -20,25 +21,25 @@
 template <typename Scalar>
 class Matrix {
 public:
-  Matrix(int m, int n, Scalar multiplier) : m_(m), n_(n), stride_(m), is_view_(false),
-											multiplier_(multiplier), data_(NULL) {
-	allocate();
-  }
 
+  Matrix(Scalar *data, int stride, int m, int n, Scalar multiplier, bool is_view) :
+	data_(data), stride_(stride), m_(m), n_(n), multiplier_(multiplier), is_view_(is_view) {
+	if (!is_view) {
+	  allocate();
+	}
+  }  
+
+  Matrix(Scalar *data, int stride, int m, int n, Scalar multiplier) :
+    Matrix(data, stride, m, n, multiplier, true) {}
+  Matrix(Scalar *data, int stride, int m, int n) : Matrix(data, stride, m, n, Scalar(1)) {}
+
+  Matrix(int m, int n, Scalar multiplier) : Matrix(NULL, m, m, n, multiplier, false) {}
   Matrix(int m, int n) : Matrix(m, n, Scalar(1)) {}
-
-  Matrix(int n) : Matrix(n, n) {}
-
-  // Default constructor
-  Matrix() : Matrix(0) {}
+  Matrix(int n=0) : Matrix(n, n) {}
 
   // Copy constructor
-  Matrix(Matrix<Scalar>& that) {
-	m_ = that.m();
-	n_ = that.n();
-	stride_ = m_;
-	multiplier_ = that.multiplier();
-	allocate();
+  Matrix(Matrix<Scalar>& that) : Matrix(NULL, that.m(), that.m(), that.n(),
+										that.multiplier(), false) {
 	Scalar *that_data = that.data();
 	int that_stride = that.stride();
 	for (int j = 0; j < n_; ++j) {
@@ -60,20 +61,15 @@ public:
   }
 
   friend void swap(Matrix<Scalar>& first, Matrix<Scalar>& second) {
-	std::swap(first.m_, second.m_);
-	std::swap(first.n_, second.n_);
-	std::swap(first.stride_, second.stride_);
-	std::swap(first.is_view_, second.is_view_);
-	std::swap(first.data_, second.data_);
-	std::swap(first.multiplier_, second.multiplier_);
+	using std::swap;
+	swap(first.m_, second.m_);
+	swap(first.n_, second.n_);
+	swap(first.stride_, second.stride_);
+	swap(first.is_view_, second.is_view_);
+	swap(first.data_, second.data_);
+	swap(first.multiplier_, second.multiplier_);
   }
 
-
-  Matrix(Scalar *data, int stride, int m, int n, Scalar multiplier=Scalar(1)):
-	data_(data), stride_(stride), m_(m), n_(n), is_view_(true),
-	multiplier_(multiplier) {
-	assert(stride >= m);
-  }
 
   // Get a view of a subblock of the matrix.
   // num_block_rows and num_block_cols are the number of block rows and columns
@@ -104,9 +100,10 @@ public:
   int m() { return m_; }
   int n() { return n_; }
 
-  //  template <typename Scalar>
+
   void allocate() {
 	if (n_ > 0 && m_ > 0) {
+	  assert(stride_ >= m_);
 #ifdef _INTEL_MKL_
 	  int alignment = 32;
 	  data_ = static_cast<Scalar *>(mkl_malloc(sizeof(Scalar) * m_ * n_, alignment));
@@ -116,6 +113,7 @@ public:
 	  assert(data_ != NULL);
 	}
   }
+
 
   void deallocate() {
 	if (data_ != NULL) {
