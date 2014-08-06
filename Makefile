@@ -51,7 +51,8 @@ EXAMPLES_SRC = bini322.cpp \
 BENCHMARKS_SRC = matmul_benchmarks.cpp \
     add_benchmark.cpp \
     daxpy_benchmark.cpp \
-    dgemm_curves.cpp
+    dgemm_curves.cpp \
+    add_perf_benchmarks.cpp
 
 TESTS_SRC = matmul_tests.cpp \
     fast_lu_test.cpp \
