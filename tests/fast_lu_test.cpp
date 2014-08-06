@@ -17,12 +17,14 @@ void Compare(Matrix<double>& A, std::vector<int>& pivots_A,
 			<< std::endl;
 }
 
+
 void RunTest(int m, int blocksize) {
   std::cout << "Factoring " << m << " x " << m << " matrix with blocksize="
 			<< blocksize << std::endl;
   Matrix<double> A = RandomMatrix<double>(m, m);
   Matrix<double> B = A;
-  std::vector<int> pivots_A(A.m()), pivots_B(B.m());
+  std::vector<int> pivots_A(A.m());
+  std::vector<int> pivots_B(B.m());
   LU(A, pivots_A);
   FastLU(B, pivots_B, blocksize);
   Compare(A, pivots_A, B, pivots_B);
@@ -30,6 +32,9 @@ void RunTest(int m, int blocksize) {
 
 
 int main(int argc, char **argv) {
+  RunTest(20, 6);
+  RunTest(30, 18);
+  RunTest(4000, 3000);
   RunTest(4000, 800);
   RunTest(5000, 1000);
   RunTest(4301, 725);
