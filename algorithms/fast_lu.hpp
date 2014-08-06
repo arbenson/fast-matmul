@@ -59,13 +59,13 @@ void FastLU(Matrix<Scalar>& A, std::vector<int>& pivots, int blocksize) {
 	}
 
 	// Apply the pivots to the j columns
-	lapack::Laswp(j, A.data(), A.stride(), j, j + blocksize - 1, &pivots[0], 1);
+	lapack::Laswp(j, A.data(), A.stride(), j + 1, j + blocksize, &pivots[0], 1);
 
 	if (j + blocksize < A.m()) {
 	  // Apply pivots to the rest of the matrix.
 	  int start = j + blocksize;
 	  lapack::Laswp(A.m() - start, A.data() + start * A.stride(),
-					A.stride(), j, j + blocksize - 1, &pivots[0], 1);
+					A.stride(), j + 1, j + blocksize, &pivots[0], 1);
 
 	  // Solve for L11U12 = A12
 	  Matrix<Scalar> L11 = Panel.Submatrix(0, 0, blocksize, blocksize);
@@ -87,11 +87,12 @@ void FastLU(Matrix<Scalar>& A, std::vector<int>& pivots, int blocksize) {
 	LU(A_end, pivots, j);
 
 	// Adjust the pivots
-	for (int i = j; i < j + blocksize; ++i) {
+	for (int i = j; i < std::min(A.m(), A.n()); ++i) {
 	  pivots[i] += j;
 	}
 
-	// Apply the pivots to the j columns
-	lapack::Laswp(j, A.data(), A.stride(), j, std::min(A.m(), A.n()) - 1, &pivots[0], 1);
+	// Apply the pivots to the first j columns
+	lapack::Laswp(j, A.data(), A.stride(), j + 1, std::min(A.m(), A.n()),
+				  &pivots[0], 1);
   }
 }
