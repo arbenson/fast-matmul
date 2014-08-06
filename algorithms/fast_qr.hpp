@@ -56,7 +56,6 @@ void TriangMatmul(char side, char uplo, char transt, char diag,
 
 template <typename Scalar>
 void UpdateTrailing(Matrix<Scalar>& V, Matrix<Scalar>& T, Matrix<Scalar>& A2) {
-  // W := V^T
   Matrix<Scalar> Vt = TransposedCopy(V);
 
   // W := Vt * A2
@@ -68,8 +67,7 @@ void UpdateTrailing(Matrix<Scalar>& V, Matrix<Scalar>& T, Matrix<Scalar>& A2) {
   TriangMatmul('L', 'U', 'T', 'N', Scalar(1.0), T, W);
 
   // A2 := A2 - VW
-  //strassen::FastMatmul(V, W, A2, num_steps, 0.0, -1.0, 1.0);
-  
+  strassen::FastMatmul(V, W, A2, num_steps, 0.0, -1.0, 1.0);  
 }
 
 
