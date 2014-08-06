@@ -821,15 +821,18 @@ def main():
             else:
                 raise Exception('Unknown fourth argument.')
 
+        # Create a namespace name from the file name
+        namespace_name = coeff_file.split('.')[0]
+        namespace_name = namespace_name.replace('-', '_')
+        namespace_name = namespace_name.split('/')[-1]
+        if len(sys.argv) > 5:
+            namespace_name = sys.argv[5]
+
         print 'Generating code for %d x %d x %d' % dims
     except:
         raise Exception('USAGE: python gen.py coeff_file m,n,p out_file')
 
     coeffs = read_coeffs(sys.argv[1])
-    # Create a namespace name from the file name
-    namespace_name = coeff_file.split('.')[0]
-    namespace_name = namespace_name.replace('-', '_')
-    namespace_name = namespace_name.split('/')[-1]
 
     with open(outfile, 'w') as header:
         # header information
