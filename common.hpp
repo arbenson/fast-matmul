@@ -14,4 +14,13 @@
 #define _BFS_PAR_ 2
 #define _HYBRID_PAR_ 3
 
+template <typename T>
+std::ostream& operator<<(std::ostream& os, std::vector<T>& vec) {
+  for (int i = 0; i < vec.size(); ++i) {
+	os << vec[i] << " ";
+  }
+  os << std::endl;
+}
+
+
 #endif  // _COMMON_HPP_
