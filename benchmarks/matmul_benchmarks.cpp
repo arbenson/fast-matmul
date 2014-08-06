@@ -49,48 +49,51 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
   std::cout << std::endl << std::endl;
 }
 
-
-// Outer product benchmark set.
-void OuterProductBenchmark() {
-  std::vector<int> m_vals;
-  for (int i = 1600; i <= 12000; i += 400) {
-	m_vals.push_back(i);
-  }
-  std::vector<int> k_vals(m_vals.size(), 1600);
-
-  std::vector<int> num_levels = {0};
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, MKL);
-
-  num_levels = {1, 2};
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, STRASSEN);
-}
-
-
-void InnerSquareBenchmark() {
-  return;
-}
-
-
 void SquareBenchmark() {
   return;
 }
 
-void TSSquareBenchmark() {
+
+// (N, k, N) for fixed k ~ 2000
+void OuterProductBenchmark() {
   std::vector<int> m_vals;
-  for (int i = 6000; i <= 12000; i += 400) {
+  for (int i = 2000; i <= 12000; i += 500) {
 	m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 1600);
+  std::vector<int> num_levels = {0};
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, MKL);
+
+  num_levels = {1, 2};
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST424_26_257);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST433_29_234);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST323_15_103);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST522_18_99);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST423_20_144);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, STRASSEN);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, BINI322);
+}
+
+
+// (N, k, k) for fixed k ~ 2000
+void TSSquareBenchmark() {
+  std::vector<int> m_vals;
+  for (int i = 10000; i <= 20000; i += 500) {
+	m_vals.push_back(i);
+  }
+  std::vector<int> k_vals(m_vals.size(), 2400);
 
   std::vector<int> num_levels = {0};
   BenchmarkSet(m_vals, k_vals, k_vals, num_levels, MKL);
 
   num_levels = {1, 2};
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST522_18_99);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST433_29_234);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, STRASSEN);
   BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST424_26_257);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST433_29_234);
   BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST323_15_103);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST522_18_99);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST423_20_144);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, STRASSEN);
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, BINI322);
 }
 
 
@@ -99,13 +102,10 @@ int main(int argc, char **argv) {
   if (OptExists(opts, "square")) {
 	SquareBenchmark();
   }
-  if (OptExists(opts, "outer_prod")) {
+  if (OptExists(opts, "outer_prod_like")) {
 	OuterProductBenchmark();
   }
-  if (OptExists(opts, "inner_square")) {
-	InnerSquareBenchmark();
-  }
-  if (OptExists(opts, "ts_square")) {
+  if (OptExists(opts, "ts_square_like")) {
 	TSSquareBenchmark();
   }
   return 0;
