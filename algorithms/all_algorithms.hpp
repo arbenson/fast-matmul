@@ -40,7 +40,7 @@
 // All of the algorithms
 enum {
   MKL,
-  BINI332,
+  BINI322,
   CLASSICAL222,
   CLASSICAL333,
   SMIRNOV333_23_128,
@@ -79,7 +79,7 @@ void RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
       // Just run the classical version with zero steps of recursion.
       classical222_8_24::FastMatmul(A, B, C1, 0);
       break;
-    case BINI332:
+    case BINI322:
 	  double x;
 	  // These values of x provide the minimum error, on average.
 	  switch (num_steps) {
@@ -192,8 +192,8 @@ std::string Alg2Str(int algorithm) {
   switch (algorithm) {
   case MKL:
     return "MKL";
-  case BINI332:
-    return "BINI332";
+  case BINI322:
+    return "BINI322";
   case CLASSICAL222:
     return "CLASSICAL2x2";
   case CLASSICAL333:
