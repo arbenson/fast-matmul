@@ -50,6 +50,12 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
 }
 
 void SquareBenchmark() {
+  std::vector<int> m_vals;
+  for (int i = 2000; i <= 6500; i += 500) {
+	m_vals.push_back(i);
+  }
+  std::vector<int> num_levels = {1};
+  BenchmarkSet(m_vals, m_vals, m_vals, num_levels, FAST423_20_144);
   return;
 }
 
@@ -65,20 +71,20 @@ void OuterProductBenchmark() {
   BenchmarkSet(m_vals, k_vals, m_vals, num_levels, MKL);
 
   num_levels = {1, 2};
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST424_26_257);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST433_29_234);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST323_15_103);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST522_18_99);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST423_20_144);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, STRASSEN);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, BINI322);
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST424_26_257);
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST433_29_234);
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST323_15_103);
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST522_18_99);
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST423_20_144);
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, STRASSEN);
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, BINI322);
 }
 
 
 // (N, k, k) for fixed k ~ 2000
 void TSSquareBenchmark() {
   std::vector<int> m_vals;
-  for (int i = 10000; i <= 20000; i += 500) {
+  for (int i = 10000; i <= 18000; i += 500) {
 	m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 2400);

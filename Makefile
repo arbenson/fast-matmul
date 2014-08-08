@@ -1,5 +1,5 @@
-#CXX = g++ 
-CXX = icpc
+CXX = g++ 
+#CXX = icpc
 
 MODE = sequential
 #MODE = openmp
@@ -52,7 +52,7 @@ BENCHMARKS_SRC = matmul_benchmarks.cpp \
     add_benchmark.cpp \
     daxpy_benchmark.cpp \
     dgemm_curves.cpp \
-    add_perf_benchmarks.cpp
+    cse_add_perf_benchmarks.cpp
 
 TESTS_SRC = matmul_tests.cpp \
     fast_lu_test.cpp \

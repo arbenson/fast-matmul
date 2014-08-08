@@ -8,12 +8,12 @@
 #include "special/fast424_26_257_pw.hpp"
 #include "special/fast424_26_257_st.hpp"
 #include "special/fast424_26_257_wo.hpp"
-#include "special/fast433_29_195_pw.hpp"
-#include "special/fast433_29_195_st.hpp"
-#include "special/fast433_29_195_wo.hpp"
-#include "special/fast433_29_234_pw.hpp"
-#include "special/fast433_29_234_st.hpp"
-#include "special/fast433_29_234_wo.hpp"
+#include "special/fast423_20_121_pw.hpp"
+#include "special/fast423_20_121_st.hpp"
+#include "special/fast423_20_121_wo.hpp"
+#include "special/fast423_20_144_pw.hpp"
+#include "special/fast423_20_144_st.hpp"
+#include "special/fast423_20_144_wo.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -23,7 +23,7 @@
 
 enum {
   FAST424_26=0,
-  FAST433_29,
+  FAST423_20,
 };
 
 
@@ -75,29 +75,29 @@ matmul_func GetAlgFunction(int algorithm, int add_type, bool use_cse) {
 	}
 	break;
 
-  case FAST433_29:
+  case FAST423_20:
 	switch (add_type) {
 	case WRITE_ONCE:
 	  if (use_cse) {
-		return fast433_29_195_wo::FastMatmul<double>;
+		return fast423_20_121_wo::FastMatmul<double>;
 	  } else {
-		return fast433_29_234_wo::FastMatmul<double>;
+		return fast423_20_144_wo::FastMatmul<double>;
 	  }
 	  break;
 
 	case STREAMING:
 	  if (use_cse) {
-		return fast433_29_195_st::FastMatmul<double>;
+		return fast423_20_121_st::FastMatmul<double>;
 	  } else {
-		return fast433_29_234_st::FastMatmul<double>;
+		return fast423_20_144_st::FastMatmul<double>;
 	  }
 	  break;
 
 	case PAIRWISE:
 	  if (use_cse) {
-		return fast433_29_195_pw::FastMatmul<double>;
+		return fast423_20_121_pw::FastMatmul<double>;
 	  } else {
-		return fast433_29_234_pw::FastMatmul<double>;
+		return fast423_20_144_pw::FastMatmul<double>;
 	  }
 	  break;
 	default:
@@ -116,8 +116,8 @@ std::string Alg2Str(int algorithm, int add_type, bool use_cse) {
   case FAST424_26:
 	alg_str = "FAST424_26";
 	break;
-  case FAST433_29:
-	alg_str = "FAST433_29";
+  case FAST423_20:
+	alg_str = "FAST423_20";
 	break;
   default:
 	throw std::logic_error("Unknown algorithm");
@@ -157,7 +157,7 @@ void SingleBenchmark(int m, int k, int n, int num_steps, matmul_func func) {
   Matrix<double> C(m, n);
 
   // Run a set number of trials and pick the median time.
-  int num_trials = 5;
+  int num_trials = 3;
   std::vector<double> times(num_trials);
   for (int trial = 0; trial < num_trials; ++trial) {
     times[trial] = Time([&] { FastMatmulShim(A, B, C, num_steps, func); });
@@ -234,19 +234,20 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
 
 void Benchmark424(int num_steps) {
   std::vector<int> m_vals;
-  for (int i = 2000; i <= 3000; i += 500) {
+  for (int i = 2000; i <= 9000; i += 500) {
 	m_vals.push_back(i);
   }
-  BenchmarkSet(m_vals, m_vals, m_vals, num_steps, FAST424_26);
+  std::vector<int> k_vals(m_vals.size(), 1600);
+  BenchmarkSet(m_vals, k_vals, m_vals, num_steps, FAST424_26);
 }
 
 
-void Benchmark433(int num_steps) {
+void Benchmark423(int num_steps) {
   std::vector<int> m_vals;
-  for (int i = 2000; i <= 3000; i += 500) {
+  for (int i = 2000; i <= 6500; i += 500) {
 	m_vals.push_back(i);
   }
-  BenchmarkSet(m_vals, m_vals, m_vals, num_steps, FAST433_29);
+  BenchmarkSet(m_vals, m_vals, m_vals, num_steps, FAST423_20);
 }
 
 
@@ -257,9 +258,9 @@ int main(int argc, char **argv) {
 	Benchmark424(num_steps);
   }
 
-  num_steps = GetIntOpt(opts, "433", -1);
+  num_steps = GetIntOpt(opts, "423", -1);
   if (num_steps != -1) {
-	Benchmark433(num_steps);
+	Benchmark423(num_steps);
   }
 
   return 0;
