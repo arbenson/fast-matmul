@@ -21,10 +21,13 @@ OPTIONS=$1
 SCRIPT=gen.py
 
 # 3,3,6
-python ${SCRIPT} ${ALGS_DIR}/smirnov336-40-960 3,6,6 ${OUT_DIR}/smirnov336_40_960.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/smirnov336-40-960 3,3,6 ${OUT_DIR}/smirnov336_40_960.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/smirnov363-40-960 3,6,3 ${OUT_DIR}/smirnov363_40_960.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/smirnov633-40-960 6,3,3 ${OUT_DIR}/smirnov633_40_960.hpp ${OPTIONS}
 
 # 5,2,2
 python ${SCRIPT} ${ALGS_DIR}/grey522-18-99 5,2,2 ${OUT_DIR}/fast522_18_99.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/grey252-18-99 2,5,2 ${OUT_DIR}/fast252_18_99.hpp ${OPTIONS}
 
 # 4,4,2
 python ${SCRIPT} ${ALGS_DIR}/grey442-26-257 4,4,2 ${OUT_DIR}/fast442_26_257.hpp ${OPTIONS}
@@ -33,6 +36,7 @@ python ${SCRIPT} ${ELIM_DIR}/grey424-26-206 4,2,4 ${OUT_DIR}/fast424_26_206.hpp 
 
 # 4,3,3
 python ${SCRIPT} ${ALGS_DIR}/grey433-29-234 4,3,3 ${OUT_DIR}/fast433_29_234.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/grey343-29-234 3,4,3 ${OUT_DIR}/fast343_29_234.hpp ${OPTIONS}
 
 # 4,3,2
 python ${SCRIPT} ${ALGS_DIR}/grey432-20-144 4,3,2 ${OUT_DIR}/fast432_20_144.hpp ${OPTIONS}
