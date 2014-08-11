@@ -2,7 +2,7 @@ CXX = g++
 #CXX = icpc
 
 MODE = sequential
-#MODE = openmp
+MODE = openmp
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
@@ -52,7 +52,8 @@ BENCHMARKS_SRC = matmul_benchmarks.cpp \
     add_benchmark.cpp \
     daxpy_benchmark.cpp \
     dgemm_curves.cpp \
-    cse_add_perf_benchmarks.cpp
+    cse_add_perf_benchmarks.cpp \
+    simple_dgemm.cpp	
 
 TESTS_SRC = matmul_tests.cpp \
     fast_lu_test.cpp \
@@ -72,6 +73,15 @@ obj:
 
 build:
 	mkdir -p $(OUTPUT_DIR)
+
+matmul_bench_dfs: matmul_benchmarks.cpp
+	$(CXX) $(CXXFLAGS) -D_PARALLEL_=1 $< $(LDFGLAS) $(LDLIBS) -o $(OUTPUT_DIR)/$@
+
+matmul_bench_bfs: matmul_benchmarks.cpp
+	$(CXX) $(CXXFLAGS) -D_PARALLEL_=2 $< $(LDFGLAS) $(LDLIBS) -o $(OUTPUT_DIR)/$@
+
+matmul_bench_hybid: matmul_benchmarks.cpp
+	$(CXX) $(CXXFLAGS) -D_PARALLEL_=3 $< $(LDFGLAS) $(LDLIBS) -o $(OUTPUT_DIR)/$@
 
 obj/%.o : %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
