@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
   if (OptExists(opts, "extra_gemm")) {
 	ExtraGemmTests();
   }
-  if (OptExists(opts, "-all")) {
+  if (OptExists(opts, "all")) {
 	FastMatmulTests();
 	ExtraGemmTests();
   }
