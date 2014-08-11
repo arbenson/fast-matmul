@@ -494,9 +494,8 @@ Matrix<Scalar> RandomMatrix(int m, int n) {
   // still slow on some systems.
   for (int j = 0; j < A.n(); ++j) {
     for (int i = 0; i < A.m(); ++i) {
-	  double val = static_cast<double>(rand());
-	  val -= (RAND_MAX / 2);
-      A.data()[i + j * A.stride()] = val / RAND_MAX;
+	  double val = static_cast<double>(rand()) / RAND_MAX;
+      A.data()[i + j * A.stride()] = val;
     }
   }  
   return A;
