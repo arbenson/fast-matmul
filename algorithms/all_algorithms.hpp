@@ -22,8 +22,10 @@
 #include "fast424_26_257.hpp"
 #include "fast432_20_144.hpp"
 #include "fast433_29_234.hpp"
+#include "fast343_29_234.hpp"
 #include "fast442_26_257.hpp"
 #include "fast522_18_99.hpp"
+#include "fast252_18_99.hpp"
 
 // Other fast algorithms and classical algorithms
 #include "bini322.hpp"
@@ -35,6 +37,8 @@
 #include "smirnov333_23_128.hpp"
 #include "smirnov333_23_139.hpp"
 #include "smirnov336_40_960.hpp"
+#include "smirnov363_40_960.hpp"
+#include "smirnov633_40_960.hpp"
 #include "strassen.hpp"
 
 // All of the algorithms
@@ -46,6 +50,8 @@ enum {
   SMIRNOV333_23_128,
   SMIRNOV333_23_139,
   SMIRNOV336_40_960,
+  SMIRNOV363_40_960,
+  SMIRNOV633_40_960,
   HK332_15_94,
   HK323_15_94,
   HK323_15_84,
@@ -64,10 +70,13 @@ enum {
   FAST234_20_144,
   FAST243_20_144,
   FAST422_14_84,
+  FAST442_26_257,
   FAST424_26_257,
   FAST424_26_206,
   FAST433_29_234,
+  FAST343_29_234,
   FAST522_18_99,
+  FAST252_18_99,
 };
 
 
@@ -148,6 +157,9 @@ void RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
     case FAST433_29_234:
       grey433_29_234::FastMatmul(A, B, C1, num_steps);
       break;
+    case FAST343_29_234:
+      grey343_29_234::FastMatmul(A, B, C1, num_steps);
+      break;
     case SMIRNOV333_23_128:
       smirnov333_23_128::FastMatmul(A, B, C1, num_steps);
       break;
@@ -156,6 +168,12 @@ void RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
       break;
     case SMIRNOV336_40_960:
       smirnov336_40_960::FastMatmul(A, B, C1, num_steps);
+      break;
+    case SMIRNOV363_40_960:
+      smirnov363_40_960::FastMatmul(A, B, C1, num_steps);
+      break;
+    case SMIRNOV633_40_960:
+      smirnov633_40_960::FastMatmul(A, B, C1, num_steps);
       break;
     case HK332_15_94:
       hk332_15_94::FastMatmul(A, B, C1, num_steps);
@@ -175,11 +193,17 @@ void RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
     case FAST424_26_257:
       grey424_26_257::FastMatmul(A, B, C1, num_steps);
       break;
+    case FAST442_26_257:
+      grey442_26_257::FastMatmul(A, B, C1, num_steps);
+      break;
     case FAST424_26_206:
       grey424_26_206::FastMatmul(A, B, C1, num_steps);
       break;
     case FAST522_18_99:
       grey522_18_99::FastMatmul(A, B, C1, num_steps);
+      break;
+    case FAST252_18_99:
+      grey252_18_99::FastMatmul(A, B, C1, num_steps);
       break;
     default:
       std::cout << "Unknown algorithm type!" << std::endl;
@@ -226,12 +250,18 @@ std::string Alg2Str(int algorithm) {
     return "FAST243_20_144";
   case FAST433_29_234:
     return "FAST433_29_234";
+  case FAST343_29_234:
+    return "FAST343_29_234";
   case SMIRNOV333_23_128:
     return "SMIRNOV333_23_128";
   case SMIRNOV333_23_139:
     return "SMIRNOV333_23_139";
   case SMIRNOV336_40_960:
     return "SMIRNOV336_40_960";
+  case SMIRNOV363_40_960:
+    return "SMIRNOV363_40_960";
+  case SMIRNOV633_40_960:
+    return "SMIRNOV633_40_960";
   case HK332_15_94:
     return "HK332_15_94";
   case HK323_15_94:
@@ -244,10 +274,14 @@ std::string Alg2Str(int algorithm) {
     return "FAST422_14_84";
   case FAST424_26_257:
     return "FAST424_26_257";
+  case FAST442_26_257:
+    return "FAST442_26_257";
   case FAST424_26_206:
     return "FAST424_26_206";
   case FAST522_18_99:
     return "FAST522_18_99";
+  case FAST252_18_99:
+    return "FAST252_18_99";
   default:
     throw std::logic_error("Unknown algorithm type!");
   }
