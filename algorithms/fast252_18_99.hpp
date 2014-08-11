@@ -870,7 +870,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 
 
     // M1 = (-1.0 * A23) * (1.0 * B11 + 1.0 * B21 + -1.0 * B31)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 1, num_threads)) untied
     {
 #endif
@@ -879,7 +879,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     M1.UpdateMultiplier(Scalar(-1));
     FastMatmulRecursive(A23, T1, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 18, x, num_threads, Scalar(0.0));
     T1.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 1, num_threads)) {
 # pragma omp taskwait
@@ -890,7 +890,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M2 = (1.0 * A14 + 1.0 * A25) * (1.0 * B41 + 1.0 * B52)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 2, num_threads)) untied
     {
 #endif
@@ -901,7 +901,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     FastMatmulRecursive(S2, T2, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 18, x, num_threads, Scalar(0.0));
     S2.deallocate();
     T2.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 2, num_threads)) {
 # pragma omp taskwait
@@ -912,7 +912,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M3 = (-1.0 * A13) * (1.0 * B11 + 1.0 * B21 + -1.0 * B31)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 3, num_threads)) untied
     {
 #endif
@@ -921,7 +921,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     M3.UpdateMultiplier(Scalar(-1));
     FastMatmulRecursive(A13, T3, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 18, x, num_threads, Scalar(0.0));
     T3.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 3, num_threads)) {
 # pragma omp taskwait
@@ -932,7 +932,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M4 = (1.0 * A25) * (-1.0 * B41 + 1.0 * B51)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 4, num_threads)) untied
     {
 #endif
@@ -940,7 +940,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     T_Add4(B41, B51, T4, x);
     FastMatmulRecursive(A25, T4, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 18, x, num_threads, Scalar(0.0));
     T4.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 4, num_threads)) {
 # pragma omp taskwait
@@ -951,7 +951,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M5 = (1.0 * A11 + -1.0 * A12 + -1.0 * A21 + 1.0 * A22) * (1.0 * B12)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 5, num_threads)) untied
     {
 #endif
@@ -959,7 +959,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add5(A11, A12, A21, A22, S5, x);
     FastMatmulRecursive(S5, B12, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 18, x, num_threads, Scalar(0.0));
     S5.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 5, num_threads)) {
 # pragma omp taskwait
@@ -970,7 +970,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M6 = (1.0 * A14) * (1.0 * B42 + -1.0 * B52)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 6, num_threads)) untied
     {
 #endif
@@ -978,7 +978,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     T_Add6(B42, B52, T6, x);
     FastMatmulRecursive(A14, T6, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 18, x, num_threads, Scalar(0.0));
     T6.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 6, num_threads)) {
 # pragma omp taskwait
@@ -989,7 +989,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M7 = (-1.0 * A14 + -1.0 * A15) * (1.0 * B52)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 7, num_threads)) untied
     {
 #endif
@@ -997,7 +997,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add7(A14, A15, S7, x);
     FastMatmulRecursive(S7, B52, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 18, x, num_threads, Scalar(0.0));
     S7.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 7, num_threads)) {
 # pragma omp taskwait
@@ -1008,7 +1008,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M8 = (1.0 * A13) * (-1.0 * B12 + -1.0 * B22 + 1.0 * B32)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 8, num_threads)) untied
     {
 #endif
@@ -1016,7 +1016,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     T_Add8(B12, B22, B32, T8, x);
     FastMatmulRecursive(A13, T8, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 18, x, num_threads, Scalar(0.0));
     T8.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 8, num_threads)) {
 # pragma omp taskwait
@@ -1027,7 +1027,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M9 = (1.0 * A21 + -1.0 * A22) * (1.0 * B21)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 9, num_threads)) untied
     {
 #endif
@@ -1035,7 +1035,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     S_Add9(A21, A22, S9, x);
     FastMatmulRecursive(S9, B21, M9, total_steps, steps_left - 1, (start_index + 9 - 1) * 18, x, num_threads, Scalar(0.0));
     S9.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 9, num_threads)) {
 # pragma omp taskwait
@@ -1046,7 +1046,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M10 = (1.0 * A24 + 1.0 * A25) * (-1.0 * B41)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 10, num_threads)) untied
     {
 #endif
@@ -1055,7 +1055,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     M10.UpdateMultiplier(Scalar(-1));
     FastMatmulRecursive(S10, B41, M10, total_steps, steps_left - 1, (start_index + 10 - 1) * 18, x, num_threads, Scalar(0.0));
     S10.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 10, num_threads)) {
 # pragma omp taskwait
@@ -1066,7 +1066,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M11 = (1.0 * A21 + 1.0 * A23) * (1.0 * B11 + 1.0 * B21)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 11, num_threads)) untied
     {
 #endif
@@ -1077,7 +1077,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     FastMatmulRecursive(S11, T11, M11, total_steps, steps_left - 1, (start_index + 11 - 1) * 18, x, num_threads, Scalar(0.0));
     S11.deallocate();
     T11.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 11, num_threads)) {
 # pragma omp taskwait
@@ -1088,7 +1088,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M12 = (-1.0 * A12 + -1.0 * A13 + 1.0 * A22) * (1.0 * B12 + 1.0 * B22)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 12, num_threads)) untied
     {
 #endif
@@ -1099,7 +1099,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     FastMatmulRecursive(S12, T12, M12, total_steps, steps_left - 1, (start_index + 12 - 1) * 18, x, num_threads, Scalar(0.0));
     S12.deallocate();
     T12.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 12, num_threads)) {
 # pragma omp taskwait
@@ -1110,7 +1110,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M13 = (-1.0 * A14 + 1.0 * A24) * (1.0 * B41 + 1.0 * B42)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 13, num_threads)) untied
     {
 #endif
@@ -1121,7 +1121,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     FastMatmulRecursive(S13, T13, M13, total_steps, steps_left - 1, (start_index + 13 - 1) * 18, x, num_threads, Scalar(0.0));
     S13.deallocate();
     T13.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 13, num_threads)) {
 # pragma omp taskwait
@@ -1132,7 +1132,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M14 = (-1.0 * A12 + -1.0 * A13 + -1.0 * A21 + 1.0 * A22) * (-1.0 * B12 + 1.0 * B21)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 14, num_threads)) untied
     {
 #endif
@@ -1143,7 +1143,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     FastMatmulRecursive(S14, T14, M14, total_steps, steps_left - 1, (start_index + 14 - 1) * 18, x, num_threads, Scalar(0.0));
     S14.deallocate();
     T14.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 14, num_threads)) {
 # pragma omp taskwait
@@ -1154,7 +1154,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M15 = (1.0 * A11 + 1.0 * A13) * (1.0 * B11 + 1.0 * B12)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 15, num_threads)) untied
     {
 #endif
@@ -1165,7 +1165,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     FastMatmulRecursive(S15, T15, M15, total_steps, steps_left - 1, (start_index + 15 - 1) * 18, x, num_threads, Scalar(0.0));
     S15.deallocate();
     T15.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 15, num_threads)) {
 # pragma omp taskwait
@@ -1176,7 +1176,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M16 = (1.0 * A12 + 1.0 * A13) * (1.0 * B21 + 1.0 * B22)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 16, num_threads)) untied
     {
 #endif
@@ -1187,7 +1187,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     FastMatmulRecursive(S16, T16, M16, total_steps, steps_left - 1, (start_index + 16 - 1) * 18, x, num_threads, Scalar(0.0));
     S16.deallocate();
     T16.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 16, num_threads)) {
 # pragma omp taskwait
@@ -1198,14 +1198,14 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M17 = (-1.0 * A23) * (-1.0 * B32)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 17, num_threads)) untied
     {
 #endif
     M17.UpdateMultiplier(Scalar(-1));
     M17.UpdateMultiplier(Scalar(-1));
     FastMatmulRecursive(A23, B32, M17, total_steps, steps_left - 1, (start_index + 17 - 1) * 18, x, num_threads, Scalar(0.0));
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 17, num_threads)) {
 # pragma omp taskwait
@@ -1216,7 +1216,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 #endif
 
     // M18 = (1.0 * A15 + -1.0 * A25) * (1.0 * B51 + 1.0 * B52)
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(should_launch_task(18, total_steps, steps_left, start_index, 18, num_threads)) untied
     {
 #endif
@@ -1227,7 +1227,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     FastMatmulRecursive(S18, T18, M18, total_steps, steps_left - 1, (start_index + 18 - 1) * 18, x, num_threads, Scalar(0.0));
     S18.deallocate();
     T18.deallocate();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ ||  _PARALLEL_ == _HYBRID_PAR_)
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     }
     if (should_task_wait(18, total_steps, steps_left, start_index, 18, num_threads)) {
 # pragma omp taskwait
