@@ -1955,7 +1955,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     B.set_multiplier(Scalar(1.0));
     // Base case for recursion
     if (steps_left == 0) {
-        Gemm(A, B, C);
+        MatMul(A, B, C);
         return;
     }
 
