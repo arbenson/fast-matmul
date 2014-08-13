@@ -17,7 +17,7 @@ void SingleBenchmark(int m, int k, int n, int num_steps, int algorithm) {
   Matrix<double> C1(m, n);
 
   // Run a set number of trials and pick the median time.
-  int num_trials = 3;
+  int num_trials = 5;
   std::vector<double> times(num_trials);
   for (int trial = 0; trial < num_trials; ++trial) {
     times[trial] = Time([&] { RunAlgorithm(algorithm, A, B, C1, num_steps); });
@@ -52,10 +52,12 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
 
 void SquareTest() {
   std::vector<int> m_vals;
-  for (int i = 8000; i <= 8000; i += 500) {
+  for (int i = 1000; i <= 7500; i += 500) {
 	m_vals.push_back(i);
   }
-  std::vector<int> num_levels = {1, 2, 3};
+  std::vector<int> num_levels = {0};
+  BenchmarkSet(m_vals, m_vals, m_vals, num_levels, MKL);
+  num_levels = {1, 2, 3};
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, STRASSEN);
   return;
 }
@@ -63,12 +65,12 @@ void SquareTest() {
 
 void SquareTestPar() {
   std::vector<int> m_vals;
-  for (int i = 5000; i <= 15000; i += 500) {
+  for (int i = 10000; i <= 10000; i += 500) {
 	m_vals.push_back(i);
   }
   std::vector<int> num_levels = {0};
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, MKL);
-  num_levels = {1, 2};
+  num_levels = {2, 3};
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, STRASSEN);
   return;
 }

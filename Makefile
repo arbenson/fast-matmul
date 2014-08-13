@@ -9,13 +9,16 @@ INCLUDES := -I$(MKLROOT)/include -I./algorithms -I./linalg -I.
 BLAS_LAPACK_LIB =  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread
 MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread -fopenmp
 
+MPIROOT := $(MPICH_DIR)
+INCLUDES += -I$(MPIROOT)/include
+
 # for compiling with Linux BLAS
 #BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
 DEFINES := -DNDEBUG
 #DEFINES += -D_PARALLEL_=1  # DFS
 #DEFINES += -D_PARALLEL_=2  # BFS
-#DEFINES += -D_PARALLEL_=3  # HYBRID
+DEFINES += -D_PARALLEL_=3  # HYBRID
 
 #DEBUG := -g -Wall
 OPT := -O3
@@ -30,6 +33,8 @@ ifeq ($(MODE), openmp)
 else
   LDLIBS := $(BLAS_LAPACK_LIB)  
 endif
+
+LDLIBS += -L$(MPIROOT)/lib -lmpich
 
 vpath %.cpp examples benchmarks tests
 
@@ -79,7 +84,7 @@ matmul_bench_dfs: matmul_benchmarks.cpp
 matmul_bench_bfs: matmul_benchmarks.cpp
 	$(CXX) $(CXXFLAGS) -D_PARALLEL_=2 $< $(LDFGLAS) $(LDLIBS) -o $(OUTPUT_DIR)/$@
 
-matmul_bench_hybid: matmul_benchmarks.cpp
+matmul_bench_hybrid: matmul_benchmarks.cpp
 	$(CXX) $(CXXFLAGS) -D_PARALLEL_=3 $< $(LDFGLAS) $(LDLIBS) -o $(OUTPUT_DIR)/$@
 
 obj/%.o : %.cpp
