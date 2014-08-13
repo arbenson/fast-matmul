@@ -1,8 +1,7 @@
-CXX = g++ 
-#CXX = icpc
+CXX = icpc
 
 MODE = sequential
-MODE = openmp
+#MODE = openmp
 
 # for compiling with MKL
 MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
@@ -13,7 +12,7 @@ MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_threa
 # for compiling with Linux BLAS
 #BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
 
-DEFINES := -D_INTEL_MKL_ -DNDEBUG
+DEFINES := -DNDEBUG
 #DEFINES += -D_PARALLEL_=1  # DFS
 #DEFINES += -D_PARALLEL_=2  # BFS
 #DEFINES += -D_PARALLEL_=3  # HYBRID

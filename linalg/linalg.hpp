@@ -3,7 +3,7 @@
 
 #include "lapack_wrap.hpp"
 
-#ifdef _INTEL_MKL_
+#ifdef __INTEL_MKL__
 # include <mkl.h>
 #endif
 
@@ -104,7 +104,7 @@ public:
   void allocate() {
 	if (n_ > 0 && m_ > 0) {
 	  assert(stride_ >= m_);
-#ifdef _INTEL_MKL_
+#ifdef __INTEL_MKL__
 	  int alignment = 32;
 	  data_ = static_cast<Scalar *>(mkl_malloc(sizeof(Scalar) * m_ * n_, alignment));
 #else
@@ -117,7 +117,7 @@ public:
 
   void deallocate() {
 	if (data_ != NULL) {
-#ifdef _INTEL_MKL_
+#ifdef __INTEL_MKL__
 	  mkl_free(data_);
 #else
 	  delete[] data_;
