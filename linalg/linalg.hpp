@@ -176,7 +176,7 @@ void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 	Matrix<Scalar> A_extra = A.Submatrix(0, inner_dim_start, row_dim, extra_cols_A);
 	Matrix<Scalar> B_extra = B.Submatrix(inner_dim_start, 0, extra_rows_B, col_dim);
 	Matrix<Scalar> C_extra = C.Submatrix(0, 0, row_dim, col_dim);
-	Gemm(A_extra, B_extra, C_extra, Scalar(1.0));
+	MatMul(A_extra, B_extra, C_extra, Scalar(1.0));
   }
 
   // Adjust for far right columns of C
@@ -185,7 +185,7 @@ void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 	int start_ind = B.n() - extra_cols_B;
 	Matrix<Scalar> B_extra = B.Submatrix(0, start_ind, B.m(), extra_cols_B);
 	Matrix<Scalar> C_extra = C.Submatrix(0, start_ind, C.m(), extra_cols_B);
-	Gemm(A, B_extra, C_extra, beta);
+	MatMul(A, B_extra, C_extra, beta);
   }
 
   // Adjust for bottom rows of C
@@ -196,7 +196,7 @@ void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 	Matrix<Scalar> A_extra = A.Submatrix(start_ind, 0, extra_rows_A, A.n());
 	Matrix<Scalar> B_extra = B.Submatrix(0, 0, B.m(), num_cols);
 	Matrix<Scalar> C_extra = C.Submatrix(start_ind, 0, extra_rows_A, num_cols);
-	Gemm(A_extra, B_extra, C_extra, beta);
+	MatMul(A_extra, B_extra, C_extra, beta);
   }
 }
 
@@ -216,58 +216,21 @@ std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
 }
 
 
-// Wrapper for dgemm called by templated gemm.
-void GemmWrap(int m, int n, int k, double *A, int lda, double *B, int ldb, double *C,
-			  int ldc, double alpha, double beta) {
-  char transa = 'n';
-  char transb = 'n';
-  dgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
-		 C, &ldc);
-}
-
-
-// Wrapper for sgemm called by templated gemm.
-void GemmWrap(int m, int n, int k, float *A, int lda, float *B, int ldb,
-			  float *C, int ldc, float alpha, float beta) {
-  char transa = 'n';
-  char transb = 'n';
-  sgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
-		 C, &ldc);
-}
-
-
 // C <-- A * B + beta * C
 template <typename Scalar>
-void Gemm(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
-		  Scalar beta=Scalar(0.0)) {
+void MatMul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
+			Scalar beta=Scalar(0.0)) {
   assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
   assert(A.m() > 0 && A.n() > 0);
   Scalar alpha = C.multiplier();
-  GemmWrap(A.m(), B.n(), A.n(), A.data(), A.stride(), B.data(), B.stride(),
-		   C.data(), C.stride(), alpha, beta);
+  lapack::Gemm('N', 'N', A.m(), B.n(), A.n(), A.data(), A.stride(), B.data(),
+			   B.stride(), C.data(), C.stride(), alpha, beta);
 }
-
-
-// C <-- alpha * A + C
-void AxpyWrap(double *C, double *A, int n, double alpha) {
-  int incx = 1;
-  int incy = 1;
-  daxpy_(&n, &alpha, A, &incx, C, &incy);
-}
-
-
-// C <-- alpha * A + C
-void AxpyWrap(float *C, float *A, int n, float alpha) {
-  int incx = 1;
-  int incy = 1;
-  saxpy_(&n, &alpha, A, &incx, C, &incy);
-}
-
 
 // C <-- alpha * A + C.  n is the number of entries.
 template<typename Scalar>
-void Axpy(Scalar *C, Scalar *A, int n, Scalar alpha) {
-  AxpyWrap(C, A, n, alpha);
+void AxpyWrap(Scalar *C, Scalar *A, int n, Scalar alpha) {
+  lapack::Axpy(C, A, n, alpha, 1, 1);
 }
 
 
@@ -467,7 +430,7 @@ void UpdateAddDaxpy(Matrix<Scalar>& A1,
     for (int j = 0; j < C.n(); ++j) {
         Scalar *dataA_curr = dataA1 + j * strideA1;
 		Scalar *dataC_curr = dataC + j * strideC;
-		Axpy(dataC_curr, dataA_curr, C.m(), alpha1);
+		AxpyWrap(dataC_curr, dataA_curr, C.m(), alpha1);
     }
 }
 

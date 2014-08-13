@@ -222,6 +222,32 @@ namespace lapack {
 	}
 	delete [] work;
   }
+
+  // Wrapper for dgemm called by templated gemm.
+  void Gemm(char transa, char transb, int m, int n, int k, double *A, int lda,
+			double *B, int ldb, double *C, int ldc, double alpha, double beta) {
+	dgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
+		   C, &ldc);
+  }
+
+  // Wrapper for sgemm called by templated gemm.
+  void Gemm(char transa, char transb, int m, int n, int k, float *A, int lda,
+			float *B, int ldb, float *C, int ldc, float alpha, float beta) {
+	sgemm_(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta,
+		   C, &ldc);
+  }
+
+  // C <-- alpha * A + C
+  void Axpy(double *C, double *A, int n, double alpha, int incx, int incy) {
+	daxpy_(&n, &alpha, A, &incx, C, &incy);
+  }
+
+
+  // C <-- alpha * A + C
+  void Axpy(float *C, float *A, int n, float alpha, int incx, int incy) {
+	saxpy_(&n, &alpha, A, &incx, C, &incy);
+  }
+
 }  // end namespace lapack
 
 

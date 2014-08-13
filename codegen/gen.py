@@ -864,7 +864,7 @@ def main():
         # Handle base case
         write_line(header, 1, '// Base case for recursion')
         write_line(header, 1, 'if (steps_left == 0) {')
-        write_line(header, 2, 'Gemm(A, B, C);')
+        write_line(header, 2, 'MatMul(A, B, C);')
         write_line(header, 2, 'return;')
         write_line(header, 1, '}\n')
         
