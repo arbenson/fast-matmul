@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     Matrix<double> B = RandomMatrix<double>(k, n);
     Matrix<double> C1(m, n), C2(m, n);
 
-    Time([&] { Gemm(A, B, C1); }, "Classical gemm");
+    Time([&] { MatMul(A, B, C1); }, "Classical gemm");
 	Time([&] { hk332_15_94::FastMatmul(A, B, C2, numsteps); },
 		 "Hopcroft-Kerr (3, 3, 2)");
 

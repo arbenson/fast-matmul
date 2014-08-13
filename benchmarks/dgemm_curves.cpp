@@ -33,7 +33,7 @@ void RunSingleTest(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C) {
   int num_trials = 5;
   auto func = [&] {
 	for (int trial = 0; trial < num_trials; ++trial) {
-	  Gemm(A, B, C);
+	  MatMul(A, B, C);
 	}
   };
   double time = Time(func);
