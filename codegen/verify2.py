@@ -20,6 +20,14 @@ class Number:
                         self.val[1] = -1
                     elif arg1 == "-ei":
                         self.val[-1] = -1
+                    elif arg1 == "e2":
+                        self.val[2] = 1
+                    elif arg1 == "-e2":
+                        self.val[2] = -1
+                    elif arg1 == "e2i":
+                        self.val[-2] = 1
+                    elif arg1 == "-e2i":
+                        self.val[-2] = -1
                     else:
                         print "Not supported", arg1
                         raise NotImplemented
@@ -83,6 +91,14 @@ class Number:
             return "ei"
         if self.exacteq(Number("-ei")):
             return "-ei"
+        if self.exacteq(Number("e2")):
+            return "e2"
+        if self.exacteq(Number("-e2")):
+            return "-e2"
+        if self.exacteq(Number("e2i")):
+            return "e2i"
+        if self.exacteq(Number("-e2i")):
+            return "-e2i"
         return "(...)"
         
 # the sizes; we check mxnxk matmul with q products, assuming row-major ordering.
