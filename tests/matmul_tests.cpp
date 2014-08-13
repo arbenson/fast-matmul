@@ -12,7 +12,7 @@ void SingleTest(int m, int k, int n, int num_steps, int algorithm) {
   Matrix<double> B = RandomMatrix<double>(k, n);
   Matrix<double> C1(m, n), C2(m, n);
   RunAlgorithm(algorithm, A, B, C1, num_steps);
-  Gemm(A, B, C2);
+  MatMul(A, B, C2);
   std::cout << "Maximum relative difference: " << MaxRelativeDiff(C1, C2)
 			<< std::endl;  
 }
@@ -33,7 +33,7 @@ void TestSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
 
 // Test some of the additional, non-standard functionality associated with
 // matrix multiply.
-void ExtraGemmTests() {
+void ExtraMatMulTests() {
   std::cout << "Additional GEMM tests" << std::endl;
   std::vector<int> m_vals = {1000, 1001, 1007};
   std::vector<int> k_vals = {1000, 200, 400};
@@ -52,7 +52,7 @@ void ExtraGemmTests() {
 			  Matrix<double> B = RandomMatrix<double>(k, n);
 			  Matrix<double> C1 = RandomMatrix<double>(m, n);
 			  Matrix<double> C2 = C1;
-			  Gemm(A, B, C2, beta);
+			  MatMul(A, B, C2, beta);
 			  strassen::FastMatmul(A, B, C1, curr_num_steps, 0, alpha, beta);
 			  std::cout << "Max. rel. diff.: " << MaxRelativeDiff(C1, C2) << std::endl;
 			}
@@ -61,7 +61,7 @@ void ExtraGemmTests() {
 			  Matrix<double> B = RandomMatrix<double>(k, n);
 			  Matrix<double> C1 = RandomMatrix<double>(m, n);
 			  Matrix<double> C2 = C1;
-			  Gemm(A, B, C2, beta);
+			  MatMul(A, B, C2, beta);
 			  grey424_26_257::FastMatmul(A, B, C1, curr_num_steps, 0, alpha, beta);
 			  std::cout << "Max. rel. diff.: " << MaxRelativeDiff(C1, C2) << std::endl;
 			}
@@ -77,7 +77,7 @@ void ExtraGemmTests() {
 			  Matrix<double> C1 = RandomMatrix<double>(m, n);
 			  Matrix<double> C2 = C1;
 			  C2.set_multiplier(alpha);
-			  Gemm(A, B, C2, beta);
+			  MatMul(A, B, C2, beta);
 			  smirnov333_23_128::FastMatmul(A, B, C1, curr_num_steps, 0, alpha, beta);
 			  std::cout << "Max. rel. diff.: " << MaxRelativeDiff(C1, C2) << std::endl;
 			}
@@ -87,7 +87,7 @@ void ExtraGemmTests() {
 			  Matrix<double> C1 = RandomMatrix<double>(m, n);
 			  Matrix<double> C2 = C1;
 			  C2.set_multiplier(alpha);
-			  Gemm(A, B, C2, beta);
+			  MatMul(A, B, C2, beta);
 			  grey522_18_99::FastMatmul(A, B, C1, curr_num_steps, 0, alpha, beta);
 			  std::cout << "Max. rel. diff.: " << MaxRelativeDiff(C1, C2) << std::endl;
 			}
@@ -102,7 +102,7 @@ void ExtraGemmTests() {
 			  Matrix<double> C1 = RandomMatrix<double>(m, n);
 			  Matrix<double> C2 = RandomMatrix<double>(m, n);
 			  C2.set_multiplier(alpha);
-			  Gemm(A, B, C2);
+			  MatMul(A, B, C2);
 			  smirnov333_23_128::FastMatmul(A, B, C1, curr_num_steps, 0, alpha);
 			  std::cout << "Max. rel. diff.: " << MaxRelativeDiff(C1, C2) << std::endl;
 			}
@@ -112,7 +112,7 @@ void ExtraGemmTests() {
 			  Matrix<double> C1 = RandomMatrix<double>(m, n);
 			  Matrix<double> C2 = RandomMatrix<double>(m, n);
 			  C2.set_multiplier(alpha);
-			  Gemm(A, B, C2);
+			  MatMul(A, B, C2);
 			  grey522_18_99::FastMatmul(A, B, C1, curr_num_steps, 0, alpha);
 			  std::cout << "Max. rel. diff.: " << MaxRelativeDiff(C1, C2) << std::endl;
 			}
@@ -167,11 +167,11 @@ int main(int argc, char **argv) {
 	FastMatmulTests();
   }
   if (OptExists(opts, "extra_gemm")) {
-	ExtraGemmTests();
+	ExtraMatMulTests();
   }
   if (OptExists(opts, "all")) {
 	FastMatmulTests();
-	ExtraGemmTests();
+	ExtraMatMulTests();
   }
   return 0;  
 }
