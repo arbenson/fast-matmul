@@ -3,8 +3,12 @@
 
 #include "lapack_wrap.hpp"
 
-#ifdef __INTEL_MKL__
-# include <mkl.h>
+#ifdef _PARALLEL_
+# include <omp.h>
+#endif
+
+#if defined(_PARALLEL_) || defined(__INTEL_MKL__)
+# include "mkl.h"
 #endif
 
 #include <assert.h>
