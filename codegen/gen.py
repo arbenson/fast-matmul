@@ -291,7 +291,7 @@ def streaming_additions(header, coeff_set, mat_name, tmp_name, mat_dims, is_outp
 
     def inner_loop(handle_beta=False):
         write_line(header, 0, '#ifdef _PARALLEL_')
-        write_line(header, 0, '# pragma omp parallel for collapse(2)')
+        write_line(header, 0, '# pragma omp parallel for')
         write_line(header, 0, '#endif')
         write_line(header, 1, 'for (int j = 0; j < %s11.n(); ++j) {' % mat_name)
         write_line(header, 2, 'for (int i = 0; i < %s11.m(); ++i) {' % mat_name)
@@ -444,7 +444,7 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
     if is_output:
         write_line(header, 1, 'if (beta != Scalar(0.0)) {')
         write_line(header, 0, '#ifdef _PARALLEL_')
-        write_line(header, 0, '# pragma omp parallel for collapse(2)')
+        write_line(header, 0, '# pragma omp parallel for')
         write_line(header, 0, '#endif')
         write_line(header, 2, 'for (int j = 0; j < C.n(); ++j) {')
         write_line(header, 3, 'for (int i = 0; i < C.m(); ++i) {')
@@ -459,7 +459,7 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
         write_line(header, 2, '}')
         write_line(header, 1, '} else {')
         write_line(header, 0, '#ifdef _PARALLEL_')
-        write_line(header, 0, '# pragma omp parallel for collapse(2)')
+        write_line(header, 0, '# pragma omp parallel for')
         write_line(header, 0, '#endif')
         write_line(header, 2, 'for (int j = 0; j < C.n(); ++j) {')
         write_line(header, 3, 'for (int i = 0; i < C.m(); ++i) {')
@@ -474,7 +474,7 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
         write_line(header, 1, '}')
     else:
         write_line(header, 0, '#ifdef _PARALLEL_')
-        write_line(header, 0, '# pragma omp parallel for collapse(2)')
+        write_line(header, 0, '# pragma omp parallel for')
         write_line(header, 0, '#endif')
         write_line(header, 1, 'for (int j = 0; j < C.n(); ++j) {')
         write_line(header, 2, 'for (int i = 0; i < C.m(); ++i) {')
@@ -616,6 +616,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
     if index != num_multiplies:
         write_line(header, 0, '# if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)')
         write_line(header, 1, 'mkl_set_num_threads_local(num_threads);')
+        write_line(header, 1, 'mkl_set_dynamic(0);')
         write_line(header, 0, '# endif')
     write_line(header, 1, '}')
     write_line(header, 0, '#endif\n')
@@ -903,6 +904,12 @@ def main():
 
         write_break(header)
         write_line(header, 1, '// Handle edge cases with dynamic peeling')
+        write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
+        write_line(header, 1, 'if (total_steps == steps_left) {')
+        write_line(header, 2, 'mkl_set_dynamic(0);')
+        write_line(header, 2, 'mkl_set_num_threads_local(num_threads);')
+        write_line(header, 1, '}')
+        write_line(header, 0, '#endif')
         write_line(header, 1, 'DynamicPeeling(A, B, C, %d, %d, %d, beta);' % dims)
 
         # end of function
