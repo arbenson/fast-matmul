@@ -109,8 +109,8 @@ def parse_coeff(coeff):
         return '1.0 / (%s)' % parse_coeff(coeff[:-1])
     else:
         try:
-            exp = float(coeff[-1])
-            return ('(%s)' % parse_coeff(coeff[:-1])) * exp
+            exp = int(coeff[-1])
+            return ' * '.join([parse_coeff(coeff[:-1]) for i in xrange(exp)])
         except:
             raise Exception('Cannot parse coefficient: %s' % coeff)
 

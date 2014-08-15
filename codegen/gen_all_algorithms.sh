@@ -56,6 +56,7 @@ python ${SCRIPT} ${ELIM_DIR}/grey333-23-125 3,3,3 ${OUT_DIR}/fast333_23_125.hpp 
 python ${SCRIPT} ${ALGS_DIR}/smirnov333-23-139 3,3,3 ${OUT_DIR}/smirnov333_23_139.hpp ${OPTIONS}
 python ${SCRIPT} ${ELIM_DIR}/smirnov333-23-128 3,3,3 ${OUT_DIR}/smirnov333_23_128.hpp ${OPTIONS}
 python ${SCRIPT} ${ALGS_DIR}/classical333-27-81 3,3,3 ${OUT_DIR}/classical333.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/schonhage333-21-117-approx 3,3,3 ${OUT_DIR}/schonhage333_21_117_approx.hpp ${OPTIONS}
 
 # 3,3,2
 python ${SCRIPT} ${ALGS_DIR}/grey332-15-103 3,3,2 ${OUT_DIR}/fast332_15_103.hpp ${OPTIONS}

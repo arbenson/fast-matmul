@@ -157,6 +157,7 @@ void FastMatmulTests() {
   TestSet(m_vals, k_vals, n_vals, HK332_15_94);
   TestSet(m_vals, k_vals, n_vals, HK323_15_84);
   TestSet(m_vals, k_vals, n_vals, BINI322);
+  TestSet(m_vals, k_vals, n_vals, SCHONHAGE333_21_117_APPROX);
   TestSet(m_vals, k_vals, n_vals, CLASSICAL222);
   TestSet(m_vals, k_vals, n_vals, CLASSICAL333);
 }
