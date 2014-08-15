@@ -1,20 +1,9 @@
-CXX = icpc
+include make.incs/make.inc.linux
 
-#MODE = sequential
-MODE = openmp
-
-# for compiling with MKL
-MKL_ROOT := /opt/intel/composer_xe_2013.5.192/mkl
 INCLUDES := -I$(MKL_ROOT)/include -I./algorithms -I./linalg -I.
-MKL_SEQ_LIBS =  $(MKL)
+MKL_SEQ_LIBS =  -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core
 MKL_PAR_LIBS := -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread
 
-DEFINES := -DNDEBUG
-#DEFINES += -D_PARALLEL_=1  # DFS
-#DEFINES += -D_PARALLEL_=2  # BFS
-#DEFINES += -D_PARALLEL_=3  # HYBRID
-
-#DEBUG := -g -Wall
 OPT := -O3
 CXXFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 $(DEFINES)
 #CXXFLAGS += -g
@@ -23,7 +12,7 @@ LDFLAGS := -O3
 
 ifeq ($(MODE), openmp)
   CXXFLAGS += -fopenmp
-  LDLIBS := -fopenmp $(MKL_PAR_LIBS) -fopenmp
+  LDLIBS := $(MKL_PAR_LIBS) -fopenmp
 else
   LDLIBS := $(MKL_SEQ_LIBS) 
 endif
@@ -41,6 +30,7 @@ EXAMPLES_SRC = bini322.cpp \
     fast433.cpp \
     hk332.cpp \
     strassen.cpp \
+	schonhage333.cpp \
     fast_lu.cpp \
     fast_qr.cpp
 

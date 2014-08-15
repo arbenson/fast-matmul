@@ -1,0 +1,11 @@
+CXX = icpc
+
+MODE = sequential
+MODE = openmp
+
+MKL_ROOT := /opt/intel/composer_xe_2013_sp1/mkl
+
+DEFINES := -DNDEBUG
+#DEFINES += -D_PARALLEL_=1  # DFS
+#DEFINES += -D_PARALLEL_=2  # BFS
+DEFINES += -D_PARALLEL_=3  # HYBRID
