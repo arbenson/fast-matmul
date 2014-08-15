@@ -13,7 +13,7 @@ void S_Add1(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataS1 = S1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -29,7 +29,7 @@ void S_Add2(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataS1 = S1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -45,7 +45,7 @@ void S_Add3(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataS1 = S1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -63,7 +63,7 @@ void S_Add4(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=
     const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -81,7 +81,7 @@ void S_Add5(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=
     const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -99,7 +99,7 @@ void S_Add6(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=
     const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -115,7 +115,7 @@ void S_Add7(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataS1 = S1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -133,7 +133,7 @@ void S_Add8(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x=
     const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -149,7 +149,7 @@ void S_Add9(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataS1 = S1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -167,7 +167,7 @@ void S_Add10(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x
     const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -185,7 +185,7 @@ void S_Add11(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x
     const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -201,7 +201,7 @@ void S_Add12(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataS1 = S1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -219,7 +219,7 @@ void S_Add13(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x
     const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -237,7 +237,7 @@ void S_Add14(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x
     const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -255,7 +255,7 @@ void S_Add15(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x
     const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -271,7 +271,7 @@ void T_Add1(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataT1 = T1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -287,7 +287,7 @@ void T_Add2(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataT1 = T1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -303,7 +303,7 @@ void T_Add3(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataT1 = T1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -321,7 +321,7 @@ void T_Add4(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=
     const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -339,7 +339,7 @@ void T_Add5(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=
     const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -357,7 +357,7 @@ void T_Add6(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=
     const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -373,7 +373,7 @@ void T_Add7(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataT1 = T1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -391,7 +391,7 @@ void T_Add8(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x=
     const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -407,7 +407,7 @@ void T_Add9(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataT1 = T1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -425,7 +425,7 @@ void T_Add10(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x
     const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -443,7 +443,7 @@ void T_Add11(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x
     const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -459,7 +459,7 @@ void T_Add12(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x=1e-8) {
     const Scalar *dataT1 = T1.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -477,7 +477,7 @@ void T_Add13(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x
     const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -495,7 +495,7 @@ void T_Add14(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x
     const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -513,7 +513,7 @@ void T_Add15(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x
     const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -532,7 +532,7 @@ void M_Add1(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=
     Scalar *dataC = C.data();
     if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -541,7 +541,7 @@ void M_Add1(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=
         }
     } else {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -565,7 +565,7 @@ void M_Add2(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     Scalar *dataC = C.data();
     if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -574,7 +574,7 @@ void M_Add2(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
         }
     } else {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -598,7 +598,7 @@ void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     Scalar *dataC = C.data();
     if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -607,7 +607,7 @@ void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
         }
     } else {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -631,7 +631,7 @@ void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     Scalar *dataC = C.data();
     if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -640,7 +640,7 @@ void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
         }
     } else {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -660,7 +660,7 @@ void M_Add5(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=
     Scalar *dataC = C.data();
     if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -669,7 +669,7 @@ void M_Add5(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=
         }
     } else {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -693,7 +693,7 @@ void M_Add6(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     Scalar *dataC = C.data();
     if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -702,7 +702,7 @@ void M_Add6(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
         }
     } else {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -726,7 +726,7 @@ void M_Add7(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     Scalar *dataC = C.data();
     if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -735,7 +735,7 @@ void M_Add7(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
         }
     } else {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -759,7 +759,7 @@ void M_Add8(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
     Scalar *dataC = C.data();
     if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -768,7 +768,7 @@ void M_Add8(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
         }
     } else {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -788,7 +788,7 @@ void M_Add9(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=
     Scalar *dataC = C.data();
     if (beta != Scalar(0.0)) {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -797,7 +797,7 @@ void M_Add9(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x=
         }
     } else {
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
@@ -816,7 +816,7 @@ void SX_Add1(Matrix<Scalar>& SX1, Matrix<Scalar>& SX2, Matrix<Scalar>& C, double
     const Scalar *dataSX2 = SX2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -834,7 +834,7 @@ void SX_Add2(Matrix<Scalar>& SX1, Matrix<Scalar>& SX2, Matrix<Scalar>& C, double
     const Scalar *dataSX2 = SX2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -852,7 +852,7 @@ void SX_Add3(Matrix<Scalar>& SX1, Matrix<Scalar>& SX2, Matrix<Scalar>& C, double
     const Scalar *dataSX2 = SX2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -870,7 +870,7 @@ void TX_Add1(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double
     const Scalar *dataTX2 = TX2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -888,7 +888,7 @@ void TX_Add2(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double
     const Scalar *dataTX2 = TX2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -906,7 +906,7 @@ void TX_Add3(Matrix<Scalar>& TX1, Matrix<Scalar>& TX2, Matrix<Scalar>& C, double
     const Scalar *dataTX2 = TX2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
-# pragma omp parallel for collapse(2)
+# pragma omp parallel for
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
@@ -994,6 +994,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1010,6 +1011,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1026,6 +1028,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1048,6 +1051,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1070,6 +1074,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1092,6 +1097,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1108,6 +1114,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1130,6 +1137,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1146,6 +1154,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1168,6 +1177,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1190,6 +1200,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1206,6 +1217,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1228,6 +1240,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1250,6 +1263,7 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
     mkl_set_num_threads_local(num_threads);
+    mkl_set_dynamic(0);
 # endif
     }
 #endif
@@ -1284,6 +1298,12 @@ void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C
     M_Add9(M7, M12, C33, x, beta);
 
     // Handle edge cases with dynamic peeling
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+    if (total_steps == steps_left) {
+        mkl_set_dynamic(0);
+        mkl_set_num_threads_local(num_threads);
+    }
+#endif
     DynamicPeeling(A, B, C, 3, 2, 3, beta);
 }
 
