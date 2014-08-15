@@ -7,7 +7,7 @@
 
 #include "linalg.hpp"
 #ifdef _PARALLEL_
-# include <omp.h>
+# include "omp.h"
 # include "par_util.hpp"
 #endif
 
