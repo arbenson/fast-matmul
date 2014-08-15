@@ -2,7 +2,9 @@
 #define _ALL_ALGORITHMS_HPP_
 
 #include "common.hpp"
-#include "mkl.h"
+#ifdef __INTEL_MKL__
+# include "mkl.h"
+#endif
 
 // New fast algorithms
 #include "fast234_20_144.hpp"

@@ -1,24 +1,18 @@
 CXX = icpc
 
-MODE = sequential
-#MODE = openmp
+#MODE = sequential
+MODE = openmp
 
 # for compiling with MKL
-MKLROOT := /opt/intel/composer_xe_2013_sp1/mkl
-INCLUDES := -I$(MKLROOT)/include -I./algorithms -I./linalg -I.
-BLAS_LAPACK_LIB =  -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread
-MKLPAR := -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread -fopenmp
-
-MPIROOT := $(MPICH_DIR)
-INCLUDES += -I$(MPIROOT)/include
-
-# for compiling with Linux BLAS
-#BLAS_LAPACK_LIB = -L/usr/lib64/ -lblas
+MKL_ROOT := /opt/intel/composer_xe_2013.5.192/mkl
+INCLUDES := -I$(MKL_ROOT)/include -I./algorithms -I./linalg -I.
+MKL_SEQ_LIBS =  $(MKL)
+MKL_PAR_LIBS := -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread
 
 DEFINES := -DNDEBUG
 #DEFINES += -D_PARALLEL_=1  # DFS
 #DEFINES += -D_PARALLEL_=2  # BFS
-DEFINES += -D_PARALLEL_=3  # HYBRID
+#DEFINES += -D_PARALLEL_=3  # HYBRID
 
 #DEBUG := -g -Wall
 OPT := -O3
@@ -29,12 +23,10 @@ LDFLAGS := -O3
 
 ifeq ($(MODE), openmp)
   CXXFLAGS += -fopenmp
-  LDLIBS := $(MKLPAR)
+  LDLIBS := -fopenmp $(MKL_PAR_LIBS) -fopenmp
 else
-  LDLIBS := $(BLAS_LAPACK_LIB)  
+  LDLIBS := $(MKL_SEQ_LIBS) 
 endif
-
-LDLIBS += -L$(MPIROOT)/lib -lmpich
 
 vpath %.cpp examples benchmarks tests
 
@@ -79,19 +71,19 @@ build:
 	mkdir -p $(OUTPUT_DIR)
 
 matmul_bench_dfs: matmul_benchmarks.cpp
-	$(CXX) $(CXXFLAGS) -D_PARALLEL_=1 $< $(LDFGLAS) $(LDLIBS) -o $(OUTPUT_DIR)/$@
+	$(CXX) $(CXXFLAGS) -D_PARALLEL_=1 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 matmul_bench_bfs: matmul_benchmarks.cpp
-	$(CXX) $(CXXFLAGS) -D_PARALLEL_=2 $< $(LDFGLAS) $(LDLIBS) -o $(OUTPUT_DIR)/$@
+	$(CXX) $(CXXFLAGS) -D_PARALLEL_=2 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 matmul_bench_hybrid: matmul_benchmarks.cpp
-	$(CXX) $(CXXFLAGS) -D_PARALLEL_=3 $< $(LDFGLAS) $(LDLIBS) -o $(OUTPUT_DIR)/$@
+	$(CXX) $(CXXFLAGS) -D_PARALLEL_=3 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 obj/%.o : %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 % : obj/%.o
-	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $(OUTPUT_DIR)/$@
+	$(CXX) $(LDFLAGS) $(LDLIBS) $^ -o $(OUTPUT_DIR)/$@
 
 .PHONY : default all clean
 
