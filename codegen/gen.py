@@ -74,6 +74,12 @@ def data_call(name):
 def data_access(name):
     return 'data%s[i + j * stride%s]' % (name, name)
 
+def instantiate_tmp(tmp_name, mult_index, mat_name):
+    inst = 'Matrix<Scalar> %s%d(' % (tmp_name, mult_index)
+    inst += 'mem_mngr.GetMem(start_index, %d, total_steps - steps_left, %s), ' % (mult_index, tmp_name)
+    inst += '%s11.m(), %s11.m(), %s11.n());' % (mat_name, mat_name, mat_name)
+    return inst
+
 
 def instantiate(subblock, mat_name):
     return 'Matrix<Scalar> %s(%s11.m(), %s11.n());' % (subblock, mat_name, mat_name)
@@ -569,10 +575,10 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
 
     # Write the adds to temps if necessary
     if need_tmp_mat(a_coeffs) and not streaming_adds:
-        write_line(header, 1, instantiate('S' + str(index), 'A'))
+        write_line(header, 1, instantiate_tmp('S', index, 'A'))
         write_line(header, 1, addition_str(a_coeffs, 'A', 'S', (dims[0], dims[1])))
     if need_tmp_mat(b_coeffs) and not streaming_adds:
-        write_line(header, 1, instantiate('T' + str(index), 'B'))
+        write_line(header, 1, instantiate_tmp('T', index, 'B'))
         write_line(header, 1, addition_str(b_coeffs, 'B', 'T', (dims[1], dims[2])))
 
     res_mat = 'M%d' % (index)
@@ -597,16 +603,11 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
             return mat_name + get_suffix(loc[0], mat_dims[0], mat_dims[1])
 
     # Finally, write the actual call to matrix multiply.
-    write_line(header, 1, 'FastMatmulRecursive(%s, %s, %s, total_steps, steps_left - 1, %s, x, num_threads, Scalar(0.0));' % (
+    write_line(header, 1, 'FastMatmulRecursive(mem_mngr, %s, %s, %s, total_steps, steps_left - 1, %s, x, num_threads, Scalar(0.0));' % (
             subblock_name(a_coeffs, 'A', 'S', (dims[0], dims[1])),
             subblock_name(b_coeffs, 'B', 'T', (dims[1], dims[2])),
             res_mat, '(start_index + %d - 1) * %d' % (index, num_multiplies)))
     
-    if need_tmp_mat(a_coeffs) and not streaming_adds:
-        write_line(header, 1, 'S%d.deallocate();' % (index))
-    if need_tmp_mat(b_coeffs) and not streaming_adds:
-        write_line(header, 1, 'T%d.deallocate();' % (index))
-
     # Shared memory wrappers (end)
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
     write_line(header, 1, '}')
@@ -760,14 +761,18 @@ def create_output(header, coeffs, dims, streaming_adds):
                              num_multiplies)
 
 
-def create_wrapper_func(header, num_multiplies):
+def create_wrapper_func(header, num_multiplies, dims):
     # Wrapper to deal with OpenMP
     write_line(header, 0, '// C := alpha * A * B + beta * C')
     write_line(header, 0, 'template <typename Scalar>')
-    write_line(header, 0, 'void FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
+    write_line(header, 0, 'double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
                'Matrix<Scalar>& C,')
     write_line(header, 1, 'int num_steps, double x=1e-8, Scalar alpha=Scalar(1.0), ' +
                'Scalar beta=Scalar(0.0)) {')
+    write_line(header, 1, 'MemoryManager<Scalar> mem_mngr;')
+    write_line(header, 1, 'mem_mngr.Allocate(%d, %d, %d, %d, num_steps, A.m(), A.n(), B.n());'
+               % (dims[0], dims[1], dims[2], num_multiplies))
+
     write_line(header, 1, 'A.set_multiplier(alpha);')
     write_line(header, 1, 'int num_multiplies_per_step = %d;' % num_multiplies)
     write_line(header, 1, 'int total_multiplies = pow(num_multiplies_per_step, num_steps);')
@@ -782,22 +787,28 @@ def create_wrapper_func(header, num_multiplies):
     write_line(header, 1, 'int num_threads = 0;')
     write_line(header, 0, '#endif')
 
+    write_line(header, 1, 'using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;')
+    write_line(header, 1, 'auto t1 = std::chrono::high_resolution_clock::now();')
+
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
     write_line(header, 1, 'omp_set_nested(1);')
     write_line(header, 1, 'if (num_threads > total_multiplies) {')
     write_line(header, 2, 'mkl_set_dynamic(0);')
     write_line(header, 1, '}')
+
     write_line(header, 0, '# pragma omp parallel')
     write_line(header, 1, '{')
     write_line(header, 0, '# pragma omp single')
     write_line(header, 0, '#endif')
 
-    write_line(header, 2, 'FastMatmulRecursive(A, B, C, num_steps, num_steps, 0, x, num_threads, beta);')
+    write_line(header, 2, 'FastMatmulRecursive(mem_mngr, A, B, C, num_steps, num_steps, 0, x, num_threads, beta);')
 
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
     write_line(header, 1, '}')
     write_line(header, 0, '#endif')
 
+    write_line(header, 1, 'auto t2 = std::chrono::high_resolution_clock::now();')
+    write_line(header, 1, 'return FpMilliseconds(t2 - t1).count();')
     write_line(header, 0, '}\n')
 
 
@@ -852,7 +863,7 @@ def main():
 
         # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
-        write_line(header, 0, 'void FastMatmulRecursive(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
+        write_line(header, 0, 'void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
                    'Matrix<Scalar>& C, int total_steps, int steps_left, int start_index, double x, int num_threads, Scalar beta) {')
 
         # Handle the multipliers
@@ -887,7 +898,9 @@ def main():
         write_line(header, 1, '// Matrices to store the results of multiplications.')
             
         for i in xrange(num_multiplies):
-            write_line(header, 1, 'Matrix<Scalar> M%d(C11.m(), C11.n(), C.multiplier());' % (i + 1))
+            write_line(header, 1,
+                       'Matrix<Scalar> M%d(mem_mngr.GetMem(start_index, %d, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());' %
+                       (i + 1, i + 1))
 
         # Handle common subexpression elimination on the S and T matrices.
         create_input_cse_subs(header, coeffs, dims, streaming_adds)
@@ -915,7 +928,7 @@ def main():
         # end of function
         write_line(header, 0, '}\n')
 
-        create_wrapper_func(header, num_multiplies)
+        create_wrapper_func(header, num_multiplies, dims)
 
         # end of namespace
         write_line(header, 0, '}  // namespace %s\n' % namespace_name)

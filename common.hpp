@@ -5,6 +5,7 @@
 #define _BFS_PAR_ 2
 #define _HYBRID_PAR_ 3
 
+#include "MemoryManager.hpp"
 #include "linalg.hpp"
 #ifdef _PARALLEL_
 # include "omp.h"
