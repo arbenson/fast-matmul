@@ -3,6 +3,7 @@
 
 #ifdef __INTEL_MKL__
 # include "mkl.h"
+# include "mkl_types.h"
 #endif
 
 #include <functional>
@@ -29,8 +30,17 @@ extern "C" {
   void strmm_(char *side, char *uplo, char *transt, char *diag, int *m, int *n,
               float *alpha, float *T, int *ldt, float *B, int *ldb);
 
-  //void dlaswp_(int *N, double *A, int *lda, int *K1, int *K2, int *ipiv, int *incx);
-  //void slaswp_(int *N, float *A, int *lda, int *K1, int *K2, int *ipiv, int *incx);
+#if 0
+  void dlarft_(char *direct, char *storev, int *m, int *n, double *V, int *ldv,
+			   double *tau, double *T, int *ldt);
+  void slarft_(char *direct, char *storev, int *m, int *n, float *V, int *ldv,
+			   float *tau, float *T, int *ldt);
+#endif
+
+#if 0
+  void dlaswp_(int *N, double *A, int *lda, int *K1, int *K2, int *ipiv, int *incx);
+  void slaswp_(int *N, float *A, int *lda, int *K1, int *K2, int *ipiv, int *incx);
+#endif
 }
 
 
@@ -68,6 +78,7 @@ namespace lapack {
   }
 
 
+#if 0
   void Larft(char direct, char storev, int m, int n, double *V, int ldv,
              double *tau, double *T, int ldt) {
     dlarft_(&direct, &storev, &m, &n, V, &ldv, tau, T, &ldt);
@@ -78,7 +89,6 @@ namespace lapack {
              float *tau, float *T, int ldt) {
     slarft_(&direct, &storev, &m, &n, V, &ldv, tau, T, &ldt);
   }
-
 
   void Geqrf(int m, int n, float *A, int lda, float *tau) {
     // First perform the workspace query.
@@ -138,8 +148,9 @@ namespace lapack {
       throw std::runtime_error("Bad sgetrf_ call");
     }
   }
+#endif
 
-
+#if 0
   void Laswp(int num_cols, double *data, int lda, int piv_start, int piv_end,
              int *pivots, int incx) {
     dlaswp_(&num_cols, data, &lda,  &piv_start, &piv_end, pivots, &incx);
@@ -150,7 +161,7 @@ namespace lapack {
              int *pivots, int incx) {
     slaswp_(&num_cols, data, &lda,  &piv_start, &piv_end, pivots, &incx);
   }
-
+#endif
 
   void Trsm(char side, char uplo, char transa, char diag, int m, int n,
             double alpha, double *A, int lda, double *B, int ldb) {
@@ -163,6 +174,7 @@ namespace lapack {
     strsm_(&side, &uplo, &transa, &diag, &m, &n, &alpha, A, &lda, B, &ldb);
   }
 
+#if 0
   void Getrs(char trans, int n, int nrhs, double *A, int lda, int *ipiv, double *b, int ldb) {
     int info;
     dgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, b, &ldb, &info);
@@ -223,6 +235,7 @@ namespace lapack {
     }
     delete [] work;
   }
+#endif
 
   // Wrapper for dgemm called by templated gemm.
   void Gemm(char transa, char transb, int m, int n, int k, double *A, int lda,
