@@ -19,7 +19,7 @@ void SingleBenchmark(int m, int k, int n, int num_steps, int algorithm) {
   Matrix<double> C1(m, n);
 
   // Run a set number of trials and pick the median time.
-  int num_trials = 7;
+  int num_trials = 5;
   std::vector<double> times(num_trials);
   for (int trial = 0; trial < num_trials; ++trial) {
     times[trial] = Time([&] { RunAlgorithm(algorithm, A, B, C1, num_steps); });
@@ -59,7 +59,7 @@ void SquareTest() {
   }
   std::vector<int> num_levels = {0};
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, MKL);
-  num_levels = {2, 3, 1};
+  num_levels = {1, 2, 3};
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, STRASSEN);
   return;
 }
@@ -67,17 +67,48 @@ void SquareTest() {
 
 void SquareTestPar() {
   std::vector<int> m_vals;
-  for (int i = 4000; i <= 16000; i += 500) {
+  for (int i = 24000; i <= 24000; i += 500) {
 	m_vals.push_back(i);
   }
   std::vector<int> num_levels = {0};
-  mkl_set_num_threads(24);
-  mkl_set_dynamic(0);
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, MKL);
-  mkl_set_dynamic(1);
-  num_levels = {2, 1, 3, 4};
+
+  num_levels = {1, 2, 3};
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, STRASSEN);
-  return;
+}
+
+
+void OuterTestPar () {
+  std::vector<int> m_vals;
+  for (int i = 15000; i <= 15000; i += 500) {
+    m_vals.push_back(i);
+  }
+  std::vector<int> k_vals(m_vals.size(), 4000);
+
+  std::vector<int> num_levels = {0};
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, MKL);
+
+  num_levels = {1, 2};
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, HK323_15_94);
+  num_levels = {1, 2};
+  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, STRASSEN);
+}
+
+
+void TSSquareTestPar() {
+  std::vector<int> m_vals;
+  for (int i = 16000; i <= 16000; i += 500) {
+	m_vals.push_back(i);
+  }
+  std::vector<int> k_vals(m_vals.size(), 6300);
+
+  std::vector<int> num_levels = {0};
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, MKL);
+
+  num_levels = {1, 2};
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST423_20_144);
+  num_levels = {1, 2};
+  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, STRASSEN);
 }
 
 
@@ -236,6 +267,12 @@ int main(int argc, char **argv) {
   }
   if (OptExists(opts, "square_test_par")) {
     SquareTestPar();
+  }
+  if (OptExists(opts, "outer_test_par")) {
+    OuterTestPar();
+  }
+  if (OptExists(opts, "ts_square_test_par")) {
+    TSSquareTestPar();
   }
 
   return 0;
