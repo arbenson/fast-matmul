@@ -36,6 +36,7 @@
 #include "hk332_15_94.hpp"
 #include "hk323_15_84.hpp"
 #include "hk323_15_94.hpp"
+#include "schonhage333_21_117_approx.hpp"
 #include "smirnov333_23_128.hpp"
 #include "smirnov333_23_139.hpp"
 #include "smirnov336_40_960.hpp"
@@ -79,6 +80,7 @@ enum {
   FAST343_29_234,
   FAST522_18_99,
   FAST252_18_99,
+  SCHONHAGE333_21_117_APPROX,
 };
 
 
@@ -110,6 +112,26 @@ void RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
 		break;
 	  }
       bini322::FastMatmul(A, B, C1, num_steps, x);
+      break;
+	case SCHONHAGE333_21_117_APPROX:
+	  double x;
+	  // These values of x provide the minimum error, on average.
+	  switch (num_steps) {
+	  case 1:
+		x = 1e-4;
+		break;
+	  case 2:
+		x = 1e-2;
+		break;
+	  case 3:
+	  case 4:
+		x = 1e-1;
+		break;
+	  default:
+		x = 1e-4;
+		break;
+	  }
+      schonhage333_21_117_approx::FastMatmul(A, B, C1, num_steps, x);
       break;
     case CLASSICAL222:
       classical222_8_24::FastMatmul(A, B, C1, num_steps);
@@ -272,6 +294,8 @@ std::string Alg2Str(int algorithm) {
     return "HK323_15_84";
   case STRASSEN:
     return "STRASSEN";
+  case SCHONHAGE333_21_117_APPROX:
+	return "SCHONHAGE333_21_117_APPROX";
   case FAST422_14_84:
     return "FAST422_14_84";
   case FAST424_26_257:

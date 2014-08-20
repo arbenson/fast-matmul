@@ -5,9 +5,9 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  int m = 10000;
-  int k = 10000;
-  int n = 10000;
+  int m = 5000;
+  int k = 5000;
+  int n = 5000;
   int numsteps = 2;
 
   Matrix<double> A = RandomMatrix<double>(m, k);
@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
 
   mkl_set_num_threads(24);
   
-  Time([&] { Gemm(A, B, C1); }, "Classical gemm");
+  Time([&] { MatMul(A, B, C1); }, "Classical gemm");
   Time([&] { strassen::FastMatmul(A, B, C2, numsteps); }, "Strassen");
   
   // Test for correctness.

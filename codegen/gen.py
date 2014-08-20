@@ -75,6 +75,7 @@ def data_access(name):
     return 'data%s[i + j * stride%s]' % (name, name)
 
 def instantiate_tmp(tmp_name, mult_index, mat_name):
+    #return 'Matrix<Scalar> %s%d(%s11.m(), %s11.n());' % (tmp_name, mult_index, mat_name, mat_name)
     inst = 'Matrix<Scalar> %s%d(' % (tmp_name, mult_index)
     inst += 'mem_mngr.GetMem(start_index, %d, total_steps - steps_left, %s), ' % (mult_index, tmp_name)
     inst += '%s11.m(), %s11.m(), %s11.n());' % (mat_name, mat_name, mat_name)
@@ -115,8 +116,8 @@ def parse_coeff(coeff):
         return '1.0 / (%s)' % parse_coeff(coeff[:-1])
     else:
         try:
-            exp = float(coeff[-1])
-            return ('(%s)' % parse_coeff(coeff[:-1])) * exp
+            exp = int(coeff[-1])
+            return ' * '.join([parse_coeff(coeff[:-1]) for i in xrange(exp)])
         except:
             raise Exception('Cannot parse coefficient: %s' % coeff)
 
@@ -560,7 +561,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
     task = '# pragma omp task '
     task += 'if(should_launch_task(%d, total_steps, steps_left, start_index, %d, num_threads)) ' % (
         num_multiplies, index)
-    task += 'untied'
+    task += 'shared(mem_mngr) untied'
     write_line(header, 0, task)
     write_line(header, 1, '{')
     write_line(header, 0, '#endif')
