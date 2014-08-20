@@ -1,4 +1,4 @@
-include make.incs/make.inc.linux
+include make.incs/make.inc.edison
 
 INCLUDES := -I$(MKL_ROOT)/include -I./algorithms -I./linalg -I.
 MKL_SEQ_LIBS =  -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread
@@ -61,13 +61,13 @@ build:
 	mkdir -p $(OUTPUT_DIR)
 
 matmul_bench_dfs: matmul_benchmarks.cpp
-	$(CXX) $(CXXFLAGS) -D_PARALLEL_=1 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
+	$(CXX) $(CXXFLAGS) -DNDEBUG -D_PARALLEL_=1 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 matmul_bench_bfs: matmul_benchmarks.cpp
-	$(CXX) $(CXXFLAGS) -D_PARALLEL_=2 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
+	$(CXX) $(CXXFLAGS) -DNDEBUG -D_PARALLEL_=2 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 matmul_bench_hybrid: matmul_benchmarks.cpp
-	$(CXX) $(CXXFLAGS) -D_PARALLEL_=3 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
+	$(CXX) $(CXXFLAGS) -DNDEBUG -D_PARALLEL_=3 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 obj/%.o : %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
