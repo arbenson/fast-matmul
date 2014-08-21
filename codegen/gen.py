@@ -412,7 +412,9 @@ def write_output_add(header, index, coeffs, mat_dims, rank):
                 suffix = '_X%d' % (suffix - rank)
             add += 'M%s, ' % suffix
     output_mat = 'C' + get_suffix(index - 1, mat_dims[0], mat_dims[1])
-    add += '%s, x, beta);' % output_mat
+    # TODO: The 'true' here does not actually have to be true.  But it is a first approximation
+    #       of what we want
+    add += '%s, x, true, beta);' % output_mat
     write_line(header, 1, add)
 
 
@@ -428,11 +430,11 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
     write_line(header, 0, 'template <typename Scalar>')
     add = 'void %s_Add%d(' % (mat_name, index)
     add += ', '.join(['Matrix<Scalar>& %s%d' % (mat_name, i + 1) for i in range(nnz)])
-    add += ', Matrix<Scalar>& C, double x=1e-8'
+    add += ', Matrix<Scalar>& C, double x, bool sequential'
     # Handle the C := alpha A * B + beta C
     is_output = (mat_name == 'M')
     if is_output:
-        add += ', Scalar beta=Scalar(0.0)'
+        add += ', Scalar beta'
     add += ') {'
     write_line(header, 0, add)
 
@@ -451,7 +453,7 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
     if is_output:
         write_line(header, 1, 'if (beta != Scalar(0.0)) {')
         write_line(header, 0, '#ifdef _PARALLEL_')
-        write_line(header, 0, '# pragma omp parallel for')
+        write_line(header, 0, '# pragma omp parallel for if(!sequential)')
         write_line(header, 0, '#endif')
         write_line(header, 2, 'for (int j = 0; j < C.n(); ++j) {')
         write_line(header, 3, 'for (int i = 0; i < C.m(); ++i) {')
@@ -466,7 +468,7 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
         write_line(header, 2, '}')
         write_line(header, 1, '} else {')
         write_line(header, 0, '#ifdef _PARALLEL_')
-        write_line(header, 0, '# pragma omp parallel for')
+        write_line(header, 0, '# pragma omp parallel for if(!sequential)')
         write_line(header, 0, '#endif')
         write_line(header, 2, 'for (int j = 0; j < C.n(); ++j) {')
         write_line(header, 3, 'for (int i = 0; i < C.m(); ++i) {')
@@ -481,7 +483,7 @@ def write_add_func(header, coeffs, index, mat_name, bfs_par_avail):
         write_line(header, 1, '}')
     else:
         write_line(header, 0, '#ifdef _PARALLEL_')
-        write_line(header, 0, '# pragma omp parallel for')
+        write_line(header, 0, '# pragma omp parallel for if(!sequential)')
         write_line(header, 0, '#endif')
         write_line(header, 1, 'for (int j = 0; j < C.n(); ++j) {')
         write_line(header, 2, 'for (int i = 0; i < C.m(); ++i) {')
@@ -558,7 +560,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
 
     # Shared memory wrappers (start)
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
-    task = '# pragma omp task if(launch%d) shared(mem_mngr) untied' % index
+    task = '# pragma omp task if(sequential%d) shared(mem_mngr) untied' % index
     write_line(header, 0, task)
     write_line(header, 1, '{')
     write_line(header, 0, '#endif')
@@ -569,7 +571,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
         for i, coeff in enumerate(coeffs):
             if is_nonzero(coeff):
                 add += mat_name + '%s, ' % get_suffix(i, mat_dims[0], mat_dims[1])
-        return add + tmp_mat + ', x);'
+        return add + tmp_mat + ', x, sequential%d);' % index
 
     # Write the adds to temps if necessary
     if need_tmp_mat(a_coeffs) and not streaming_adds:
@@ -897,13 +899,18 @@ def main():
             
         for i in xrange(num_multiplies):
             write_line(header, 1,
-                       'Matrix<Scalar> M%d(mem_mngr.GetMem(start_index, %d, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());' %
-                       (i + 1, i + 1))
+                       'Matrix<Scalar> M%d(mem_mngr.GetMem(start_index, %d, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());' % (i + 1, i + 1))
 
+        write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
         for i in xrange(num_multiplies):
             write_line(header, 1,
-                       'bool launch%d = should_launch_task(%d, total_steps, steps_left, start_index, %d, num_threads);' % (
+                       'bool sequential%d = should_launch_task(%d, total_steps, steps_left, start_index, %d, num_threads);' % (
                     i + 1, num_multiplies, i + 1))
+        write_line(header, 0, '#else')
+        for i in xrange(num_multiplies):
+            write_line(header, 1, 'bool sequential%d = false;' % (i + 1))
+        write_line(header, 0, '#endif')
+
 
         # Handle common subexpression elimination on the S and T matrices.
         create_input_cse_subs(header, coeffs, dims, streaming_adds)
