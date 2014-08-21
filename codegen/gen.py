@@ -412,9 +412,7 @@ def write_output_add(header, index, coeffs, mat_dims, rank):
                 suffix = '_X%d' % (suffix - rank)
             add += 'M%s, ' % suffix
     output_mat = 'C' + get_suffix(index - 1, mat_dims[0], mat_dims[1])
-    # TODO: The 'true' here does not actually have to be true.  But it is a first approximation
-    #       of what we want
-    add += '%s, x, true, beta);' % output_mat
+    add += '%s, x, false, beta);' % output_mat
     write_line(header, 1, add)
 
 
