@@ -558,10 +558,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
 
     # Shared memory wrappers (start)
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
-    task = '# pragma omp task '
-    task += 'if(should_launch_task(%d, total_steps, steps_left, start_index, %d, num_threads)) ' % (
-        num_multiplies, index)
-    task += 'shared(mem_mngr) untied'
+    task = '# pragma omp task if(launch%d) shared(mem_mngr) untied' % index
     write_line(header, 0, task)
     write_line(header, 1, '{')
     write_line(header, 0, '#endif')
@@ -902,6 +899,11 @@ def main():
             write_line(header, 1,
                        'Matrix<Scalar> M%d(mem_mngr.GetMem(start_index, %d, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());' %
                        (i + 1, i + 1))
+
+        for i in xrange(num_multiplies):
+            write_line(header, 1,
+                       'bool launch%d = should_launch_task(%d, total_steps, steps_left, start_index, %d, num_threads);' % (
+                    i + 1, num_multiplies, i + 1))
 
         # Handle common subexpression elimination on the S and T matrices.
         create_input_cse_subs(header, coeffs, dims, streaming_adds)
