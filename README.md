@@ -11,6 +11,18 @@ The code requires:
 * Intel MKL
 * Compiler supporting C++11
 
+The Makefile depends on an included file that specifies the compiler and the run-time mode.
+You must specify this file in the first line of the Makefile.
+For an example, see the file `make.incs/make.inc.edison`, which contains the information for running
+on NERSC's Edison machine.
+The `MODE` variable specifies sequential or parallel mode.
+The `DEFINES` variable can specifies the type of parallelism if running in parallel mode.
+The `MKL_ROOT` variable must be set for your machine.
+
+We did most testing using the Intel compiler (icpc).
+Depending on the version of g++, the OpenMP task constructs can be different and the hybrid shared-memory
+parallel code may crash.  Sequential mode, DFS parallel, and BFS parallel should work with g++.
+
 Building examples
 --------
 First, use the code generator to generate the algorithms:
