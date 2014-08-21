@@ -14,13 +14,11 @@
 #include "fast323_15_89.hpp"
 #include "fast324_20_144.hpp"
 #include "fast332_15_103.hpp"
-#include "fast333_23_125.hpp"
 #include "fast333_23_152.hpp"
 #include "fast333_23_221.hpp"
 #include "fast342_20_144.hpp"
 #include "fast422_14_84.hpp"
 #include "fast423_20_144.hpp"
-#include "fast424_26_206.hpp"
 #include "fast424_26_257.hpp"
 #include "fast432_20_144.hpp"
 #include "fast433_29_234.hpp"
@@ -34,15 +32,21 @@
 #include "classical222.hpp"
 #include "classical333.hpp"
 #include "hk332_15_94.hpp"
-#include "hk323_15_84.hpp"
 #include "hk323_15_94.hpp"
 #include "schonhage333_21_117_approx.hpp"
-#include "smirnov333_23_128.hpp"
 #include "smirnov333_23_139.hpp"
 #include "smirnov336_40_960.hpp"
 #include "smirnov363_40_960.hpp"
 #include "smirnov633_40_960.hpp"
 #include "strassen.hpp"
+
+#ifdef _USING_CSE_
+#include "fast424_26_206.hpp"
+#include "hk323_15_84.hpp"
+#include "fast333_23_125.hpp"
+#include "smirnov333_23_128.hpp"
+#endif
+
 
 // All of the algorithms
 enum {
@@ -85,153 +89,160 @@ enum {
 
 
 template <typename Scalar>
-void RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
-				  Matrix<Scalar>& C1, int num_steps) {
-    switch (algorithm) {
-    case MKL:
-      // Just run the classical version with zero steps of recursion.
-      classical222_8_24::FastMatmul(A, B, C1, 0);
+double RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
+                  Matrix<Scalar>& C1, int num_steps) {
+  double x = 1e-8;
+  switch (algorithm) {
+  case MKL:
+    // Just run the classical version with zero steps of recursion.
+    return classical222_8_24::FastMatmul(A, B, C1, 0);
+    break;
+  case BINI322:
+    // These values of x provide the minimum error, on average.
+    switch (num_steps) {
+    case 2:
+      x = 1e-4;
       break;
-    case BINI322:
-	  double x;
-	  // These values of x provide the minimum error, on average.
-	  switch (num_steps) {
-	  case 2:
-		x = 1e-4;
-		break;
-	  case 3:
-		x = 1e-2;
-		break;
-	  case 4:
-		x = 1e-1;
-		break;
-	  case 0:
-	  case 1:
-	  default:
-		x = 1e-8;
-		break;
-	  }
-      bini322::FastMatmul(A, B, C1, num_steps, x);
+    case 3:
+      x = 1e-2;
       break;
-	case SCHONHAGE333_21_117_APPROX:
-	  double x;
-	  // These values of x provide the minimum error, on average.
-	  switch (num_steps) {
-	  case 1:
-		x = 1e-4;
-		break;
-	  case 2:
-		x = 1e-2;
-		break;
-	  case 3:
-	  case 4:
-		x = 1e-1;
-		break;
-	  default:
-		x = 1e-4;
-		break;
-	  }
-      schonhage333_21_117_approx::FastMatmul(A, B, C1, num_steps, x);
+    case 4:
+      x = 1e-1;
       break;
-    case CLASSICAL222:
-      classical222_8_24::FastMatmul(A, B, C1, num_steps);
+    case 0:
+    case 1:
+    default:
+      x = 1e-8;
       break;
-    case CLASSICAL333:
-      classical333_27_81::FastMatmul(A, B, C1, num_steps);
+    }
+    return bini322::FastMatmul(A, B, C1, num_steps, x);
+    break;
+  case SCHONHAGE333_21_117_APPROX:
+    // These values of x provide the minimum error, on average.
+    switch (num_steps) {
+    case 1:
+      x = 1e-4;
       break;
-    case FAST322_11_50:
-      grey322_11_50::FastMatmul(A, B, C1, num_steps);      
+    case 2:
+      x = 1e-2;
       break;
-    case FAST332_15_103:
-      grey332_15_103::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST323_15_103:
-      grey323_15_103::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST323_15_89:
-      grey323_15_103::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST333_23_125:
-      grey333_23_125::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST333_23_152:
-      grey333_23_152::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST333_23_221:
-      grey333_23_221::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST432_20_144:
-      grey432_20_144::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST423_20_144:
-      grey423_20_144::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST324_20_144:
-      grey324_20_144::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST342_20_144:
-      grey342_20_144::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST234_20_144:
-      grey234_20_144::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST243_20_144:
-      grey243_20_144::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST433_29_234:
-      grey433_29_234::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST343_29_234:
-      grey343_29_234::FastMatmul(A, B, C1, num_steps);
-      break;
-    case SMIRNOV333_23_128:
-      smirnov333_23_128::FastMatmul(A, B, C1, num_steps);
-      break;
-    case SMIRNOV333_23_139:
-      smirnov333_23_139::FastMatmul(A, B, C1, num_steps);
-      break;
-    case SMIRNOV336_40_960:
-      smirnov336_40_960::FastMatmul(A, B, C1, num_steps);
-      break;
-    case SMIRNOV363_40_960:
-      smirnov363_40_960::FastMatmul(A, B, C1, num_steps);
-      break;
-    case SMIRNOV633_40_960:
-      smirnov633_40_960::FastMatmul(A, B, C1, num_steps);
-      break;
-    case HK332_15_94:
-      hk332_15_94::FastMatmul(A, B, C1, num_steps);
-      break;
-    case HK323_15_94:
-      hk323_15_94::FastMatmul(A, B, C1, num_steps);
-      break;
-    case HK323_15_84:
-      hk323_15_84::FastMatmul(A, B, C1, num_steps);
-      break;
-    case STRASSEN:
-      strassen::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST422_14_84:
-      grey422_14_84::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST424_26_257:
-      grey424_26_257::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST442_26_257:
-      grey442_26_257::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST424_26_206:
-      grey424_26_206::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST522_18_99:
-      grey522_18_99::FastMatmul(A, B, C1, num_steps);
-      break;
-    case FAST252_18_99:
-      grey252_18_99::FastMatmul(A, B, C1, num_steps);
+    case 3:
+    case 4:
+      x = 1e-1;
       break;
     default:
-      std::cout << "Unknown algorithm type!" << std::endl;
+      x = 1e-4;
+      break;
     }
+    return schonhage333_21_117_approx::FastMatmul(A, B, C1, num_steps, x);
+    break;
+  case CLASSICAL222:
+    return classical222_8_24::FastMatmul(A, B, C1, num_steps);
+    break;
+  case CLASSICAL333:
+    return classical333_27_81::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST322_11_50:
+    return grey322_11_50::FastMatmul(A, B, C1, num_steps);      
+    break;
+  case FAST332_15_103:
+    return grey332_15_103::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST323_15_103:
+    return grey323_15_103::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST323_15_89:
+    return grey323_15_103::FastMatmul(A, B, C1, num_steps);
+    break;
+#ifdef _USING_CSE_
+  case FAST333_23_125:
+    return grey333_23_125::FastMatmul(A, B, C1, num_steps);
+    break;
+#endif
+  case FAST333_23_152:
+    return grey333_23_152::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST333_23_221:
+    return grey333_23_221::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST432_20_144:
+    return grey432_20_144::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST423_20_144:
+    return grey423_20_144::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST324_20_144:
+    return grey324_20_144::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST342_20_144:
+    return grey342_20_144::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST234_20_144:
+    return grey234_20_144::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST243_20_144:
+    return grey243_20_144::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST433_29_234:
+    return grey433_29_234::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST343_29_234:
+    return grey343_29_234::FastMatmul(A, B, C1, num_steps);
+    break;
+#ifdef _USING_CSE_
+  case SMIRNOV333_23_128:
+    return smirnov333_23_128::FastMatmul(A, B, C1, num_steps);
+    break;
+#endif
+  case SMIRNOV333_23_139:
+    return smirnov333_23_139::FastMatmul(A, B, C1, num_steps);
+    break;
+  case SMIRNOV336_40_960:
+    return smirnov336_40_960::FastMatmul(A, B, C1, num_steps);
+    break;
+  case SMIRNOV363_40_960:
+    return smirnov363_40_960::FastMatmul(A, B, C1, num_steps);
+    break;
+  case SMIRNOV633_40_960:
+    return smirnov633_40_960::FastMatmul(A, B, C1, num_steps);
+    break;
+  case HK332_15_94:
+    return hk332_15_94::FastMatmul(A, B, C1, num_steps);
+    break;
+  case HK323_15_94:
+    return hk323_15_94::FastMatmul(A, B, C1, num_steps);
+    break;
+#ifdef _USING_CSE_
+  case HK323_15_84:
+    return hk323_15_84::FastMatmul(A, B, C1, num_steps);
+    break;
+#endif
+  case STRASSEN:
+    return strassen::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST422_14_84:
+    return grey422_14_84::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST424_26_257:
+    return grey424_26_257::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST442_26_257:
+    return grey442_26_257::FastMatmul(A, B, C1, num_steps);
+    break;
+#ifdef _USING_CSE_
+  case FAST424_26_206:
+    return grey424_26_206::FastMatmul(A, B, C1, num_steps);
+    break;
+#endif _USING_CSE_
+  case FAST522_18_99:
+    return grey522_18_99::FastMatmul(A, B, C1, num_steps);
+    break;
+  case FAST252_18_99:
+    return grey252_18_99::FastMatmul(A, B, C1, num_steps);
+    break;
+  default:
+    std::cout << "Unknown algorithm type!" << std::endl;
+  }
 }
 
 
@@ -295,7 +306,7 @@ std::string Alg2Str(int algorithm) {
   case STRASSEN:
     return "STRASSEN";
   case SCHONHAGE333_21_117_APPROX:
-	return "SCHONHAGE333_21_117_APPROX";
+    return "SCHONHAGE333_21_117_APPROX";
   case FAST422_14_84:
     return "FAST422_14_84";
   case FAST424_26_257:
