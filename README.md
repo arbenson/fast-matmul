@@ -3,7 +3,7 @@ Fast matrix multiplication
 Austin R. Benson and Grey Ballard
 
 This software contains implementations of fast matrix multiplication algorithms for
-sequential and shared memory.
+sequential and shared-memory parallel environments.
 
 Setup
 --------
@@ -13,6 +13,11 @@ The code requires:
 
 Building examples
 --------
+First, use the code generator to generate the algorithms:
+          
+	cd codegen
+	bash gen_all_algorithms.sh 0
+
 Some simple codes that use the fast algorithms are in the `examples` directory.
 For example, you can build and run the (4, 3, 3) algorithm:
 

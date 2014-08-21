@@ -4,21 +4,22 @@ The naming convention for the algorithms that we have found is
 
 	fast{m}{k}{n}_{rank}_{nnz}.hpp
 
-m, k, and n refer to the dimensions of matrices in the base case (m x k multiplied by k x n), rank is the number of multiplications used, 
+m, k, and n refer to the dimensions of matrices in the base case (m x k multiplied by k x n, denoted <m, k, n>), rank is the number of multiplications used, 
 and nnz is the number of nonzeros coefficients.
 
 We also include:
 
-*  The 3 x 3 x 3 and 3 x 3 x 6 algorithms from Smirnov's paper:
+*  The <3, 3, 3> and <3, 3, 6> algorithms from Smirnov:
     Smirnov, A. V. "The bilinear complexity and practical algorithms for matrix multiplication." Computational Mathematics and Mathematical Physics 53.12 (2013): 1781-1795.
 
 *  Strassen's algorithm (strassen222.hpp).
 
-*  Bini's approximation algorithm for 3 x 3 x 2 (bini332.hpp).
+*  Bini's rank-10 approximation algorithm for <3, 3, 2> (bini332.hpp).
 
-*  The 3 x 2 x 2 variant from Hopcroft and Kerr (hk322.hpp):
+*  Schönhage's rank-21 approximation or <3, 3, 3> (schonhage333_21_117_approx.hpp).
+    Schönhage, Arnold. "Partial and total matrix multiplication." SIAM Journal on Computing 10.3 (1981): 434-455.
+
+*  The rank-15 <3, 3, 2> algorithm from Hopcroft and Kerr (hk323_15_94.hpp):
    Hopcroft, John E., and Leslie R. Kerr. "On minimizing the number of multiplications necessary for matrix multiplication." SIAM Journal on Applied Mathematics 20.1 (1971): 30-36.
 
 *  The classical matrix multiplication algorithm via recursion (classical222.hpp and classical333.hpp).
-
-
