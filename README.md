@@ -24,6 +24,32 @@ For example, you can build and run the (4, 3, 3) algorithm:
 	make fast433
 	./out/fast433
 
+Building tests
+--------
+
+We now assume that all of the algorithms have been gernated with the code generator (see above).
+The tests are built and run with:
+
+    make matmul_tests
+	./build/matmul_tests -all 1
+
+The tests are just for correctness of the algorithms, not for performance.
+You should see output like:
+
+    STRASSEN_1: 257, 500, 55
+    Maximum relative difference: 3.87253e-15
+
+This test runs one step of Strassen's algorithm, multiplying a 257 x 500 matrix with a 500 x 55 matrix.
+The maximum relative difference is an error measure:
+
+    max_{ij} |C_{ij} - D_{ij}| / |C_{ij}|,
+
+where C is the result computed with the fast algorithm and D is the result computed with the classical algorithm.
+For all of the exact fast algorithms, the error should be around 1e-14 or 1e-15.
+The approximate algorithms (e.g., Bini's) have larger error.
+Typically, additional recursive steps leads to a larger error.
+
+
 Building benchmarks
 --------
 Build the benchmarking code:
