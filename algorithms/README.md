@@ -4,7 +4,7 @@ The naming convention for the algorithms that we have found is
 
 	fast{m}{k}{n}_{rank}_{nnz}.hpp
 
-m, k, and n refer to the dimensions of matrices in the base case (m x k multiplied by k x n, denoted <m, k, n>), rank is the number of multiplications used, 
+m, k, and n refer to the dimensions of matrices in the base case (m x k multiplied by k x n, denoted \<m, k, n\>), rank is the number of multiplications used, 
 and nnz is the number of nonzeros coefficients.
 
 We also include:
