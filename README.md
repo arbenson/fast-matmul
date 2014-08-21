@@ -9,7 +9,7 @@ Setup
 --------
 The code requires:
 * Intel MKL
-* Compiler supporting C++11
+* Compiler supporting C++11 and OpenMP
 
 The Makefile depends on an included file that specifies the compiler and the run-time mode.
 You must specify this file in the first line of the Makefile.
