@@ -1437,7 +1437,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M1 = (1.0 * A22) * (1.0 * B11 + 1.0 * B12 + 1.0 * B21 + 1.0 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential1) shared(mem_mngr) untied
+# pragma omp task if(sequential1) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> T1(mem_mngr.GetMem(start_index, 1, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
@@ -1448,7 +1448,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 1, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1456,7 +1456,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M2 = (1.0 * A22 + -1.0 * A23 + -1.0 * A32 + 1.0 * A33) * (1.0 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential2) shared(mem_mngr) untied
+# pragma omp task if(sequential2) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S2(mem_mngr.GetMem(start_index, 2, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1467,7 +1467,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 2, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1475,7 +1475,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M3 = (1.0 * A21 + -1.0 * A22) * (1.0 * B11 + 1.0 * B12 + -1.0 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential3) shared(mem_mngr) untied
+# pragma omp task if(sequential3) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S3(mem_mngr.GetMem(start_index, 3, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1488,7 +1488,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 3, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1496,7 +1496,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M4 = (1.0 * A12 + 1.0 * A32) * (1.0 * B11 + 1.0 * B21 + 1.0 * B31)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential4) shared(mem_mngr) untied
+# pragma omp task if(sequential4) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S4(mem_mngr.GetMem(start_index, 4, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1509,7 +1509,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 4, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1517,7 +1517,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M5 = (1.0 * A12 + -1.0 * A13) * (-1.0 * B12 + -1.0 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential5) shared(mem_mngr) untied
+# pragma omp task if(sequential5) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S5(mem_mngr.GetMem(start_index, 5, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1530,7 +1530,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 5, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1538,7 +1538,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M6 = (1.0 * A21) * (1.0 * B13 + 1.0 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential6) shared(mem_mngr) untied
+# pragma omp task if(sequential6) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> T6(mem_mngr.GetMem(start_index, 6, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
@@ -1549,7 +1549,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 6, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1557,7 +1557,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M7 = (1.0 * A13 + 1.0 * A21 + -1.0 * A23 + -1.0 * A31 + 1.0 * A33) * (-1.0 * B12 + -1.0 * B22 + 1.0 * B31 + 1.0 * B33)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential7) shared(mem_mngr) untied
+# pragma omp task if(sequential7) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S7(mem_mngr.GetMem(start_index, 7, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1570,7 +1570,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 7, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1578,7 +1578,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M8 = (1.0 * A21 + -1.0 * A23 + -1.0 * A31 + 1.0 * A33) * (-1.0 * B22 + 1.0 * B31 + 1.0 * B33)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential8) shared(mem_mngr) untied
+# pragma omp task if(sequential8) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S8(mem_mngr.GetMem(start_index, 8, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1591,7 +1591,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 8, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1599,7 +1599,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M9 = (1.0 * A11 + -1.0 * A12 + -1.0 * A21 + 1.0 * A22 + 1.0 * A31 + -1.0 * A32) * (1.0 * B11 + 1.0 * B12)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential9) shared(mem_mngr) untied
+# pragma omp task if(sequential9) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S9(mem_mngr.GetMem(start_index, 9, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1612,7 +1612,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 9, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1620,7 +1620,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M10 = (1.0 * A11 + -1.0 * A12 + -1.0 * A21 + 1.0 * A23 + 1.0 * A31 + -1.0 * A33) * (1.0 * B12)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential10) shared(mem_mngr) untied
+# pragma omp task if(sequential10) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S10(mem_mngr.GetMem(start_index, 10, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1631,7 +1631,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 10, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1639,7 +1639,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M11 = (-1.0 * A23) * (1.0 * B31 + 1.0 * B32 + 1.0 * B33)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential11) shared(mem_mngr) untied
+# pragma omp task if(sequential11) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> T11(mem_mngr.GetMem(start_index, 11, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
@@ -1651,7 +1651,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 11, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1659,7 +1659,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M12 = (1.0 * A11) * (1.0 * B11 + 1.0 * B12 + 1.0 * B13 + 1.0 * B21 + 1.0 * B22 + 1.0 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential12) shared(mem_mngr) untied
+# pragma omp task if(sequential12) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> T12(mem_mngr.GetMem(start_index, 12, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
@@ -1670,7 +1670,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 12, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1678,7 +1678,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M13 = (-1.0 * A21 + 1.0 * A31) * (-1.0 * B12 + 1.0 * B13 + -1.0 * B22 + 1.0 * B31 + 1.0 * B33)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential13) shared(mem_mngr) untied
+# pragma omp task if(sequential13) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S13(mem_mngr.GetMem(start_index, 13, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1691,7 +1691,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 13, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1699,7 +1699,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M14 = (1.0 * A12 + -1.0 * A13 + 1.0 * A32 + -1.0 * A33) * (1.0 * B31)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential14) shared(mem_mngr) untied
+# pragma omp task if(sequential14) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S14(mem_mngr.GetMem(start_index, 14, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1710,7 +1710,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 14, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1718,7 +1718,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M15 = (1.0 * A12 + -1.0 * A13 + 1.0 * A23 + 1.0 * A32 + -1.0 * A33) * (1.0 * B12 + 1.0 * B22 + -1.0 * B31)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential15) shared(mem_mngr) untied
+# pragma omp task if(sequential15) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S15(mem_mngr.GetMem(start_index, 15, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1731,7 +1731,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 15, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1739,7 +1739,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M16 = (-1.0 * A21 + 1.0 * A23 + 1.0 * A32 + -1.0 * A33) * (-1.0 * B12 + 1.0 * B31 + 1.0 * B32)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential16) shared(mem_mngr) untied
+# pragma omp task if(sequential16) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S16(mem_mngr.GetMem(start_index, 16, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1752,7 +1752,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 16, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1760,7 +1760,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M17 = (-1.0 * A11 + 1.0 * A12 + -1.0 * A31 + 1.0 * A32) * (-1.0 * B11)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential17) shared(mem_mngr) untied
+# pragma omp task if(sequential17) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S17(mem_mngr.GetMem(start_index, 17, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1772,7 +1772,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 17, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1780,7 +1780,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M18 = (1.0 * A13 + -1.0 * A23 + 1.0 * A33) * (1.0 * B12 + 1.0 * B22 + 1.0 * B32)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential18) shared(mem_mngr) untied
+# pragma omp task if(sequential18) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S18(mem_mngr.GetMem(start_index, 18, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1793,7 +1793,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 18, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1801,7 +1801,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M19 = (-1.0 * A11 + 1.0 * A12 + -1.0 * A22 + 1.0 * A32) * (1.0 * B11 + 1.0 * B12 + 1.0 * B21 + 1.0 * B22 + 1.0 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential19) shared(mem_mngr) untied
+# pragma omp task if(sequential19) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S19(mem_mngr.GetMem(start_index, 19, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1814,7 +1814,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 19, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1822,7 +1822,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M20 = (1.0 * A21 + -1.0 * A32) * (-1.0 * B23 + 1.0 * B31 + 1.0 * B32)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential20) shared(mem_mngr) untied
+# pragma omp task if(sequential20) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S20(mem_mngr.GetMem(start_index, 20, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1835,7 +1835,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 20, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1843,7 +1843,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M21 = (1.0 * A11 + -1.0 * A12) * (1.0 * B21 + 1.0 * B22 + 1.0 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential21) shared(mem_mngr) untied
+# pragma omp task if(sequential21) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S21(mem_mngr.GetMem(start_index, 21, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1856,7 +1856,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 21, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1864,7 +1864,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M22 = (1.0 * A13) * (1.0 * B31 + 1.0 * B32 + 1.0 * B33)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential22) shared(mem_mngr) untied
+# pragma omp task if(sequential22) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> T22(mem_mngr.GetMem(start_index, 22, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
@@ -1875,7 +1875,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     if (should_task_wait(23, total_steps, steps_left, start_index, 22, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_set_num_threads_local(num_threads);
+    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
     mkl_set_dynamic(0);
 # endif
     }
@@ -1883,7 +1883,7 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M23 = (1.0 * A21 + -1.0 * A32 + 1.0 * A33) * (1.0 * B31 + 1.0 * B32)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential23) shared(mem_mngr) untied
+# pragma omp task if(sequential23) shared(mem_mngr)
     {
 #endif
     Matrix<Scalar> S23(mem_mngr.GetMem(start_index, 23, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
@@ -1927,28 +1927,51 @@ double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     A.set_multiplier(alpha);
     int num_multiplies_per_step = 23;
     int total_multiplies = pow(num_multiplies_per_step, num_steps);
+
+    // Set parameters needed for all types of parallelism.
+    int num_threads = 0;
 #ifdef _PARALLEL_
-    int num_threads = -1;
 # pragma omp parallel
     {
         if (omp_get_thread_num() == 0) { num_threads = omp_get_num_threads(); }
     }
-#else
-    int num_threads = 0;
-#endif
-    using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;
-    auto t1 = std::chrono::high_resolution_clock::now();
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     omp_set_nested(1);
-    if (num_threads > total_multiplies) {
+#endif
+
+#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_)
+# pragma omp parallel
+    {
+        mkl_set_num_threads_local(1);
         mkl_set_dynamic(0);
     }
+#endif
+
+#if defined(_PARALLEL_) && (_PARALLEL_ == _DFS_PAR_)
+    mkl_set_dynamic(0);
+#endif
+
+#if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
+    if (num_threads > total_multiplies) {
+        mkl_set_dynamic(0);
+    } else {
+# pragma omp parallel
+        {
+            mkl_set_num_threads_local(1);
+            mkl_set_dynamic(0);
+        }
+    }
+#endif
+
+    using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;
+    auto t1 = std::chrono::high_resolution_clock::now();
+
+#ifdef _PARALLEL_
 # pragma omp parallel
     {
 # pragma omp single
 #endif
         FastMatmulRecursive(mem_mngr, A, B, C, num_steps, num_steps, 0, x, num_threads, beta);
-#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+#ifdef _PARALLEL_
     }
 #endif
     auto t2 = std::chrono::high_resolution_clock::now();
