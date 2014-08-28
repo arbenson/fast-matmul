@@ -558,7 +558,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
 
     # Shared memory wrappers (start)
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
-    task = '# pragma omp task if(sequential%d) shared(mem_mngr) untied' % index
+    task = '# pragma omp task if(sequential%d) shared(mem_mngr)' % index
     write_line(header, 0, task)
     write_line(header, 1, '{')
     write_line(header, 0, '#endif')
@@ -683,7 +683,8 @@ def write_input_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
     for i, coeff in enumerate(coeffs):
         if is_nonzero(coeff):
             add += '%s%s, ' % (mat_name, get_suffix(i, mat_dims[0], mat_dims[1]))
-    add += tmp_mat_name + ');'
+    add += tmp_mat_name
+    add += ', x, false);'
     write_line(header, 1, add)
 
 
@@ -698,7 +699,8 @@ def write_output_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
     for i, coeff in enumerate(coeffs):
         if is_nonzero(coeff):
             add += '%s%d, ' % (mat_name, i + 1)
-    add += tmp_mat_name + ');'
+    add += tmp_mat_name
+    add += ', x, false);'
     write_line(header, 1, add)
 
 
@@ -777,12 +779,41 @@ def create_wrapper_func(header, num_multiplies, dims):
     write_line(header, 1, 'int total_multiplies = pow(num_multiplies_per_step, num_steps);')
     write_line(header, 0, '')
 
+    write_line(header, 1, '// Set parameters needed for all types of parallelism.')
     write_line(header, 1, 'int num_threads = 0;')
     write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 0, '# pragma omp parallel')
     write_line(header, 1,  '{')
     write_line(header, 2, 'if (omp_get_thread_num() == 0) { num_threads = omp_get_num_threads(); }')
     write_line(header, 1,  '}')
+    write_line(header, 1, 'omp_set_nested(1);')
+    write_line(header, 0, '#endif')
+    write_line(header, 0, '')
+
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_)')
+    write_line(header, 0, '# pragma omp parallel')
+    write_line(header, 1, '{')
+    write_line(header, 2, 'mkl_set_num_threads_local(1);')
+    write_line(header, 2, 'mkl_set_dynamic(0);')
+    write_line(header, 1, '}')
+    write_line(header, 0, '#endif')
+    write_line(header, 0, '')
+
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _DFS_PAR_)')
+    write_line(header, 1, 'mkl_set_dynamic(0);')
+    write_line(header, 0, '#endif')
+    write_line(header, 0, '')
+
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 1, 'if (num_threads > total_multiplies) {')
+    write_line(header, 2, 'mkl_set_dynamic(0);')
+    write_line(header, 1, '} else {')
+    write_line(header, 0, '# pragma omp parallel')
+    write_line(header, 2, '{')
+    write_line(header, 3, 'mkl_set_num_threads_local(1);')
+    write_line(header, 3, 'mkl_set_dynamic(0);')
+    write_line(header, 2, '}')
+    write_line(header, 1, '}')
     write_line(header, 0, '#endif')
     write_line(header, 0, '')
 
@@ -790,21 +821,7 @@ def create_wrapper_func(header, num_multiplies, dims):
     write_line(header, 1, 'auto t1 = std::chrono::high_resolution_clock::now();')
     write_line(header, 0, '')
 
-    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
-    write_line(header, 1, 'omp_set_nested(1);')
-    write_line(header, 1, 'mkl_set_num_threads_local(1);')
-    write_line(header, 0, '#endif')
-    write_line(header, 0, '')
-
-    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)')
-    write_line(header, 1, 'if (num_threads > total_multiplies) {')
-    write_line(header, 2, 'mkl_set_num_threads_local(num_threads);')
-    write_line(header, 2, 'mkl_set_dynamic(0);')
-    write_line(header, 1, '}')
-    write_line(header, 0, '#endif')
-    write_line(header, 0, '')
-
-    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 0, '# pragma omp parallel')
     write_line(header, 1, '{')
     write_line(header, 0, '# pragma omp single')
@@ -812,7 +829,7 @@ def create_wrapper_func(header, num_multiplies, dims):
 
     write_line(header, 2, 'FastMatmulRecursive(mem_mngr, A, B, C, num_steps, num_steps, 0, x, num_threads, beta);')
 
-    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 1, '}')
     write_line(header, 0, '#endif')
 
