@@ -5,7 +5,7 @@ MKL_SEQ_LIBS =  -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmk
 MKL_PAR_LIBS := -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread
 
 OPT := -O3
-CXXFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11 $(DEFINES)
+CXXFLAGS := $(OPT) $(DEBUG) $(INCLUDES) -std=c++11
 #CXXFLAGS += -g
 
 LDFLAGS := -O3
@@ -30,7 +30,7 @@ EXAMPLES_SRC = bini322.cpp \
     fast433.cpp \
     hk332.cpp \
     strassen.cpp \
-	schonhage333.cpp \
+    schonhage333.cpp \
     fast_lu.cpp \
     fast_qr.cpp
 
@@ -60,17 +60,17 @@ obj:
 build:
 	mkdir -p $(OUTPUT_DIR)
 
-matmul_bench_dfs: matmul_benchmarks.cpp
-	$(CXX) $(CXXFLAGS) -DNDEBUG -D_PARALLEL_=1 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
+matmul_bench_dfs: matmul_benchmarks.cpp build
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -DNDEBUG -D_PARALLEL_=1 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
-matmul_bench_bfs: matmul_benchmarks.cpp
-	$(CXX) $(CXXFLAGS) -DNDEBUG -D_PARALLEL_=2 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
+matmul_bench_bfs: matmul_benchmarks.cpp build
+	$(CXX) $(CXXFLAGS) -fopenmp -DNDEBUG -D_PARALLEL_=2 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
-matmul_bench_hybrid: matmul_benchmarks.cpp
+matmul_bench_hybrid: matmul_benchmarks.cpp build
 	$(CXX) $(CXXFLAGS) -DNDEBUG -D_PARALLEL_=3 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 obj/%.o : %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(DEFINES) -c $< -o $@
 
 % : obj/%.o
 	$(CXX) $(LDFLAGS) $(LDLIBS) $^ -o $(OUTPUT_DIR)/$@
