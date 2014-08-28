@@ -615,7 +615,8 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
     write_line(header, 0, '# pragma omp taskwait')
     if index != num_multiplies:
         write_line(header, 0, '# if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)')
-        write_line(header, 1, 'mkl_set_num_threads_local(num_threads);')
+        write_line(header, 1, 'mkl_domain_set_num_threads(num_threads, MKL_BLAS);')
+        #write_line(header, 1, 'mkl_set_num_threads_local(num_threads);')
         write_line(header, 1, 'mkl_set_dynamic(0);')
         write_line(header, 0, '# endif')
     write_line(header, 1, '}')
