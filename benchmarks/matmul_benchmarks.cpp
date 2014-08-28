@@ -8,26 +8,24 @@
 #include <stdexcept>
 #include <vector>
 
-
 // Run a single benchmark for multiplying m x k x n with num_steps of recursion.
 // To just call GEMM, set num_steps to zero.
 // The median of five trials is printed to std::cout.
 // If run_check is true, then it also
 void SingleBenchmark(int m, int k, int n, int num_steps, int algorithm) {
-  Matrix<double> A = RandomMatrix<double>(m, k);
-  Matrix<double> B = RandomMatrix<double>(k, n);
-  Matrix<double> C1(m, n);
-
   // Run a set number of trials and pick the median time.
   int num_trials = 5;
   std::vector<double> times(num_trials);
   for (int trial = 0; trial < num_trials; ++trial) {
+	Matrix<double> A = RandomMatrix<double>(m, k);
+	Matrix<double> B = RandomMatrix<double>(k, n);
+	Matrix<double> C1(m, n);
     times[trial] = RunAlgorithm(algorithm, A, B, C1, num_steps);
   }
 
   // Spit out the median time
   std::sort(times.begin(), times.end());
-  size_t ind = num_trials / 2 + 1;
+  size_t ind = num_trials / 2;
   std::cout << " " << m << " " << k << " " << n << " "
             << num_steps << " " << times[ind] << " "
             << "; ";
@@ -71,10 +69,10 @@ void SquareTestPar() {
     m_vals.push_back(i);
   }
 
-  mkl_set_num_threads(omp_get_num_threads());
-
   std::vector<int> num_levels = {0};
+#if defined(_PARALLEL_) && (_PARALLEL_ == _DFS_PAR_)
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, MKL);
+#endif
 
   num_levels = {1, 2, 3};
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, STRASSEN);
@@ -88,9 +86,10 @@ void OuterTestPar () {
   }
   std::vector<int> k_vals(m_vals.size(), 2800);
 
-  mkl_set_num_threads(omp_get_num_threads());
   std::vector<int> num_levels = {0};
+#if defined(_PARALLEL_) && (_PARALLEL_ == _DFS_PAR_)
   BenchmarkSet(m_vals, k_vals, m_vals, num_levels, MKL);
+#endif
   num_levels = {1, 2};
   BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST424_26_257);
 }
@@ -104,8 +103,9 @@ void TSSquareTestPar() {
   std::vector<int> k_vals(m_vals.size(), 3000);
   std::vector<int> num_levels = {0};
 
-  mkl_set_num_threads(omp_get_num_threads());
+#if defined(_PARALLEL_) && (_PARALLEL_ == _DFS_PAR_)
   BenchmarkSet(m_vals, k_vals, k_vals, num_levels, MKL);
+#endif
   num_levels = {1, 2};
   BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST433_29_234);
 }
