@@ -17,6 +17,7 @@ void SingleTest(int m, int k, int n, int num_steps, int algorithm) {
 			<< std::endl;  
 }
 
+
 // Runs a set of tests.
 void TestSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
 			 std::vector<int>& n_vals, int algorithm) {
@@ -30,6 +31,7 @@ void TestSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
 	}
   }
 }
+
 
 // Test some of the additional, non-standard functionality associated with
 // matrix multiply.
@@ -121,16 +123,16 @@ void ExtraMatMulTests() {
 	  }
 	}
   }
-
 }
+
 
 // Run all of the tests.
 void FastMatmulTests() {
-  std::vector<int> m_vals = {44, 70,  101, 402, 600, 634, 4001, 4002, 4003,
+  std::vector<int> m_vals = {257, 300, 366, 101, 402, 600, 634,  4001, 4002, 4003,
 							 4004, 4005, 4006, 4007, 4008, 4009, 4010};
-  std::vector<int> k_vals = {71, 80,   99, 400, 500, 700, 1000, 1200, 1301,
+  std::vector<int> k_vals = {500, 500, 500, 500, 500, 500, 700, 1000, 1200, 1301,
 							 1400, 1477, 1514, 2020, 2100, 2800, 2900};
-  std::vector<int> n_vals = {55, 100, 200, 340, 562, 671, 1000, 1200, 1201,
+  std::vector<int> n_vals = {55, 100, 200, 340, 562, 671, 1000, 1200, 1201, 1201,
 							 1300, 1400, 1500, 2000, 2003, 2489, 2765};
 
   TestSet(m_vals, k_vals, n_vals, STRASSEN);
@@ -161,6 +163,7 @@ void FastMatmulTests() {
   TestSet(m_vals, k_vals, n_vals, CLASSICAL222);
   TestSet(m_vals, k_vals, n_vals, CLASSICAL333);
 }
+
 
 int main(int argc, char **argv) {
   auto opts = GetOpts(argc, argv);
