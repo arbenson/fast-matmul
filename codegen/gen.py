@@ -600,6 +600,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
             loc = [i for i, c in enumerate(coeffs) if is_nonzero(c)]
             return mat_name + get_suffix(loc[0], mat_dims[0], mat_dims[1])
 
+    #write_line(header, 1, 'if (steps_left == 1 && sequential%d) { mkl_domain_set_num_threads(1, MKL_DOMAIN_BLAS); }' % index)
     # Finally, write the actual call to matrix multiply.
     write_line(header, 1, 'FastMatmulRecursive(mem_mngr, %s, %s, %s, total_steps, steps_left - 1, %s, x, num_threads, Scalar(0.0));' % (
             subblock_name(a_coeffs, 'A', 'S', (dims[0], dims[1])),
@@ -774,26 +775,36 @@ def create_wrapper_func(header, num_multiplies, dims):
     write_line(header, 1, 'A.set_multiplier(alpha);')
     write_line(header, 1, 'int num_multiplies_per_step = %d;' % num_multiplies)
     write_line(header, 1, 'int total_multiplies = pow(num_multiplies_per_step, num_steps);')
+    write_line(header, 0, '')
 
+    write_line(header, 1, 'int num_threads = 0;')
     write_line(header, 0, '#ifdef _PARALLEL_')
-    write_line(header, 1, 'int num_threads = -1;')
     write_line(header, 0, '# pragma omp parallel')
     write_line(header, 1,  '{')
     write_line(header, 2, 'if (omp_get_thread_num() == 0) { num_threads = omp_get_num_threads(); }')
     write_line(header, 1,  '}')
-    write_line(header, 0, '#else')
-    write_line(header, 1, 'int num_threads = 0;')
     write_line(header, 0, '#endif')
+    write_line(header, 0, '')
 
     write_line(header, 1, 'using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;')
     write_line(header, 1, 'auto t1 = std::chrono::high_resolution_clock::now();')
+    write_line(header, 0, '')
 
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
     write_line(header, 1, 'omp_set_nested(1);')
+    write_line(header, 1, 'mkl_set_num_threads_local(1);')
+    write_line(header, 0, '#endif')
+    write_line(header, 0, '')
+
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)')
     write_line(header, 1, 'if (num_threads > total_multiplies) {')
+    write_line(header, 2, 'mkl_set_num_threads_local(num_threads);')
     write_line(header, 2, 'mkl_set_dynamic(0);')
     write_line(header, 1, '}')
+    write_line(header, 0, '#endif')
+    write_line(header, 0, '')
 
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
     write_line(header, 0, '# pragma omp parallel')
     write_line(header, 1, '{')
     write_line(header, 0, '# pragma omp single')
