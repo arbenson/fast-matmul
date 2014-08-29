@@ -379,7 +379,7 @@ void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x,
 }
 
 template <typename Scalar>
-void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int total_steps, int steps_left, int start_index, double x, int num_threads, Scalar beta) {
+void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C, int total_steps, int steps_left, int start_index, double x, int num_threads, Scalar beta) {
     // Update multipliers
     C.UpdateMultiplier(A.multiplier());
     C.UpdateMultiplier(B.multiplier());
@@ -438,130 +438,131 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
 
     // M1 = (1.0 * A11) * (1.0 * B11)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential1) shared(mem_mngr)
+# pragma omp task if(sequential1) shared(mem_mngr, locker) untied
     {
 #endif
-    FastMatmulRecursive(mem_mngr, A11, B11, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 8, x, num_threads, Scalar(0.0));
+    FastMatmulRecursive(locker, mem_mngr, A11, B11, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 8, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+locker.Decrement();
     }
     if (should_task_wait(8, total_steps, steps_left, start_index, 1, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
-    mkl_set_dynamic(0);
+    SwitchToDFS(locker, num_threads);
 # endif
     }
 #endif
 
     // M2 = (1.0 * A12) * (1.0 * B21)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential2) shared(mem_mngr)
+# pragma omp task if(sequential2) shared(mem_mngr, locker) untied
     {
 #endif
-    FastMatmulRecursive(mem_mngr, A12, B21, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 8, x, num_threads, Scalar(0.0));
+    FastMatmulRecursive(locker, mem_mngr, A12, B21, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 8, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+locker.Decrement();
     }
     if (should_task_wait(8, total_steps, steps_left, start_index, 2, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
-    mkl_set_dynamic(0);
+    SwitchToDFS(locker, num_threads);
 # endif
     }
 #endif
 
     // M3 = (1.0 * A11) * (1.0 * B12)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential3) shared(mem_mngr)
+# pragma omp task if(sequential3) shared(mem_mngr, locker) untied
     {
 #endif
-    FastMatmulRecursive(mem_mngr, A11, B12, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 8, x, num_threads, Scalar(0.0));
+    FastMatmulRecursive(locker, mem_mngr, A11, B12, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 8, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+locker.Decrement();
     }
     if (should_task_wait(8, total_steps, steps_left, start_index, 3, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
-    mkl_set_dynamic(0);
+    SwitchToDFS(locker, num_threads);
 # endif
     }
 #endif
 
     // M4 = (1.0 * A12) * (1.0 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential4) shared(mem_mngr)
+# pragma omp task if(sequential4) shared(mem_mngr, locker) untied
     {
 #endif
-    FastMatmulRecursive(mem_mngr, A12, B22, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 8, x, num_threads, Scalar(0.0));
+    FastMatmulRecursive(locker, mem_mngr, A12, B22, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 8, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+locker.Decrement();
     }
     if (should_task_wait(8, total_steps, steps_left, start_index, 4, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
-    mkl_set_dynamic(0);
+    SwitchToDFS(locker, num_threads);
 # endif
     }
 #endif
 
     // M5 = (1.0 * A21) * (1.0 * B11)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential5) shared(mem_mngr)
+# pragma omp task if(sequential5) shared(mem_mngr, locker) untied
     {
 #endif
-    FastMatmulRecursive(mem_mngr, A21, B11, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 8, x, num_threads, Scalar(0.0));
+    FastMatmulRecursive(locker, mem_mngr, A21, B11, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 8, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+locker.Decrement();
     }
     if (should_task_wait(8, total_steps, steps_left, start_index, 5, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
-    mkl_set_dynamic(0);
+    SwitchToDFS(locker, num_threads);
 # endif
     }
 #endif
 
     // M6 = (1.0 * A22) * (1.0 * B21)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential6) shared(mem_mngr)
+# pragma omp task if(sequential6) shared(mem_mngr, locker) untied
     {
 #endif
-    FastMatmulRecursive(mem_mngr, A22, B21, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 8, x, num_threads, Scalar(0.0));
+    FastMatmulRecursive(locker, mem_mngr, A22, B21, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 8, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+locker.Decrement();
     }
     if (should_task_wait(8, total_steps, steps_left, start_index, 6, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
-    mkl_set_dynamic(0);
+    SwitchToDFS(locker, num_threads);
 # endif
     }
 #endif
 
     // M7 = (1.0 * A21) * (1.0 * B12)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential7) shared(mem_mngr)
+# pragma omp task if(sequential7) shared(mem_mngr, locker) untied
     {
 #endif
-    FastMatmulRecursive(mem_mngr, A21, B12, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 8, x, num_threads, Scalar(0.0));
+    FastMatmulRecursive(locker, mem_mngr, A21, B12, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 8, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+locker.Decrement();
     }
     if (should_task_wait(8, total_steps, steps_left, start_index, 7, num_threads)) {
 # pragma omp taskwait
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
-    mkl_domain_set_num_threads(num_threads, MKL_BLAS);
-    mkl_set_dynamic(0);
+    SwitchToDFS(locker, num_threads);
 # endif
     }
 #endif
 
     // M8 = (1.0 * A22) * (1.0 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
-# pragma omp task if(sequential8) shared(mem_mngr)
+# pragma omp task if(sequential8) shared(mem_mngr, locker) untied
     {
 #endif
-    FastMatmulRecursive(mem_mngr, A22, B22, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 8, x, num_threads, Scalar(0.0));
+    FastMatmulRecursive(locker, mem_mngr, A22, B22, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 8, x, num_threads, Scalar(0.0));
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
+locker.Decrement();
     }
     if (should_task_wait(8, total_steps, steps_left, start_index, 8, num_threads)) {
 # pragma omp taskwait
@@ -576,8 +577,8 @@ void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Mat
     // Handle edge cases with dynamic peeling
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     if (total_steps == steps_left) {
-        mkl_set_dynamic(0);
         mkl_set_num_threads_local(num_threads);
+        mkl_set_dynamic(0);
     }
 #endif
     DynamicPeeling(A, B, C, 2, 2, 2, beta);
@@ -627,6 +628,7 @@ double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     }
 #endif
 
+    LockAndCounter locker(total_multiplies - (total_multiplies % num_threads));
     using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;
     auto t1 = std::chrono::high_resolution_clock::now();
 
@@ -635,7 +637,7 @@ double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     {
 # pragma omp single
 #endif
-        FastMatmulRecursive(mem_mngr, A, B, C, num_steps, num_steps, 0, x, num_threads, beta);
+        FastMatmulRecursive(locker, mem_mngr, A, B, C, num_steps, num_steps, 0, x, num_threads, beta);
 #ifdef _PARALLEL_
     }
 #endif
