@@ -85,6 +85,7 @@ bool should_launch_task(int mults_per_step, int total_rec_steps, int steps_left,
   return true;
 }
 
+#ifdef _PARALLEL_
 class Lock {
 public:
   Lock() { omp_init_lock(&lock_); }
@@ -97,7 +98,6 @@ public:
 private:
   omp_lock_t lock_;
 };
-
 
 class LockAndCounter {
 public:
@@ -127,6 +127,14 @@ private:
   int count_;
   Lock lock_;
 };
+#else
+// We make this definition so that the sequential code will compile.  This
+// is a little bit of a hack, but it keeps the generated code simpler.
+class LockAndCounter {
+public:
+  LockAndCounter(int count) {}
+};
+#endif
 
 # if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)
 // Switch to DFS style sub-problems in the hybrid parallelism
