@@ -39,7 +39,8 @@ BENCHMARKS_SRC = matmul_benchmarks.cpp \
     daxpy_benchmark.cpp \
     dgemm_curves.cpp \
     cse_add_perf_benchmarks.cpp \
-    simple_dgemm.cpp	
+    simple_dgemm.cpp \
+    square54_benchmark.cpp
 
 TESTS_SRC = matmul_tests.cpp \
     fast_lu_test.cpp \
