@@ -74,12 +74,16 @@ def data_call(name):
 def data_access(name):
     return 'data%s[i + j * stride%s]' % (name, name)
 
-def instantiate_tmp(tmp_name, mult_index, mat_name):
-    #return 'Matrix<Scalar> %s%d(%s11.m(), %s11.n());' % (tmp_name, mult_index, mat_name, mat_name)
+def instantiate_tmp(header, tmp_name, mult_index, mat_name):
+    write_line(header, 0, '#ifdef _PARALLEL_')
     inst = 'Matrix<Scalar> %s%d(' % (tmp_name, mult_index)
     inst += 'mem_mngr.GetMem(start_index, %d, total_steps - steps_left, %s), ' % (mult_index, tmp_name)
     inst += '%s11.m(), %s11.m(), %s11.n());' % (mat_name, mat_name, mat_name)
-    return inst
+    write_line(header, 1, inst)
+    write_line(header, 0, '#else')
+    inst = 'Matrix<Scalar> %s%d(%s11.m(), %s11.n());' % (tmp_name, mult_index, mat_name, mat_name)
+    write_line(header, 1, inst)
+    write_line(header, 0, '#endif')
 
 
 def instantiate(subblock, mat_name):
@@ -573,10 +577,10 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
 
     # Write the adds to temps if necessary
     if need_tmp_mat(a_coeffs) and not streaming_adds:
-        write_line(header, 1, instantiate_tmp('S', index, 'A'))
+        instantiate_tmp(header, 'S', index, 'A')
         write_line(header, 1, addition_str(a_coeffs, 'A', 'S', (dims[0], dims[1])))
     if need_tmp_mat(b_coeffs) and not streaming_adds:
-        write_line(header, 1, instantiate_tmp('T', index, 'B'))
+        instantiate_tmp(header, 'T', index, 'B')
         write_line(header, 1, addition_str(b_coeffs, 'B', 'T', (dims[1], dims[2])))
 
     res_mat = 'M%d' % (index)
@@ -606,6 +610,14 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
             subblock_name(a_coeffs, 'A', 'S', (dims[0], dims[1])),
             subblock_name(b_coeffs, 'B', 'T', (dims[1], dims[2])),
             res_mat, '(start_index + %d - 1) * %d' % (index, num_multiplies)))
+
+    # If we are not in parallel mode, de-allocate the temporary matrices
+    write_line(header, 0, '#ifndef _PARALLEL_')
+    if need_tmp_mat(a_coeffs) and not streaming_adds:
+        write_line(header, 1, 'S%d.deallocate();' % (index))
+    if need_tmp_mat(b_coeffs) and not streaming_adds:
+        write_line(header, 1, 'T%d.deallocate();' % (index))
+    write_line(header, 0, '#endif')
     
     # Shared memory wrappers (end)
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
@@ -771,8 +783,10 @@ def create_wrapper_func(header, num_multiplies, dims):
     write_line(header, 1, 'int num_steps, double x=1e-8, Scalar alpha=Scalar(1.0), ' +
                'Scalar beta=Scalar(0.0)) {')
     write_line(header, 1, 'MemoryManager<Scalar> mem_mngr;')
+    write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 1, 'mem_mngr.Allocate(%d, %d, %d, %d, num_steps, A.m(), A.n(), B.n());'
                % (dims[0], dims[1], dims[2], num_multiplies))
+    write_line(header, 0, '#endif')               
 
     write_line(header, 1, 'A.set_multiplier(alpha);')
     write_line(header, 1, 'int num_multiplies_per_step = %d;' % num_multiplies)
@@ -924,9 +938,14 @@ def main():
         write_break(header)
         write_line(header, 1, '// Matrices to store the results of multiplications.')
             
+        write_line(header, 0, '#ifdef _PARALLEL_')
         for i in xrange(num_multiplies):
             write_line(header, 1,
                        'Matrix<Scalar> M%d(mem_mngr.GetMem(start_index, %d, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());' % (i + 1, i + 1))
+        write_line(header, 0, '#else')
+        for i in xrange(num_multiplies):
+            write_line(header, 1, 'Matrix<Scalar> M%d(C11.m(), C11.n(), C.multiplier());' % (i + 1))
+        write_line(header, 0, '#endif')
 
         write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
         for i in xrange(num_multiplies):
