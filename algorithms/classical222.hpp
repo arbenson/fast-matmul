@@ -406,6 +406,7 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
 
 
     // Matrices to store the results of multiplications.
+#ifdef _PARALLEL_
     Matrix<Scalar> M1(mem_mngr.GetMem(start_index, 1, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M2(mem_mngr.GetMem(start_index, 2, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M3(mem_mngr.GetMem(start_index, 3, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
@@ -414,6 +415,16 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
     Matrix<Scalar> M6(mem_mngr.GetMem(start_index, 6, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M7(mem_mngr.GetMem(start_index, 7, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M8(mem_mngr.GetMem(start_index, 8, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
+#else
+    Matrix<Scalar> M1(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M2(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M3(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M4(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M5(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M6(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M7(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M8(C11.m(), C11.n(), C.multiplier());
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     bool sequential1 = should_launch_task(8, total_steps, steps_left, start_index, 1, num_threads);
     bool sequential2 = should_launch_task(8, total_steps, steps_left, start_index, 2, num_threads);
@@ -442,6 +453,8 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
     {
 #endif
     FastMatmulRecursive(locker, mem_mngr, A11, B11, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 8, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -459,6 +472,8 @@ locker.Decrement();
     {
 #endif
     FastMatmulRecursive(locker, mem_mngr, A12, B21, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 8, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -476,6 +491,8 @@ locker.Decrement();
     {
 #endif
     FastMatmulRecursive(locker, mem_mngr, A11, B12, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 8, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -493,6 +510,8 @@ locker.Decrement();
     {
 #endif
     FastMatmulRecursive(locker, mem_mngr, A12, B22, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 8, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -510,6 +529,8 @@ locker.Decrement();
     {
 #endif
     FastMatmulRecursive(locker, mem_mngr, A21, B11, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 8, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -527,6 +548,8 @@ locker.Decrement();
     {
 #endif
     FastMatmulRecursive(locker, mem_mngr, A22, B21, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 8, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -544,6 +567,8 @@ locker.Decrement();
     {
 #endif
     FastMatmulRecursive(locker, mem_mngr, A21, B12, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 8, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -561,6 +586,8 @@ locker.Decrement();
     {
 #endif
     FastMatmulRecursive(locker, mem_mngr, A22, B22, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 8, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -589,7 +616,9 @@ template <typename Scalar>
 double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     int num_steps, double x=1e-8, Scalar alpha=Scalar(1.0), Scalar beta=Scalar(0.0)) {
     MemoryManager<Scalar> mem_mngr;
+#ifdef _PARALLEL_
     mem_mngr.Allocate(2, 2, 2, 8, num_steps, A.m(), A.n(), B.n());
+#endif
     A.set_multiplier(alpha);
     int num_multiplies_per_step = 8;
     int total_multiplies = pow(num_multiplies_per_step, num_steps);

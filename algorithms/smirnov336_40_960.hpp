@@ -3557,6 +3557,7 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
 
 
     // Matrices to store the results of multiplications.
+#ifdef _PARALLEL_
     Matrix<Scalar> M1(mem_mngr.GetMem(start_index, 1, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M2(mem_mngr.GetMem(start_index, 2, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M3(mem_mngr.GetMem(start_index, 3, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
@@ -3597,6 +3598,48 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
     Matrix<Scalar> M38(mem_mngr.GetMem(start_index, 38, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M39(mem_mngr.GetMem(start_index, 39, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
     Matrix<Scalar> M40(mem_mngr.GetMem(start_index, 40, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());
+#else
+    Matrix<Scalar> M1(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M2(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M3(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M4(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M5(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M6(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M7(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M8(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M9(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M10(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M11(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M12(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M13(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M14(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M15(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M16(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M17(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M18(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M19(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M20(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M21(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M22(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M23(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M24(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M25(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M26(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M27(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M28(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M29(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M30(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M31(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M32(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M33(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M34(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M35(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M36(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M37(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M38(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M39(C11.m(), C11.n(), C.multiplier());
+    Matrix<Scalar> M40(C11.m(), C11.n(), C.multiplier());
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
     bool sequential1 = should_launch_task(40, total_steps, steps_left, start_index, 1, num_threads);
     bool sequential2 = should_launch_task(40, total_steps, steps_left, start_index, 2, num_threads);
@@ -3688,11 +3731,23 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
 # pragma omp task if(sequential1) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S1(mem_mngr.GetMem(start_index, 1, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S1(A11.m(), A11.n());
+#endif
     S_Add1(A11, A13, A22, A23, A31, A32, S1, x, sequential1);
+#ifdef _PARALLEL_
     Matrix<Scalar> T1(mem_mngr.GetMem(start_index, 1, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T1(B11.m(), B11.n());
+#endif
     T_Add1(B12, B15, B16, B23, B24, B25, B31, B33, B36, T1, x, sequential1);
     FastMatmulRecursive(locker, mem_mngr, S1, T1, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S1.deallocate();
+    T1.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3709,11 +3764,23 @@ locker.Decrement();
 # pragma omp task if(sequential2) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S2(mem_mngr.GetMem(start_index, 2, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S2(A11.m(), A11.n());
+#endif
     S_Add2(A11, A13, A22, A23, A31, A32, S2, x, sequential2);
+#ifdef _PARALLEL_
     Matrix<Scalar> T2(mem_mngr.GetMem(start_index, 2, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T2(B11.m(), B11.n());
+#endif
     T_Add2(B13, B14, B15, B22, B25, B26, B31, B32, B34, T2, x, sequential2);
     FastMatmulRecursive(locker, mem_mngr, S2, T2, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S2.deallocate();
+    T2.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3730,11 +3797,23 @@ locker.Decrement();
 # pragma omp task if(sequential3) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S3(mem_mngr.GetMem(start_index, 3, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S3(A11.m(), A11.n());
+#endif
     S_Add3(A11, A13, A22, A23, A31, A32, S3, x, sequential3);
+#ifdef _PARALLEL_
     Matrix<Scalar> T3(mem_mngr.GetMem(start_index, 3, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T3(B11.m(), B11.n());
+#endif
     T_Add3(B11, B13, B16, B21, B22, B24, B32, B35, B36, T3, x, sequential3);
     FastMatmulRecursive(locker, mem_mngr, S3, T3, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S3.deallocate();
+    T3.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3751,11 +3830,23 @@ locker.Decrement();
 # pragma omp task if(sequential4) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S4(mem_mngr.GetMem(start_index, 4, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S4(A11.m(), A11.n());
+#endif
     S_Add4(A11, A13, A22, A23, A31, A32, S4, x, sequential4);
+#ifdef _PARALLEL_
     Matrix<Scalar> T4(mem_mngr.GetMem(start_index, 4, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T4(B11.m(), B11.n());
+#endif
     T_Add4(B12, B15, B16, B23, B24, B25, B31, B33, B36, T4, x, sequential4);
     FastMatmulRecursive(locker, mem_mngr, S4, T4, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S4.deallocate();
+    T4.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3772,11 +3863,23 @@ locker.Decrement();
 # pragma omp task if(sequential5) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S5(mem_mngr.GetMem(start_index, 5, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S5(A11.m(), A11.n());
+#endif
     S_Add5(A11, A13, A22, A23, A31, A32, S5, x, sequential5);
+#ifdef _PARALLEL_
     Matrix<Scalar> T5(mem_mngr.GetMem(start_index, 5, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T5(B11.m(), B11.n());
+#endif
     T_Add5(B13, B14, B15, B22, B25, B26, B31, B32, B34, T5, x, sequential5);
     FastMatmulRecursive(locker, mem_mngr, S5, T5, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S5.deallocate();
+    T5.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3793,11 +3896,23 @@ locker.Decrement();
 # pragma omp task if(sequential6) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S6(mem_mngr.GetMem(start_index, 6, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S6(A11.m(), A11.n());
+#endif
     S_Add6(A11, A13, A22, A23, A31, A32, S6, x, sequential6);
+#ifdef _PARALLEL_
     Matrix<Scalar> T6(mem_mngr.GetMem(start_index, 6, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T6(B11.m(), B11.n());
+#endif
     T_Add6(B11, B12, B14, B21, B23, B26, B33, B34, B35, T6, x, sequential6);
     FastMatmulRecursive(locker, mem_mngr, S6, T6, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S6.deallocate();
+    T6.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3814,11 +3929,23 @@ locker.Decrement();
 # pragma omp task if(sequential7) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S7(mem_mngr.GetMem(start_index, 7, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S7(A11.m(), A11.n());
+#endif
     S_Add7(A11, A13, A22, A23, A31, A32, S7, x, sequential7);
+#ifdef _PARALLEL_
     Matrix<Scalar> T7(mem_mngr.GetMem(start_index, 7, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T7(B11.m(), B11.n());
+#endif
     T_Add7(B11, B13, B16, B21, B22, B24, B32, B35, B36, T7, x, sequential7);
     FastMatmulRecursive(locker, mem_mngr, S7, T7, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S7.deallocate();
+    T7.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3835,11 +3962,23 @@ locker.Decrement();
 # pragma omp task if(sequential8) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S8(mem_mngr.GetMem(start_index, 8, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S8(A11.m(), A11.n());
+#endif
     S_Add8(A11, A13, A22, A23, A31, A32, S8, x, sequential8);
+#ifdef _PARALLEL_
     Matrix<Scalar> T8(mem_mngr.GetMem(start_index, 8, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T8(B11.m(), B11.n());
+#endif
     T_Add8(B12, B15, B16, B23, B24, B25, B31, B33, B36, T8, x, sequential8);
     FastMatmulRecursive(locker, mem_mngr, S8, T8, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S8.deallocate();
+    T8.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3856,11 +3995,23 @@ locker.Decrement();
 # pragma omp task if(sequential9) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S9(mem_mngr.GetMem(start_index, 9, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S9(A11.m(), A11.n());
+#endif
     S_Add9(A11, A13, A22, A23, A31, A32, S9, x, sequential9);
+#ifdef _PARALLEL_
     Matrix<Scalar> T9(mem_mngr.GetMem(start_index, 9, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T9(B11.m(), B11.n());
+#endif
     T_Add9(B11, B13, B16, B21, B22, B24, B32, B35, B36, T9, x, sequential9);
     FastMatmulRecursive(locker, mem_mngr, S9, T9, M9, total_steps, steps_left - 1, (start_index + 9 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S9.deallocate();
+    T9.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3877,11 +4028,23 @@ locker.Decrement();
 # pragma omp task if(sequential10) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S10(mem_mngr.GetMem(start_index, 10, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S10(A11.m(), A11.n());
+#endif
     S_Add10(A11, A13, A22, A23, A31, A32, S10, x, sequential10);
+#ifdef _PARALLEL_
     Matrix<Scalar> T10(mem_mngr.GetMem(start_index, 10, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T10(B11.m(), B11.n());
+#endif
     T_Add10(B11, B12, B14, B21, B23, B26, B33, B34, B35, T10, x, sequential10);
     FastMatmulRecursive(locker, mem_mngr, S10, T10, M10, total_steps, steps_left - 1, (start_index + 10 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S10.deallocate();
+    T10.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3898,11 +4061,23 @@ locker.Decrement();
 # pragma omp task if(sequential11) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S11(mem_mngr.GetMem(start_index, 11, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S11(A11.m(), A11.n());
+#endif
     S_Add11(A11, A13, A22, A23, A31, A32, S11, x, sequential11);
+#ifdef _PARALLEL_
     Matrix<Scalar> T11(mem_mngr.GetMem(start_index, 11, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T11(B11.m(), B11.n());
+#endif
     T_Add11(B11, B12, B14, B21, B23, B26, B33, B34, B35, T11, x, sequential11);
     FastMatmulRecursive(locker, mem_mngr, S11, T11, M11, total_steps, steps_left - 1, (start_index + 11 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S11.deallocate();
+    T11.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3919,11 +4094,23 @@ locker.Decrement();
 # pragma omp task if(sequential12) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S12(mem_mngr.GetMem(start_index, 12, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S12(A11.m(), A11.n());
+#endif
     S_Add12(A11, A13, A22, A23, A31, A32, S12, x, sequential12);
+#ifdef _PARALLEL_
     Matrix<Scalar> T12(mem_mngr.GetMem(start_index, 12, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T12(B11.m(), B11.n());
+#endif
     T_Add12(B13, B14, B15, B22, B25, B26, B31, B32, B34, T12, x, sequential12);
     FastMatmulRecursive(locker, mem_mngr, S12, T12, M12, total_steps, steps_left - 1, (start_index + 12 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S12.deallocate();
+    T12.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3940,11 +4127,23 @@ locker.Decrement();
 # pragma omp task if(sequential13) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S13(mem_mngr.GetMem(start_index, 13, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S13(A11.m(), A11.n());
+#endif
     S_Add13(A11, A13, A22, A23, A31, A32, S13, x, sequential13);
+#ifdef _PARALLEL_
     Matrix<Scalar> T13(mem_mngr.GetMem(start_index, 13, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T13(B11.m(), B11.n());
+#endif
     T_Add13(B12, B15, B16, B23, B24, B25, B31, B33, B36, T13, x, sequential13);
     FastMatmulRecursive(locker, mem_mngr, S13, T13, M13, total_steps, steps_left - 1, (start_index + 13 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S13.deallocate();
+    T13.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3961,11 +4160,23 @@ locker.Decrement();
 # pragma omp task if(sequential14) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S14(mem_mngr.GetMem(start_index, 14, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S14(A11.m(), A11.n());
+#endif
     S_Add14(A11, A13, A22, A23, A31, A32, S14, x, sequential14);
+#ifdef _PARALLEL_
     Matrix<Scalar> T14(mem_mngr.GetMem(start_index, 14, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T14(B11.m(), B11.n());
+#endif
     T_Add14(B11, B13, B16, B21, B22, B24, B32, B35, B36, T14, x, sequential14);
     FastMatmulRecursive(locker, mem_mngr, S14, T14, M14, total_steps, steps_left - 1, (start_index + 14 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S14.deallocate();
+    T14.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -3982,11 +4193,23 @@ locker.Decrement();
 # pragma omp task if(sequential15) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S15(mem_mngr.GetMem(start_index, 15, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S15(A11.m(), A11.n());
+#endif
     S_Add15(A11, A13, A22, A23, A31, A32, S15, x, sequential15);
+#ifdef _PARALLEL_
     Matrix<Scalar> T15(mem_mngr.GetMem(start_index, 15, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T15(B11.m(), B11.n());
+#endif
     T_Add15(B11, B12, B14, B21, B23, B26, B33, B34, B35, T15, x, sequential15);
     FastMatmulRecursive(locker, mem_mngr, S15, T15, M15, total_steps, steps_left - 1, (start_index + 15 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S15.deallocate();
+    T15.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4003,11 +4226,23 @@ locker.Decrement();
 # pragma omp task if(sequential16) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S16(mem_mngr.GetMem(start_index, 16, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S16(A11.m(), A11.n());
+#endif
     S_Add16(A11, A13, A22, A23, A31, A32, S16, x, sequential16);
+#ifdef _PARALLEL_
     Matrix<Scalar> T16(mem_mngr.GetMem(start_index, 16, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T16(B11.m(), B11.n());
+#endif
     T_Add16(B13, B14, B15, B22, B25, B26, B31, B32, B34, T16, x, sequential16);
     FastMatmulRecursive(locker, mem_mngr, S16, T16, M16, total_steps, steps_left - 1, (start_index + 16 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S16.deallocate();
+    T16.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4024,11 +4259,23 @@ locker.Decrement();
 # pragma omp task if(sequential17) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S17(mem_mngr.GetMem(start_index, 17, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S17(A11.m(), A11.n());
+#endif
     S_Add17(A21, A22, A31, A32, S17, x, sequential17);
+#ifdef _PARALLEL_
     Matrix<Scalar> T17(mem_mngr.GetMem(start_index, 17, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T17(B11.m(), B11.n());
+#endif
     T_Add17(B11, B12, B13, B14, B15, B16, B21, B25, B34, B36, T17, x, sequential17);
     FastMatmulRecursive(locker, mem_mngr, S17, T17, M17, total_steps, steps_left - 1, (start_index + 17 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S17.deallocate();
+    T17.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4045,11 +4292,23 @@ locker.Decrement();
 # pragma omp task if(sequential18) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S18(mem_mngr.GetMem(start_index, 18, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S18(A11.m(), A11.n());
+#endif
     S_Add18(A11, A12, A31, A32, S18, x, sequential18);
+#ifdef _PARALLEL_
     Matrix<Scalar> T18(mem_mngr.GetMem(start_index, 18, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T18(B11.m(), B11.n());
+#endif
     T_Add18(B11, B15, B21, B22, B23, B24, B25, B26, B32, B33, T18, x, sequential18);
     FastMatmulRecursive(locker, mem_mngr, S18, T18, M18, total_steps, steps_left - 1, (start_index + 18 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S18.deallocate();
+    T18.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4066,11 +4325,23 @@ locker.Decrement();
 # pragma omp task if(sequential19) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S19(mem_mngr.GetMem(start_index, 19, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S19(A11.m(), A11.n());
+#endif
     S_Add19(A21, A22, A31, A32, S19, x, sequential19);
+#ifdef _PARALLEL_
     Matrix<Scalar> T19(mem_mngr.GetMem(start_index, 19, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T19(B11.m(), B11.n());
+#endif
     T_Add19(B11, B12, B13, B14, B15, B16, B21, B25, B34, B36, T19, x, sequential19);
     FastMatmulRecursive(locker, mem_mngr, S19, T19, M19, total_steps, steps_left - 1, (start_index + 19 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S19.deallocate();
+    T19.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4087,11 +4358,23 @@ locker.Decrement();
 # pragma omp task if(sequential20) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S20(mem_mngr.GetMem(start_index, 20, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S20(A11.m(), A11.n());
+#endif
     S_Add20(A12, A13, A22, A23, S20, x, sequential20);
+#ifdef _PARALLEL_
     Matrix<Scalar> T20(mem_mngr.GetMem(start_index, 20, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T20(B11.m(), B11.n());
+#endif
     T_Add20(B11, B15, B21, B22, B23, B24, B25, B26, B32, B33, T20, x, sequential20);
     FastMatmulRecursive(locker, mem_mngr, S20, T20, M20, total_steps, steps_left - 1, (start_index + 20 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S20.deallocate();
+    T20.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4108,11 +4391,23 @@ locker.Decrement();
 # pragma omp task if(sequential21) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S21(mem_mngr.GetMem(start_index, 21, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S21(A11.m(), A11.n());
+#endif
     S_Add21(A11, A13, A21, A23, S21, x, sequential21);
+#ifdef _PARALLEL_
     Matrix<Scalar> T21(mem_mngr.GetMem(start_index, 21, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T21(B11.m(), B11.n());
+#endif
     T_Add21(B11, B12, B13, B14, B15, B16, B21, B25, B34, B36, T21, x, sequential21);
     FastMatmulRecursive(locker, mem_mngr, S21, T21, M21, total_steps, steps_left - 1, (start_index + 21 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S21.deallocate();
+    T21.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4129,11 +4424,23 @@ locker.Decrement();
 # pragma omp task if(sequential22) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S22(mem_mngr.GetMem(start_index, 22, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S22(A11.m(), A11.n());
+#endif
     S_Add22(A11, A13, A21, A23, S22, x, sequential22);
+#ifdef _PARALLEL_
     Matrix<Scalar> T22(mem_mngr.GetMem(start_index, 22, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T22(B11.m(), B11.n());
+#endif
     T_Add22(B11, B12, B13, B14, B15, B16, B21, B25, B34, B36, T22, x, sequential22);
     FastMatmulRecursive(locker, mem_mngr, S22, T22, M22, total_steps, steps_left - 1, (start_index + 22 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S22.deallocate();
+    T22.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4150,11 +4457,23 @@ locker.Decrement();
 # pragma omp task if(sequential23) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S23(mem_mngr.GetMem(start_index, 23, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S23(A11.m(), A11.n());
+#endif
     S_Add23(A22, A23, A32, A33, S23, x, sequential23);
+#ifdef _PARALLEL_
     Matrix<Scalar> T23(mem_mngr.GetMem(start_index, 23, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T23(B11.m(), B11.n());
+#endif
     T_Add23(B14, B16, B22, B23, B31, B32, B33, B34, B35, B36, T23, x, sequential23);
     FastMatmulRecursive(locker, mem_mngr, S23, T23, M23, total_steps, steps_left - 1, (start_index + 23 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S23.deallocate();
+    T23.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4171,11 +4490,23 @@ locker.Decrement();
 # pragma omp task if(sequential24) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S24(mem_mngr.GetMem(start_index, 24, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S24(A11.m(), A11.n());
+#endif
     S_Add24(A22, A23, A32, A33, S24, x, sequential24);
+#ifdef _PARALLEL_
     Matrix<Scalar> T24(mem_mngr.GetMem(start_index, 24, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T24(B11.m(), B11.n());
+#endif
     T_Add24(B14, B16, B22, B23, B31, B32, B33, B34, B35, B36, T24, x, sequential24);
     FastMatmulRecursive(locker, mem_mngr, S24, T24, M24, total_steps, steps_left - 1, (start_index + 24 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S24.deallocate();
+    T24.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4192,11 +4523,23 @@ locker.Decrement();
 # pragma omp task if(sequential25) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S25(mem_mngr.GetMem(start_index, 25, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S25(A11.m(), A11.n());
+#endif
     S_Add25(A11, A12, A31, A32, S25, x, sequential25);
+#ifdef _PARALLEL_
     Matrix<Scalar> T25(mem_mngr.GetMem(start_index, 25, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T25(B11.m(), B11.n());
+#endif
     T_Add25(B11, B15, B21, B22, B23, B24, B25, B26, B32, B33, T25, x, sequential25);
     FastMatmulRecursive(locker, mem_mngr, S25, T25, M25, total_steps, steps_left - 1, (start_index + 25 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S25.deallocate();
+    T25.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4213,11 +4556,23 @@ locker.Decrement();
 # pragma omp task if(sequential26) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S26(mem_mngr.GetMem(start_index, 26, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S26(A11.m(), A11.n());
+#endif
     S_Add26(A12, A13, A22, A23, S26, x, sequential26);
+#ifdef _PARALLEL_
     Matrix<Scalar> T26(mem_mngr.GetMem(start_index, 26, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T26(B11.m(), B11.n());
+#endif
     T_Add26(B11, B15, B21, B22, B23, B24, B25, B26, B32, B33, T26, x, sequential26);
     FastMatmulRecursive(locker, mem_mngr, S26, T26, M26, total_steps, steps_left - 1, (start_index + 26 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S26.deallocate();
+    T26.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4234,11 +4589,23 @@ locker.Decrement();
 # pragma omp task if(sequential27) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S27(mem_mngr.GetMem(start_index, 27, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S27(A11.m(), A11.n());
+#endif
     S_Add27(A11, A13, A31, A33, S27, x, sequential27);
+#ifdef _PARALLEL_
     Matrix<Scalar> T27(mem_mngr.GetMem(start_index, 27, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T27(B11.m(), B11.n());
+#endif
     T_Add27(B14, B16, B22, B23, B31, B32, B33, B34, B35, B36, T27, x, sequential27);
     FastMatmulRecursive(locker, mem_mngr, S27, T27, M27, total_steps, steps_left - 1, (start_index + 27 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S27.deallocate();
+    T27.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4255,11 +4622,23 @@ locker.Decrement();
 # pragma omp task if(sequential28) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S28(mem_mngr.GetMem(start_index, 28, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S28(A11.m(), A11.n());
+#endif
     S_Add28(A11, A13, A31, A33, S28, x, sequential28);
+#ifdef _PARALLEL_
     Matrix<Scalar> T28(mem_mngr.GetMem(start_index, 28, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T28(B11.m(), B11.n());
+#endif
     T_Add28(B14, B16, B22, B23, B31, B32, B33, B34, B35, B36, T28, x, sequential28);
     FastMatmulRecursive(locker, mem_mngr, S28, T28, M28, total_steps, steps_left - 1, (start_index + 28 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S28.deallocate();
+    T28.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4276,11 +4655,23 @@ locker.Decrement();
 # pragma omp task if(sequential29) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S29(mem_mngr.GetMem(start_index, 29, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S29(A11.m(), A11.n());
+#endif
     S_Add29(A11, A13, A31, A33, S29, x, sequential29);
+#ifdef _PARALLEL_
     Matrix<Scalar> T29(mem_mngr.GetMem(start_index, 29, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T29(B11.m(), B11.n());
+#endif
     T_Add29(B14, B16, B22, B23, B31, B32, B33, B34, B35, B36, T29, x, sequential29);
     FastMatmulRecursive(locker, mem_mngr, S29, T29, M29, total_steps, steps_left - 1, (start_index + 29 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S29.deallocate();
+    T29.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4297,11 +4688,23 @@ locker.Decrement();
 # pragma omp task if(sequential30) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S30(mem_mngr.GetMem(start_index, 30, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S30(A11.m(), A11.n());
+#endif
     S_Add30(A22, A23, A32, A33, S30, x, sequential30);
+#ifdef _PARALLEL_
     Matrix<Scalar> T30(mem_mngr.GetMem(start_index, 30, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T30(B11.m(), B11.n());
+#endif
     T_Add30(B14, B16, B22, B23, B31, B32, B33, B34, B35, B36, T30, x, sequential30);
     FastMatmulRecursive(locker, mem_mngr, S30, T30, M30, total_steps, steps_left - 1, (start_index + 30 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S30.deallocate();
+    T30.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4318,11 +4721,23 @@ locker.Decrement();
 # pragma omp task if(sequential31) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S31(mem_mngr.GetMem(start_index, 31, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S31(A11.m(), A11.n());
+#endif
     S_Add31(A22, A23, A32, A33, S31, x, sequential31);
+#ifdef _PARALLEL_
     Matrix<Scalar> T31(mem_mngr.GetMem(start_index, 31, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T31(B11.m(), B11.n());
+#endif
     T_Add31(B14, B16, B22, B23, B31, B32, B33, B34, B35, B36, T31, x, sequential31);
     FastMatmulRecursive(locker, mem_mngr, S31, T31, M31, total_steps, steps_left - 1, (start_index + 31 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S31.deallocate();
+    T31.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4339,11 +4754,23 @@ locker.Decrement();
 # pragma omp task if(sequential32) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S32(mem_mngr.GetMem(start_index, 32, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S32(A11.m(), A11.n());
+#endif
     S_Add32(A11, A13, A31, A33, S32, x, sequential32);
+#ifdef _PARALLEL_
     Matrix<Scalar> T32(mem_mngr.GetMem(start_index, 32, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T32(B11.m(), B11.n());
+#endif
     T_Add32(B14, B16, B22, B23, B31, B32, B33, B34, B35, B36, T32, x, sequential32);
     FastMatmulRecursive(locker, mem_mngr, S32, T32, M32, total_steps, steps_left - 1, (start_index + 32 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S32.deallocate();
+    T32.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4360,11 +4787,23 @@ locker.Decrement();
 # pragma omp task if(sequential33) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S33(mem_mngr.GetMem(start_index, 33, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S33(A11.m(), A11.n());
+#endif
     S_Add33(A11, A12, A31, A32, S33, x, sequential33);
+#ifdef _PARALLEL_
     Matrix<Scalar> T33(mem_mngr.GetMem(start_index, 33, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T33(B11.m(), B11.n());
+#endif
     T_Add33(B11, B15, B21, B22, B23, B24, B25, B26, B32, B33, T33, x, sequential33);
     FastMatmulRecursive(locker, mem_mngr, S33, T33, M33, total_steps, steps_left - 1, (start_index + 33 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S33.deallocate();
+    T33.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4381,11 +4820,23 @@ locker.Decrement();
 # pragma omp task if(sequential34) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S34(mem_mngr.GetMem(start_index, 34, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S34(A11.m(), A11.n());
+#endif
     S_Add34(A11, A13, A21, A23, S34, x, sequential34);
+#ifdef _PARALLEL_
     Matrix<Scalar> T34(mem_mngr.GetMem(start_index, 34, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T34(B11.m(), B11.n());
+#endif
     T_Add34(B11, B12, B13, B14, B15, B16, B21, B25, B34, B36, T34, x, sequential34);
     FastMatmulRecursive(locker, mem_mngr, S34, T34, M34, total_steps, steps_left - 1, (start_index + 34 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S34.deallocate();
+    T34.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4402,11 +4853,23 @@ locker.Decrement();
 # pragma omp task if(sequential35) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S35(mem_mngr.GetMem(start_index, 35, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S35(A11.m(), A11.n());
+#endif
     S_Add35(A12, A13, A22, A23, S35, x, sequential35);
+#ifdef _PARALLEL_
     Matrix<Scalar> T35(mem_mngr.GetMem(start_index, 35, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T35(B11.m(), B11.n());
+#endif
     T_Add35(B11, B15, B21, B22, B23, B24, B25, B26, B32, B33, T35, x, sequential35);
     FastMatmulRecursive(locker, mem_mngr, S35, T35, M35, total_steps, steps_left - 1, (start_index + 35 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S35.deallocate();
+    T35.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4423,11 +4886,23 @@ locker.Decrement();
 # pragma omp task if(sequential36) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S36(mem_mngr.GetMem(start_index, 36, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S36(A11.m(), A11.n());
+#endif
     S_Add36(A11, A12, A31, A32, S36, x, sequential36);
+#ifdef _PARALLEL_
     Matrix<Scalar> T36(mem_mngr.GetMem(start_index, 36, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T36(B11.m(), B11.n());
+#endif
     T_Add36(B11, B15, B21, B22, B23, B24, B25, B26, B32, B33, T36, x, sequential36);
     FastMatmulRecursive(locker, mem_mngr, S36, T36, M36, total_steps, steps_left - 1, (start_index + 36 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S36.deallocate();
+    T36.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4444,11 +4919,23 @@ locker.Decrement();
 # pragma omp task if(sequential37) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S37(mem_mngr.GetMem(start_index, 37, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S37(A11.m(), A11.n());
+#endif
     S_Add37(A21, A22, A31, A32, S37, x, sequential37);
+#ifdef _PARALLEL_
     Matrix<Scalar> T37(mem_mngr.GetMem(start_index, 37, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T37(B11.m(), B11.n());
+#endif
     T_Add37(B11, B12, B13, B14, B15, B16, B21, B25, B34, B36, T37, x, sequential37);
     FastMatmulRecursive(locker, mem_mngr, S37, T37, M37, total_steps, steps_left - 1, (start_index + 37 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S37.deallocate();
+    T37.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4465,11 +4952,23 @@ locker.Decrement();
 # pragma omp task if(sequential38) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S38(mem_mngr.GetMem(start_index, 38, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S38(A11.m(), A11.n());
+#endif
     S_Add38(A21, A22, A31, A32, S38, x, sequential38);
+#ifdef _PARALLEL_
     Matrix<Scalar> T38(mem_mngr.GetMem(start_index, 38, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T38(B11.m(), B11.n());
+#endif
     T_Add38(B11, B12, B13, B14, B15, B16, B21, B25, B34, B36, T38, x, sequential38);
     FastMatmulRecursive(locker, mem_mngr, S38, T38, M38, total_steps, steps_left - 1, (start_index + 38 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S38.deallocate();
+    T38.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4486,11 +4985,23 @@ locker.Decrement();
 # pragma omp task if(sequential39) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S39(mem_mngr.GetMem(start_index, 39, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S39(A11.m(), A11.n());
+#endif
     S_Add39(A12, A13, A22, A23, S39, x, sequential39);
+#ifdef _PARALLEL_
     Matrix<Scalar> T39(mem_mngr.GetMem(start_index, 39, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T39(B11.m(), B11.n());
+#endif
     T_Add39(B11, B15, B21, B22, B23, B24, B25, B26, B32, B33, T39, x, sequential39);
     FastMatmulRecursive(locker, mem_mngr, S39, T39, M39, total_steps, steps_left - 1, (start_index + 39 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S39.deallocate();
+    T39.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4507,11 +5018,23 @@ locker.Decrement();
 # pragma omp task if(sequential40) shared(mem_mngr, locker) untied
     {
 #endif
+#ifdef _PARALLEL_
     Matrix<Scalar> S40(mem_mngr.GetMem(start_index, 40, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S40(A11.m(), A11.n());
+#endif
     S_Add40(A11, A13, A21, A23, S40, x, sequential40);
+#ifdef _PARALLEL_
     Matrix<Scalar> T40(mem_mngr.GetMem(start_index, 40, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T40(B11.m(), B11.n());
+#endif
     T_Add40(B11, B12, B13, B14, B15, B16, B21, B25, B34, B36, T40, x, sequential40);
     FastMatmulRecursive(locker, mem_mngr, S40, T40, M40, total_steps, steps_left - 1, (start_index + 40 - 1) * 40, x, num_threads, Scalar(0.0));
+#ifndef _PARALLEL_
+    S40.deallocate();
+    T40.deallocate();
+#endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
     }
@@ -4554,7 +5077,9 @@ template <typename Scalar>
 double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     int num_steps, double x=1e-8, Scalar alpha=Scalar(1.0), Scalar beta=Scalar(0.0)) {
     MemoryManager<Scalar> mem_mngr;
+#ifdef _PARALLEL_
     mem_mngr.Allocate(3, 3, 6, 40, num_steps, A.m(), A.n(), B.n());
+#endif
     A.set_multiplier(alpha);
     int num_multiplies_per_step = 40;
     int total_multiplies = pow(num_multiplies_per_step, num_steps);
