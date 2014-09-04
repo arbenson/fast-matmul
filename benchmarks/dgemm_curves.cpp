@@ -16,7 +16,7 @@
 enum {
   SQUARE=1,
   OUTER_PRODUCT=2,
-  INNER_SQUARE=3,
+  TS_SQUARE=3,
 };
 
 // Run a single timing test.  The output is
@@ -32,9 +32,9 @@ void RunSingleTest(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C) {
 
   int num_trials = 5;
   auto func = [&] {
-	for (int trial = 0; trial < num_trials; ++trial) {
-	  MatMul(A, B, C);
-	}
+    for (int trial = 0; trial < num_trials; ++trial) {
+      MatMul(A, B, C);
+    }
   };
   double time = Time(func);
   
@@ -44,45 +44,45 @@ void RunSingleTest(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C) {
 
 
 // Run the timing tests for all dimensions.  The "type" is either
-// SQUARE, OUTER_PRODUCT, or INNER_SQUARE, corresponding to
-// (N, N, N), (N, N / 4, N), or (N / 4, N, N) computations.
+// SQUARE, OUTER_PRODUCT, or TS_SQUARE, corresponding to
+// (N, N, N), (N, 2000, N), or (N, 2500, 2500) computations.
 void RunAllDimensions(int type) {
   std::vector<int> N_vals;
 #ifdef _PARALLEL_
-  for (int i = 200; i <= 9000; i += 100) {
+  for (int i = 200; i <= 8000; i += 100) {
     N_vals.push_back(i);
   }
 #else
-  for (int i = 20; i <= 2500; i += 20) {
+  for (int i = 25; i <= 3000; i += 25) {
     N_vals.push_back(i);
   }
 #endif
 
   Matrix<double> A, B, C;
   for (int N : N_vals) {
-	switch (type) {
-	case SQUARE:
-	  A = RandomMatrix<double>(N, N);
-	  B = RandomMatrix<double>(N, N);
-	  C = Matrix<double>(N, N);
-	  break;
+    switch (type) {
+    case SQUARE:
+      A = RandomMatrix<double>(N, N);
+      B = RandomMatrix<double>(N, N);
+      C = Matrix<double>(N, N);
+      break;
 
-	case OUTER_PRODUCT:
-	  A = RandomMatrix<double>(N, N / 4);
-	  B = RandomMatrix<double>(N / 4, N);
-	  C = Matrix<double>(N, N);
-	  break;
+    case OUTER_PRODUCT:
+      A = RandomMatrix<double>(N, 800);
+      B = RandomMatrix<double>(800, N);
+      C = Matrix<double>(N, N);
+      break;
 
-	case INNER_SQUARE:
-	  A = RandomMatrix<double>(N / 4, N);
-	  B = RandomMatrix<double>(N, N);
-	  C = Matrix<double>(N / 4, N);
-	  break;
+    case TS_SQUARE:
+      A = RandomMatrix<double>(N, 800);
+      B = RandomMatrix<double>(800, 800);
+      C = Matrix<double>(N, 800);
+      break;
 
-	default:
-	  throw std::invalid_argument("Incorrect type option");
-	  break;
-	}
+    default:
+      throw std::invalid_argument("Incorrect type option");
+      break;
+    }
     RunSingleTest(A, B, C);
     if (!(N % 1000)) {
       std::cout << "..." << std::endl;
@@ -93,12 +93,14 @@ void RunAllDimensions(int type) {
 
 int main(int argc, char **argv) {
   if (argc < 2) {
-	std::cout << "Usage: ./dgemm_curves TYPE [NO_DYNAMIC]" << std::endl;
-	return -1;
+    std::cout << "Usage: ./dgemm_curves TYPE [NO_DYNAMIC]" << std::endl;
+    return -1;
   }
   if (argc > 2) {
     std::cout << "no dynamic MKL" << std::endl;
+#ifdef _PARALLEL_
     mkl_set_dynamic(0);
+#endif
   }
   int type = atoi(argv[1]);
   RunAllDimensions(type);

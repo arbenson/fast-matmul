@@ -9,8 +9,9 @@
 #include "linalg.hpp"
 #ifdef _PARALLEL_
 # include "omp.h"
-# include "par_util.hpp"
 #endif
+#include "par_util.hpp"
+
 
 #include "options.hpp"
 #include "timing.hpp"

@@ -8,26 +8,24 @@
 #include <stdexcept>
 #include <vector>
 
-
 // Run a single benchmark for multiplying m x k x n with num_steps of recursion.
 // To just call GEMM, set num_steps to zero.
 // The median of five trials is printed to std::cout.
 // If run_check is true, then it also
 void SingleBenchmark(int m, int k, int n, int num_steps, int algorithm) {
-  Matrix<double> A = RandomMatrix<double>(m, k);
-  Matrix<double> B = RandomMatrix<double>(k, n);
-  Matrix<double> C1(m, n);
-
   // Run a set number of trials and pick the median time.
   int num_trials = 5;
   std::vector<double> times(num_trials);
   for (int trial = 0; trial < num_trials; ++trial) {
+	Matrix<double> A = RandomMatrix<double>(m, k);
+	Matrix<double> B = RandomMatrix<double>(k, n);
+	Matrix<double> C1(m, n);
     times[trial] = RunAlgorithm(algorithm, A, B, C1, num_steps);
   }
 
   // Spit out the median time
   std::sort(times.begin(), times.end());
-  size_t ind = num_trials / 2 + 1;
+  size_t ind = num_trials / 2;
   std::cout << " " << m << " " << k << " " << n << " "
             << num_steps << " " << times[ind] << " "
             << "; ";
@@ -71,26 +69,27 @@ void SquareTestPar() {
     m_vals.push_back(i);
   }
 
-  mkl_set_num_threads(omp_get_num_threads());
-
   std::vector<int> num_levels = {0};
+#if defined(_PARALLEL_) && (_PARALLEL_ == _DFS_PAR_)
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, MKL);
+#endif
 
   num_levels = {1, 2, 3};
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, STRASSEN);
 }
 
 
-void OuterTestPar () {
+void OuterTestPar() {
   std::vector<int> m_vals;
   for (int i = 3000; i <= 18000; i += 500) {
     m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 2800);
 
-  mkl_set_num_threads(omp_get_num_threads());
   std::vector<int> num_levels = {0};
+#if defined(_PARALLEL_) && (_PARALLEL_ == _DFS_PAR_)
   BenchmarkSet(m_vals, k_vals, m_vals, num_levels, MKL);
+#endif
   num_levels = {1, 2};
   BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST424_26_257);
 }
@@ -99,13 +98,14 @@ void OuterTestPar () {
 void TSSquareTestPar() {
   std::vector<int> m_vals;
   for (int i = 3000; i <= 20000; i += 500) {
-	m_vals.push_back(i);
+    m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 3000);
   std::vector<int> num_levels = {0};
 
-  mkl_set_num_threads(omp_get_num_threads());
+#if defined(_PARALLEL_) && (_PARALLEL_ == _DFS_PAR_)
   BenchmarkSet(m_vals, k_vals, k_vals, num_levels, MKL);
+#endif
   num_levels = {1, 2};
   BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST433_29_234);
 }
@@ -114,7 +114,7 @@ void TSSquareTestPar() {
 void SquareBenchmark(int which) {
 #ifdef _PARALLEL_
   std::vector<int> m_vals;
-  for (int i = 1000; i <= 10000; i += 500) {
+  for (int i = 9000; i <= 13000; i += 500) {
 	m_vals.push_back(i);
   }
 #else
@@ -124,7 +124,7 @@ void SquareBenchmark(int which) {
   }
 #endif
   std::vector<int> num_levels_MKL = {0};
-  std::vector<int> num_levels = {1, 2, 3, 4};
+  std::vector<int> num_levels = {1, 2};
 
   switch (which) {
   case 0:
@@ -167,7 +167,7 @@ void SquareBenchmark(int which) {
     BenchmarkSet(m_vals, m_vals, m_vals, num_levels, FAST342_20_144);
     break;
   case 13:
-  BenchmarkSet(m_vals, m_vals, m_vals, num_levels, FAST333_23_152);
+    BenchmarkSet(m_vals, m_vals, m_vals, num_levels, FAST333_23_152);
     break;
   case 14:
     BenchmarkSet(m_vals, m_vals, m_vals, num_levels, FAST424_26_257);
@@ -193,6 +193,9 @@ void SquareBenchmark(int which) {
   case 21:
     BenchmarkSet(m_vals, m_vals, m_vals, num_levels, SCHONHAGE333_21_117_APPROX);
     break;
+  case 22:
+    BenchmarkSet(m_vals, m_vals, m_vals, num_levels, CLASSICAL222);
+    break;
   default:
     throw std::logic_error("Unknown algorithm");
   }
@@ -202,10 +205,10 @@ void SquareBenchmark(int which) {
 
 
 // (N, k, N) for fixed k ~ 2000
-void OuterProductBenchmark() {
+void OuterProductBenchmark(int which) {
   std::vector<int> m_vals;
 #ifdef _PARALLEL_
-  for (int i = 3000; i <= 20000; i += 500) {
+  for (int i = 6000; i <= 18000; i += 500) {
       m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 2800);
@@ -216,28 +219,56 @@ void OuterProductBenchmark() {
   std::vector<int> k_vals(m_vals.size(), 1600);
 #endif
 
-  std::vector<int> num_levels = {0};
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, MKL);
+  std::vector<int> num_levels_MKL = {0};
+  std::vector<int> num_levels = {1, 2};
 
-  num_levels = {1, 2};
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST424_26_257);
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST433_29_234);
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST323_15_103);
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST522_18_99);
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST423_20_144);
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, STRASSEN);
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, BINI322);
-  BenchmarkSet(m_vals, k_vals, m_vals, num_levels, SCHONHAGE333_21_117_APPROX);
+  switch (which) {
+  case 0:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels_MKL, MKL);
+    break;
+  case 1:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST424_26_257);
+    break;
+  case 2:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST433_29_234);
+    break;
+  case 3:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST323_15_103);
+    break;
+  case 4:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST522_18_99);
+    break;
+  case 5:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, FAST423_20_144);
+    break;
+  case 6:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, STRASSEN);
+    break;
+  case 7:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, BINI322);
+    break;
+  case 8:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, SCHONHAGE333_21_117_APPROX);
+    break;
+  case 9:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, SMIRNOV633_40_960);
+    break;
+  case 10:
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, CLASSICAL222);
+    break;
+  default:
+    throw std::logic_error("Unknown algorithm");
+  }
 }
 
 
 // (N, k, k) for fixed k ~ 2000
-void TSSquareBenchmark() {
+void TSSquareBenchmark(int which) {
   std::vector<int> m_vals;
 #ifdef _PARALLEL_
-  for (int i = 3000; i <= 24000; i += 500) {
+  for (int i = 16000; i <= 26000; i += 500) {
       m_vals.push_back(i);
-  }  
+  }
   std::vector<int> k_vals(m_vals.size(), 3000);
 #else
   for (int i = 10000; i <= 18000; i += 500) {
@@ -246,18 +277,43 @@ void TSSquareBenchmark() {
   std::vector<int> k_vals(m_vals.size(), 2400);
 #endif
 
-  std::vector<int> num_levels = {0};
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, MKL);
-
-  num_levels = {1, 2};
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST424_26_257);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST433_29_234);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST323_15_103);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST522_18_99);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST423_20_144);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, STRASSEN);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, BINI322);
-  BenchmarkSet(m_vals, k_vals, k_vals, num_levels, SCHONHAGE333_21_117_APPROX);
+  std::vector<int> num_levels_MKL = {0};
+  std::vector<int> num_levels = {1, 2};
+  switch (which) {
+  case 0:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels_MKL, MKL);
+    break;
+  case 1:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST424_26_257);
+    break;
+  case 2:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST433_29_234);
+    break;
+  case 3:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST323_15_103);
+    break;
+  case 4:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST522_18_99);
+    break;
+  case 5:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, FAST423_20_144);
+    break;
+  case 6:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, STRASSEN);
+    break;
+  case 7:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, BINI322);
+    break;
+  case 8:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, SCHONHAGE333_21_117_APPROX);
+    break;
+  case 9:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, SMIRNOV633_40_960);
+    break;
+  case 10:
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, CLASSICAL222);
+    break;
+  }
 }
 
 
@@ -279,12 +335,14 @@ int main(int argc, char **argv) {
 
   // Run <N, k, N> benchmark for fixed k
   if (OptExists(opts, "outer_prod_like")) {
-	OuterProductBenchmark();
+    int which = GetIntOpt(opts, "outer_prod_like");
+    OuterProductBenchmark(which);
   }
 
   // Run <N, k, k> benchmark for fixed k
   if (OptExists(opts, "ts_square_like")) {
-	TSSquareBenchmark();
+    int which = GetIntOpt(opts, "ts_square_like");
+    TSSquareBenchmark(which);
   }
 
 

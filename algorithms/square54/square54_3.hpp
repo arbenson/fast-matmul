@@ -1,10 +1,10 @@
-#ifndef _smirnov633_40_960_HPP_
-#define _smirnov633_40_960_HPP_
+#ifndef _square54_3_HPP_
+#define _square54_3_HPP_
 
 // This is an automatically generated file from gen.py.
 #include "common.hpp"
 
-namespace smirnov633_40_960 {
+namespace square54_3 {
 
 template <typename Scalar>
 void S_Add1(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& S4, Matrix<Scalar>& S5, Matrix<Scalar>& S6, Matrix<Scalar>& S7, Matrix<Scalar>& S8, Matrix<Scalar>& S9, Matrix<Scalar>& C, double x, bool sequential) {
@@ -5080,7 +5080,6 @@ double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 #ifdef _PARALLEL_
     mem_mngr.Allocate(6, 3, 3, 40, num_steps, A.m(), A.n(), B.n());
 #endif
-    A.set_multiplier(alpha);
     int num_multiplies_per_step = 40;
     int total_multiplies = pow(num_multiplies_per_step, num_steps);
 
@@ -5135,6 +5134,6 @@ double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     return FpMilliseconds(t2 - t1).count();
 }
 
-}  // namespace smirnov633_40_960
+}  // namespace square54_3
 
-#endif  // _smirnov633_40_960_HPP_
+#endif  // _square54_3_HPP_

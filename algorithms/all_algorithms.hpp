@@ -85,6 +85,7 @@ enum {
   FAST522_18_99,
   FAST252_18_99,
   SCHONHAGE333_21_117_APPROX,
+  SMIRNOV54,
 };
 
 
@@ -297,6 +298,8 @@ std::string Alg2Str(int algorithm) {
     return "SMIRNOV363_40_960";
   case SMIRNOV633_40_960:
     return "SMIRNOV633_40_960";
+  case SMIRNOV54:
+    return "SMIRNOV54";
   case HK332_15_94:
     return "HK332_15_94";
   case HK323_15_94:

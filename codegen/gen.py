@@ -74,12 +74,16 @@ def data_call(name):
 def data_access(name):
     return 'data%s[i + j * stride%s]' % (name, name)
 
-def instantiate_tmp(tmp_name, mult_index, mat_name):
-    #return 'Matrix<Scalar> %s%d(%s11.m(), %s11.n());' % (tmp_name, mult_index, mat_name, mat_name)
+def instantiate_tmp(header, tmp_name, mult_index, mat_name):
+    write_line(header, 0, '#ifdef _PARALLEL_')
     inst = 'Matrix<Scalar> %s%d(' % (tmp_name, mult_index)
     inst += 'mem_mngr.GetMem(start_index, %d, total_steps - steps_left, %s), ' % (mult_index, tmp_name)
     inst += '%s11.m(), %s11.m(), %s11.n());' % (mat_name, mat_name, mat_name)
-    return inst
+    write_line(header, 1, inst)
+    write_line(header, 0, '#else')
+    inst = 'Matrix<Scalar> %s%d(%s11.m(), %s11.n());' % (tmp_name, mult_index, mat_name, mat_name)
+    write_line(header, 1, inst)
+    write_line(header, 0, '#endif')
 
 
 def instantiate(subblock, mat_name):
@@ -558,7 +562,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
 
     # Shared memory wrappers (start)
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
-    task = '# pragma omp task if(sequential%d) shared(mem_mngr) untied' % index
+    task = '# pragma omp task if(sequential%d) shared(mem_mngr, locker) untied' % index
     write_line(header, 0, task)
     write_line(header, 1, '{')
     write_line(header, 0, '#endif')
@@ -573,10 +577,10 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
 
     # Write the adds to temps if necessary
     if need_tmp_mat(a_coeffs) and not streaming_adds:
-        write_line(header, 1, instantiate_tmp('S', index, 'A'))
+        instantiate_tmp(header, 'S', index, 'A')
         write_line(header, 1, addition_str(a_coeffs, 'A', 'S', (dims[0], dims[1])))
     if need_tmp_mat(b_coeffs) and not streaming_adds:
-        write_line(header, 1, instantiate_tmp('T', index, 'B'))
+        instantiate_tmp(header, 'T', index, 'B')
         write_line(header, 1, addition_str(b_coeffs, 'B', 'T', (dims[1], dims[2])))
 
     res_mat = 'M%d' % (index)
@@ -600,23 +604,31 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
             loc = [i for i, c in enumerate(coeffs) if is_nonzero(c)]
             return mat_name + get_suffix(loc[0], mat_dims[0], mat_dims[1])
 
-    #write_line(header, 1, 'if (steps_left == 1 && sequential%d) { mkl_domain_set_num_threads(1, MKL_DOMAIN_BLAS); }' % index)
     # Finally, write the actual call to matrix multiply.
-    write_line(header, 1, 'FastMatmulRecursive(mem_mngr, %s, %s, %s, total_steps, steps_left - 1, %s, x, num_threads, Scalar(0.0));' % (
+    write_line(header, 1,
+               'FastMatmulRecursive(locker, mem_mngr, %s, %s, %s, total_steps, steps_left - 1, %s, x, num_threads, Scalar(0.0));' % (
             subblock_name(a_coeffs, 'A', 'S', (dims[0], dims[1])),
             subblock_name(b_coeffs, 'B', 'T', (dims[1], dims[2])),
             res_mat, '(start_index + %d - 1) * %d' % (index, num_multiplies)))
+
+    # If we are not in parallel mode, de-allocate the temporary matrices
+    write_line(header, 0, '#ifndef _PARALLEL_')
+    if need_tmp_mat(a_coeffs) and not streaming_adds:
+        write_line(header, 1, 'S%d.deallocate();' % (index))
+    if need_tmp_mat(b_coeffs) and not streaming_adds:
+        write_line(header, 1, 'T%d.deallocate();' % (index))
+    write_line(header, 0, '#endif')
     
     # Shared memory wrappers (end)
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 0, 'locker.Decrement();')
     write_line(header, 1, '}')
     write_line(header, 1, 'if (should_task_wait(%d, total_steps, steps_left, start_index, %d, num_threads)) {' % (
             num_multiplies, index))
     write_line(header, 0, '# pragma omp taskwait')
     if index != num_multiplies:
         write_line(header, 0, '# if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)')
-        write_line(header, 1, 'mkl_set_num_threads_local(num_threads);')
-        write_line(header, 1, 'mkl_set_dynamic(0);')
+        write_line(header, 1, 'SwitchToDFS(locker, num_threads);')
         write_line(header, 0, '# endif')
     write_line(header, 1, '}')
     write_line(header, 0, '#endif\n')
@@ -683,7 +695,8 @@ def write_input_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
     for i, coeff in enumerate(coeffs):
         if is_nonzero(coeff):
             add += '%s%s, ' % (mat_name, get_suffix(i, mat_dims[0], mat_dims[1]))
-    add += tmp_mat_name + ');'
+    add += tmp_mat_name
+    add += ', x, false);'
     write_line(header, 1, add)
 
 
@@ -698,7 +711,8 @@ def write_output_cse_sub(header, coeffs, index, mat_name, add_name, mat_dims):
     for i, coeff in enumerate(coeffs):
         if is_nonzero(coeff):
             add += '%s%d, ' % (mat_name, i + 1)
-    add += tmp_mat_name + ');'
+    add += tmp_mat_name
+    add += ', x, false);'
     write_line(header, 1, add)
 
 
@@ -769,50 +783,68 @@ def create_wrapper_func(header, num_multiplies, dims):
     write_line(header, 1, 'int num_steps, double x=1e-8, Scalar alpha=Scalar(1.0), ' +
                'Scalar beta=Scalar(0.0)) {')
     write_line(header, 1, 'MemoryManager<Scalar> mem_mngr;')
+    write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 1, 'mem_mngr.Allocate(%d, %d, %d, %d, num_steps, A.m(), A.n(), B.n());'
                % (dims[0], dims[1], dims[2], num_multiplies))
+    write_line(header, 0, '#endif')               
 
     write_line(header, 1, 'A.set_multiplier(alpha);')
     write_line(header, 1, 'int num_multiplies_per_step = %d;' % num_multiplies)
     write_line(header, 1, 'int total_multiplies = pow(num_multiplies_per_step, num_steps);')
     write_line(header, 0, '')
 
+    write_line(header, 1, '// Set parameters needed for all types of parallelism.')
     write_line(header, 1, 'int num_threads = 0;')
     write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 0, '# pragma omp parallel')
     write_line(header, 1,  '{')
     write_line(header, 2, 'if (omp_get_thread_num() == 0) { num_threads = omp_get_num_threads(); }')
     write_line(header, 1,  '}')
-    write_line(header, 0, '#endif')
-    write_line(header, 0, '')
-
-    write_line(header, 1, 'using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;')
-    write_line(header, 1, 'auto t1 = std::chrono::high_resolution_clock::now();')
-    write_line(header, 0, '')
-
-    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
     write_line(header, 1, 'omp_set_nested(1);')
-    write_line(header, 1, 'mkl_set_num_threads_local(1);')
     write_line(header, 0, '#endif')
     write_line(header, 0, '')
 
-    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)')
-    write_line(header, 1, 'if (num_threads > total_multiplies) {')
-    write_line(header, 2, 'mkl_set_num_threads_local(num_threads);')
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_)')
+    write_line(header, 0, '# pragma omp parallel')
+    write_line(header, 1, '{')
+    write_line(header, 2, 'mkl_set_num_threads_local(1);')
     write_line(header, 2, 'mkl_set_dynamic(0);')
     write_line(header, 1, '}')
     write_line(header, 0, '#endif')
     write_line(header, 0, '')
 
-    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _DFS_PAR_)')
+    write_line(header, 1, 'mkl_set_dynamic(0);')
+    write_line(header, 0, '#endif')
+    write_line(header, 0, '')
+
+    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 1, 'if (num_threads > total_multiplies) {')
+    write_line(header, 2, 'mkl_set_dynamic(0);')
+    write_line(header, 1, '} else {')
+    write_line(header, 0, '# pragma omp parallel')
+    write_line(header, 2, '{')
+    write_line(header, 3, 'mkl_set_num_threads_local(1);')
+    write_line(header, 3, 'mkl_set_dynamic(0);')
+    write_line(header, 2, '}')
+    write_line(header, 1, '}')
+    write_line(header, 0, '#endif')
+    write_line(header, 0, '')
+
+    write_line(header, 1, 'LockAndCounter locker(total_multiplies - (total_multiplies % num_threads));')
+    write_line(header, 1, 'using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;')
+    write_line(header, 1, 'auto t1 = std::chrono::high_resolution_clock::now();')
+    write_line(header, 0, '')
+
+    write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 0, '# pragma omp parallel')
     write_line(header, 1, '{')
     write_line(header, 0, '# pragma omp single')
     write_line(header, 0, '#endif')
 
-    write_line(header, 2, 'FastMatmulRecursive(mem_mngr, A, B, C, num_steps, num_steps, 0, x, num_threads, beta);')
+    write_line(header, 2, 'FastMatmulRecursive(locker, mem_mngr, A, B, C, num_steps, num_steps, 0, x, num_threads, beta);')
 
-    write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
+    write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 1, '}')
     write_line(header, 0, '#endif')
 
@@ -872,7 +904,7 @@ def main():
 
         # Start of fast matrix multiplication function
         write_line(header, 0, 'template <typename Scalar>')
-        write_line(header, 0, 'void FastMatmulRecursive(MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
+        write_line(header, 0, 'void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr, Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
                    'Matrix<Scalar>& C, int total_steps, int steps_left, int start_index, double x, int num_threads, Scalar beta) {')
 
         # Handle the multipliers
@@ -906,9 +938,14 @@ def main():
         write_break(header)
         write_line(header, 1, '// Matrices to store the results of multiplications.')
             
+        write_line(header, 0, '#ifdef _PARALLEL_')
         for i in xrange(num_multiplies):
             write_line(header, 1,
                        'Matrix<Scalar> M%d(mem_mngr.GetMem(start_index, %d, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());' % (i + 1, i + 1))
+        write_line(header, 0, '#else')
+        for i in xrange(num_multiplies):
+            write_line(header, 1, 'Matrix<Scalar> M%d(C11.m(), C11.n(), C.multiplier());' % (i + 1))
+        write_line(header, 0, '#endif')
 
         write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
         for i in xrange(num_multiplies):
@@ -938,8 +975,8 @@ def main():
         write_line(header, 1, '// Handle edge cases with dynamic peeling')
         write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
         write_line(header, 1, 'if (total_steps == steps_left) {')
-        write_line(header, 2, 'mkl_set_dynamic(0);')
         write_line(header, 2, 'mkl_set_num_threads_local(num_threads);')
+        write_line(header, 2, 'mkl_set_dynamic(0);')
         write_line(header, 1, '}')
         write_line(header, 0, '#endif')
         write_line(header, 1, 'DynamicPeeling(A, B, C, %d, %d, %d, beta);' % dims)
