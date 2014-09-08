@@ -78,10 +78,3 @@ Run the dgemm curves:
 To run without dynamic threads (mkl_set_dynamic(0)), append a second argument, e.g.:
 
 	./out/dgemm_curves 1 1  # Square timings without dynamic thread allocation
-
-
-LU and QR
---------
-Build with:
-
-    make fast_lu fast_qr
