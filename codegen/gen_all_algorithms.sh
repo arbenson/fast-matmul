@@ -45,6 +45,7 @@ python ${SCRIPT} ${ALGS_DIR}/grey324-20-144 3,2,4 ${OUT_DIR}/fast324_20_144.hpp 
 python ${SCRIPT} ${ALGS_DIR}/grey342-20-144 3,4,2 ${OUT_DIR}/fast342_20_144.hpp ${OPTIONS}
 python ${SCRIPT} ${ALGS_DIR}/grey234-20-144 2,3,4 ${OUT_DIR}/fast234_20_144.hpp ${OPTIONS}
 python ${SCRIPT} ${ALGS_DIR}/grey243-20-144 2,4,3 ${OUT_DIR}/fast243_20_144.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/classical423-24-72 4,2,3 ${OUT_DIR}/classical423.hpp ${OPTIONS}
 
 # 4,2,2
 python ${SCRIPT} ${ALGS_DIR}/grey422-14-84 4,2,2 ${OUT_DIR}/fast422_14_84.hpp ${OPTIONS}

@@ -30,6 +30,7 @@
 // Other fast algorithms and classical algorithms
 #include "bini322.hpp"
 #include "classical222.hpp"
+#include "classical423.hpp"
 #include "classical333.hpp"
 #include "hk332_15_94.hpp"
 #include "hk323_15_94.hpp"
@@ -53,6 +54,7 @@ enum {
   MKL,
   BINI322,
   CLASSICAL222,
+  CLASSICAL423,
   CLASSICAL333,
   SMIRNOV333_23_128,
   SMIRNOV333_23_139,
@@ -139,6 +141,9 @@ double RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
     break;
   case CLASSICAL222:
     return classical222_8_24::FastMatmul(A, B, C1, num_steps);
+    break;
+  case CLASSICAL423:
+    return classical423_24_72::FastMatmul(A, B, C1, num_steps);
     break;
   case CLASSICAL333:
     return classical333_27_81::FastMatmul(A, B, C1, num_steps);
@@ -255,9 +260,11 @@ std::string Alg2Str(int algorithm) {
   case BINI322:
     return "BINI322";
   case CLASSICAL222:
-    return "CLASSICAL2x2";
+    return "CLASSICAL222";
+  case CLASSICAL423:
+    return "CLASSICAL423";
   case CLASSICAL333:
-    return "CLASSICAL3x3";
+    return "CLASSICAL333";
   case FAST322_11_50:
     return "FAST322_11_50";
   case FAST332_15_103:
