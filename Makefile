@@ -1,6 +1,6 @@
-include make.incs/make.inc.edison
+include make.incs/make.inc.linux
 
-INCLUDES := -I$(MKL_ROOT)/include -I./algorithms -I./linalg -I.
+INCLUDES := -I$(MKL_ROOT)/include -I./algorithms -I./linalg -I./util
 MKL_SEQ_LIBS =  -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread
 MKL_PAR_LIBS := -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread
 
@@ -62,13 +62,13 @@ build:
 	mkdir -p $(OUTPUT_DIR)
 
 matmul_bench_dfs: matmul_benchmarks.cpp build
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -DNDEBUG -D_PARALLEL_=1 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
+	$(CXX) $(CXXFLAGS) -fopenmp -DNDEBUG -D_PARALLEL_=1 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 matmul_bench_bfs: matmul_benchmarks.cpp build
 	$(CXX) $(CXXFLAGS) -fopenmp -DNDEBUG -D_PARALLEL_=2 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 matmul_bench_hybrid: matmul_benchmarks.cpp build
-	$(CXX) $(CXXFLAGS) -DNDEBUG -D_PARALLEL_=3 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
+	$(CXX) $(CXXFLAGS) -fopenmp -DNDEBUG -D_PARALLEL_=3 $< $(MKL_PAR_LIBS) -o $(OUTPUT_DIR)/$@
 
 obj/%.o : %.cpp
 	$(CXX) $(CXXFLAGS) $(DEFINES) -c $< -o $@

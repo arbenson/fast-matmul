@@ -62,6 +62,23 @@ The approximate algorithms (e.g., Bini's) have larger error.
 Typically, additional recursive steps leads to a larger error.
 
 
+Building with different parallel methods
+--------
+
+The BFS, DFS, and HYBRID parallel algorithms are compile-time options.
+In your make include file in the `make.incs` directory, to use DFS:
+
+    MODE=openmp
+    DEFINES += -D_PARALLEL_=1
+
+Switch the _PARALLEL_ define to 2 for BFS or 3 for HYBRID.
+For an example, run
+
+    make fast424
+    ./build/fast424
+
+
+
 Building benchmarks
 --------
 Build the benchmarking code:

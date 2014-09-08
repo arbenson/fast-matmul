@@ -41,12 +41,11 @@
 #include "smirnov633_40_960.hpp"
 #include "strassen.hpp"
 
-#ifdef _USING_CSE_
+// Common subexpression elimination
 #include "fast424_26_206.hpp"
 #include "hk323_15_84.hpp"
 #include "fast333_23_125.hpp"
 #include "smirnov333_23_128.hpp"
-#endif
 
 
 // All of the algorithms
@@ -160,11 +159,9 @@ double RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
   case FAST323_15_89:
     return grey323_15_103::FastMatmul(A, B, C1, num_steps);
     break;
-#ifdef _USING_CSE_
   case FAST333_23_125:
     return grey333_23_125::FastMatmul(A, B, C1, num_steps);
     break;
-#endif
   case FAST333_23_152:
     return grey333_23_152::FastMatmul(A, B, C1, num_steps);
     break;
@@ -195,11 +192,9 @@ double RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
   case FAST343_29_234:
     return grey343_29_234::FastMatmul(A, B, C1, num_steps);
     break;
-#ifdef _USING_CSE_
   case SMIRNOV333_23_128:
     return smirnov333_23_128::FastMatmul(A, B, C1, num_steps);
     break;
-#endif
   case SMIRNOV333_23_139:
     return smirnov333_23_139::FastMatmul(A, B, C1, num_steps);
     break;
@@ -218,11 +213,9 @@ double RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
   case HK323_15_94:
     return hk323_15_94::FastMatmul(A, B, C1, num_steps);
     break;
-#ifdef _USING_CSE_
   case HK323_15_84:
     return hk323_15_84::FastMatmul(A, B, C1, num_steps);
     break;
-#endif
   case STRASSEN:
     return strassen::FastMatmul(A, B, C1, num_steps);
     break;
@@ -235,11 +228,9 @@ double RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
   case FAST442_26_257:
     return grey442_26_257::FastMatmul(A, B, C1, num_steps);
     break;
-#ifdef _USING_CSE_
   case FAST424_26_206:
     return grey424_26_206::FastMatmul(A, B, C1, num_steps);
     break;
-#endif _USING_CSE_
   case FAST522_18_99:
     return grey522_18_99::FastMatmul(A, B, C1, num_steps);
     break;

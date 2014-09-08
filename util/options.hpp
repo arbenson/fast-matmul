@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+// These are simple functions for handling command-line options.
 
 bool OptExists(std::map<std::string, std::string>& args_map, std::string arg) {
   return args_map.find(arg) != args_map.end();

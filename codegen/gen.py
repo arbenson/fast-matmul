@@ -516,9 +516,9 @@ def write_pairwise_add_func(header, coeffs, index, mat_name):
     write_line(header, 0, 'template <typename Scalar>')
     add = 'void %s_Add%d(' % (mat_name, index)
     add += ', '.join(['Matrix<Scalar>& %s%d' % (mat_name, i + 1) for i in range(nnz)])
-    add += ', Matrix<Scalar>& C, double x=1e-8'
+    add += ', Matrix<Scalar>& C, double x, bool sequential'
     if is_output:
-        add += ', Scalar beta=Scalar(0.0)'
+        add += ', Scalar beta'
     add += ') {'
     write_line(header, 0, add)
 

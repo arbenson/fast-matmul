@@ -136,11 +136,11 @@ void FastMatmulTests() {
 							 1300, 1400, 1500, 2000, 2003, 2489, 2765};
 
   TestSet(m_vals, k_vals, n_vals, STRASSEN);
+  TestSet(m_vals, k_vals, n_vals, FAST333_23_125);
   TestSet(m_vals, k_vals, n_vals, FAST322_11_50);
   TestSet(m_vals, k_vals, n_vals, FAST332_15_103);
   TestSet(m_vals, k_vals, n_vals, FAST323_15_103);
   TestSet(m_vals, k_vals, n_vals, FAST323_15_89);
-  TestSet(m_vals, k_vals, n_vals, FAST333_23_125);
   TestSet(m_vals, k_vals, n_vals, FAST333_23_152);
   TestSet(m_vals, k_vals, n_vals, FAST333_23_221);
   TestSet(m_vals, k_vals, n_vals, FAST432_20_144);
