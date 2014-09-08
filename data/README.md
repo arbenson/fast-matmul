@@ -25,3 +25,7 @@ Each data point is
 where P, Q, and R signify multiplication of a P x Q matrix by a Q x R matrix, steps is the number of recursive steps, and time is the running time in ms.
 The time is the median of five trials.
 The name FAST442_26_257_1 means that this was the <4, 4, 2> fast matrix multiplication algorithm with 26 multiplies, 257 non-zeros in the factor matrices, and 1 step of recursion.
+To get the effective GFLOPS performance, you can use, for example (in Matlab):
+
+    eff_gflops = @(X) (X(:, 1) .* X(:, 3) .* (2 * X(:, 2) - 1) / 1e9) / (X(:, 5) / 1e3);
+    perf = eff_gflops(FAST442_26_257_1);

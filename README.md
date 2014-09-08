@@ -71,9 +71,9 @@ Build the benchmarking code:
 Run the dgemm curves:
 	
 	make dgemm_curves
-	./out/dgemm_curves 1  # Square timings
-	./out/dgemm_curves 2  # Outer product timings
-	./out/dgemm_curves 3  # Inner-square timings
+	./out/dgemm_curves 1  # N x N x N
+	./out/dgemm_curves 2  # N x 800 x N
+	./out/dgemm_curves 3  # N x 800 x 800
 
 To run without dynamic threads (mkl_set_dynamic(0)), append a second argument, e.g.:
 
