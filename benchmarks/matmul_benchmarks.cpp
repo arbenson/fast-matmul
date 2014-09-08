@@ -194,7 +194,7 @@ void SquareBenchmark(int which) {
     BenchmarkSet(m_vals, m_vals, m_vals, num_levels, SCHONHAGE333_21_117_APPROX);
     break;
   case 22:
-    BenchmarkSet(m_vals, m_vals, m_vals, num_levels, CLASSICAL222);
+    BenchmarkSet(m_vals, m_vals, m_vals, num_levels, CLASSICAL423);
     break;
   default:
     throw std::logic_error("Unknown algorithm");
@@ -208,7 +208,7 @@ void SquareBenchmark(int which) {
 void OuterProductBenchmark(int which) {
   std::vector<int> m_vals;
 #ifdef _PARALLEL_
-  for (int i = 6000; i <= 18000; i += 500) {
+  for (int i = 3000; i <= 18000; i += 500) {
       m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 2800);
@@ -254,7 +254,7 @@ void OuterProductBenchmark(int which) {
     BenchmarkSet(m_vals, k_vals, m_vals, num_levels, SMIRNOV633_40_960);
     break;
   case 10:
-    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, CLASSICAL222);
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, CLASSICAL423);
     break;
   default:
     throw std::logic_error("Unknown algorithm");
@@ -266,7 +266,7 @@ void OuterProductBenchmark(int which) {
 void TSSquareBenchmark(int which) {
   std::vector<int> m_vals;
 #ifdef _PARALLEL_
-  for (int i = 16000; i <= 26000; i += 500) {
+  for (int i = 3000; i <= 20000; i += 500) {
       m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 3000);
@@ -311,7 +311,7 @@ void TSSquareBenchmark(int which) {
     BenchmarkSet(m_vals, k_vals, k_vals, num_levels, SMIRNOV633_40_960);
     break;
   case 10:
-    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, CLASSICAL222);
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, CLASSICAL423);
     break;
   }
 }
