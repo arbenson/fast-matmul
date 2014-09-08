@@ -23,11 +23,13 @@ void SingleBenchmark(int m, int k, int n, int num_steps, int algorithm) {
     Matrix<double> B = RandomMatrix<double>(k, n);
     Matrix<double> C1(m, n);
     if (algorithm == SMIRNOV54) {
-      times[trial] = smirnov_54x54x54_1::FastMatmul(A, B, C1, 3);
+      times[trial] = square54_1::FastMatmul(A, B, C1, 3);
     } else if (algorithm == MKL) {
       times[trial] = strassen::FastMatmul(A, B, C1, 0);
     } else if (algorithm == STRASSEN) {
       times[trial] = strassen::FastMatmul(A, B, C1, num_steps);
+    } else if (algorithm == SCHONHAGE333_21_117_APPROX) {
+      times[trial] = schonhage333_21_117_approx::FastMatmul(A, B, C1, num_steps);
     }
   }
 
@@ -60,7 +62,7 @@ int main(int argc, char **argv) {
   auto opts = GetOpts(argc, argv);
 
   std::vector<int> m_vals;
-  for (int i = 20000; i <= 20000; i += 1000) {
+  for (int i = 13000; i <= 13000; i += 1000) {
     m_vals.push_back(i);
   }
   
@@ -71,13 +73,18 @@ int main(int argc, char **argv) {
 
   if (OptExists(opts, "strassen")) {
     //int num_steps = GetIntOpt(opts, "strassen");
-    std::vector<int> num_steps = {3, 4};
+    std::vector<int> num_steps = {5};
     BenchmarkSet(m_vals, m_vals, m_vals, num_steps, STRASSEN);
   }
 
   if (OptExists(opts, "smirnov54")) {
     std::vector<int> num_steps = {3};
     BenchmarkSet(m_vals, m_vals, m_vals, num_steps, SMIRNOV54);
+  }
+
+  if (OptExists(opts, "schonhage")) {
+    std::vector<int> num_steps = {2};
+    BenchmarkSet(m_vals, m_vals, m_vals, num_steps, SCHONHAGE333_21_117_APPROX);
   }
 
   return 0;
