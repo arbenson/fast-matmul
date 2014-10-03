@@ -40,9 +40,6 @@ void write_output( char* filename, parameters & prm );
 double als(parameters & prm);
 double compute_residual( parameters & prm, int eqn, bool recompute );
 
-//void normalize_columns(double* A, int m, int n, int lda, double* norms);
-//void scale_columns(double* A, int m, int n, int lda, double* scale, bool reciprocal);
-
 // round each value to nearest reciprocal pwrOfTwo (3 implies 1/8th)
 void rounding(double* A, int numVals, int pwrOfTwo);
 
@@ -54,9 +51,6 @@ void setSmallestToZero(double* A, double* work, int* indices, int numVals, int M
 
 // count number of nonzeros
 int nnz(double* A, int n);
-
-// round values within threshold of +/- maxVal or 0 to those extremal values
-void rounding_extremes(double* A, int numVals, double maxVal, double threshold);
 
 // computes A = U (kr) V
 void khatri_rao(double* A, int n, double* U, int mU, int ldu, double* V, int mV, int ldv);
@@ -78,5 +72,7 @@ void sparsify(parameters & prm);
 
 // put all weights of model into ith array
 void normalize_model( parameters& prm, int i );
+void normalize_columns(double* A, int m, int n, int lda, double* norms);
+void scale_columns(double* A, int m, int n, int lda, double* scale, bool reciprocal);
 
 #endif
