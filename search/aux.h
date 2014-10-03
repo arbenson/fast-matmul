@@ -9,11 +9,6 @@
 #include <sys/time.h>
 #include "kernels.h"
 
-#ifdef MKL
-    #include <mkl.h>
-    #include <mkl_service.h>
-#endif
-
 // BLAS & LAPACK function definitions
 extern "C" {
 
