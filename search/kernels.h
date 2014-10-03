@@ -30,20 +30,18 @@ typedef struct {
     bool rnd;
     int rnd_pwrOfTwo;
     double rnd_maxVal;
-    double rnd_thresh;
-    bool weighted;
 } parameters;
 
 // file I/O
 void read_input( char* filename, parameters & prm );
 void write_output( char* filename, parameters & prm );
 
+// main kernels
 double als(parameters & prm);
-
 double compute_residual( parameters & prm, int eqn, bool recompute );
 
-void normalize_columns(double* A, int m, int n, int lda, double* norms);
-void scale_columns(double* A, int m, int n, int lda, double* scale, bool reciprocal);
+//void normalize_columns(double* A, int m, int n, int lda, double* norms);
+//void scale_columns(double* A, int m, int n, int lda, double* scale, bool reciprocal);
 
 // round each value to nearest reciprocal pwrOfTwo (3 implies 1/8th)
 void rounding(double* A, int numVals, int pwrOfTwo);
