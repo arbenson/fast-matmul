@@ -91,10 +91,6 @@ double als(parameters & prm)
         // add alpha*I to NE coefficient matrix
         for (j = 0; j < prm.rank; j++)
             prm.NE_coeff[j+j*prm.rank] += prm.alpha;
-            
-        //printf("Y:\n");
-        //print_matrix(prm.NE_coeff,prm.rank,prm.rank,prm.rank);
-        //printf("\n");
                 
         // compute NE right-hand-side = Ai^T * Xi^T
         cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, prm.rank, prm.dims[i], prm.mtCols[i], 1.0, prm.A, prm.mtCols[i], prm.X[i], prm.dims[i], 0.0, prm.NE_rhs, prm.rank);
@@ -103,10 +99,6 @@ double als(parameters & prm)
         for (j = 0; j < prm.dims[i]; j++)
             for (k = 0; k < prm.rank; k++)
                 prm.model[i][k+j*prm.rank] = prm.U[i][j+k*prm.dims[i]];
-                
-        //printf("target before:\n");
-        //print_matrix(prm.model[i],prm.rank,prm.dims[i],prm.rank);
-        //printf("\n");
         
         // set all but largest M entries to zero
         setSmallestToZero(prm.model[i], prm.work, prm.iwork, prm.rank*prm.dims[i], prm.M[i]);
@@ -114,17 +106,8 @@ double als(parameters & prm)
         // cap model values
         capping(prm.model[i], prm.rank*prm.dims[i], prm.rnd_maxVal);
         
-        //printf("target after:\n");
-        //print_matrix(prm.model[i],prm.rank,prm.dims[i],prm.rank);
-        //printf("\n");
-        
-        
         // add alpha * model^T to right hand side
         cblas_daxpy(prm.dims[i]*prm.rank,prm.alpha,prm.model[i],1,prm.NE_rhs,1);
-        
-        //printf("Unew:\n");
-        //print_matrix(prm.NE_rhs,prm.rank,prm.dims[i],prm.rank);
-        //printf("\n");
                 
         // solve (Ai^T*Ai + alpha * I) * Ui^T = Ai^T * Xi^T + alpha * modeli^T for Ui^T
         dposv_(&lower, &prm.rank, &prm.dims[i], prm.NE_coeff, &prm.rank, prm.NE_rhs, &prm.rank, &info);
@@ -133,11 +116,6 @@ double als(parameters & prm)
         for (j = 0; j < prm.dims[i]; j++)
             for (k = 0; k < prm.rank; k++)
                 prm.U[i][j+k*prm.dims[i]] = prm.NE_rhs[k+j*prm.rank];
-                
-        //printf("U:\n");        
-        //print_matrix(prm.U[i],prm.dims[i],prm.rank,prm.dims[i]);
-        //printf("\n");
-        //exit(1);
 
     }
     
@@ -155,7 +133,7 @@ double compute_residual( parameters & prm, int eqn, bool recompute )
     cblas_dcopy(prm.mkn2, prm.X[eqn], 1, prm.residual, 1);
     
     // put weights back in factor matrix
-    scale_columns(prm.U[eqn], prm.dims[eqn], prm.rank, prm.dims[eqn], prm.lambda, false);
+    //scale_columns(prm.U[eqn], prm.dims[eqn], prm.rank, prm.dims[eqn], prm.lambda, false);
     
     // recompute coefficient matrix if necessary
     if (recompute)
@@ -168,46 +146,10 @@ double compute_residual( parameters & prm, int eqn, bool recompute )
     resnrm = cblas_dnrm2(prm.mkn2, prm.residual, 1);
     
     // take weights back out of factor matrix
-    scale_columns(prm.U[eqn], prm.dims[eqn], prm.rank, prm.dims[eqn], prm.lambda, true);
+    //scale_columns(prm.U[eqn], prm.dims[eqn], prm.rank, prm.dims[eqn], prm.lambda, true);
     
     return resnrm*resnrm;
     
-}
-
-// Computes the (outer iteration) gradient, using error in each of 3 normal equations
-//  - returns absolute measure of gradient, can be skewed by large solution values
-double compute_grad( parameters & prm )
-{
-    double tmp, gradient = 0.0;
-            
-    // put weights back in last factor matrix
-    scale_columns(prm.U[2], prm.dims[2], prm.rank, prm.dims[2], prm.lambda, false);
-
-    // skipping last factor matrix, assuming normal equations satisfied by last solve
-    for (int i = 0; i < 3; i++)
-    {   
-        // compute coefficient matrix
-        rev_khatri_rao(prm.A, prm.rank, prm.U, prm.dims, prm.dims, i);
-    
-        // form normal equations coefficients
-        cblas_dsyrk(CblasColMajor, CblasLower, CblasTrans, prm.rank, prm.mtCols[i], 1.0, prm.A, prm.mtCols[i], 0.0, prm.NE_coeff, prm.rank);
-    
-        // compute NE_rhs = Ui * NE_coeff
-        cblas_dsymm(CblasColMajor, CblasRight, CblasLower, prm.dims[i], prm.rank, 1.0, prm.NE_coeff, prm.rank, prm.U[i], prm.dims[i], 0.0, prm.NE_rhs, prm.dims[i]);
-    
-        // compute difference with NE_rhs: NE_rhs = Ui * (KRi)^T(KRi) - Xi * KRi
-        cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, prm.dims[i], prm.rank, prm.mtCols[i], 1.0, prm.X[i], prm.dims[i], prm.A, prm.mtCols[i], -1.0, prm.NE_rhs, prm.dims[i]);
-    
-        // compute Frobenius norm of difference and update gradient value
-        tmp = cblas_dnrm2(prm.dims[i]*prm.rank, prm.NE_rhs, 1);
-        gradient += tmp * tmp;
-    }
-    gradient = sqrt( gradient );
-
-    // take weights back out of last factor matrix
-    scale_columns(prm.U[2], prm.dims[2], prm.rank, prm.dims[2], prm.lambda, true);
-    
-    return gradient;
 }
 
 // Normalizes all columns of matrix, storing norms in separate array
