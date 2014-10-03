@@ -1,7 +1,7 @@
 
 # for compiling on Mac with Accelerate framework
 CC = g++
-INCLUDES = -DMAC -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/
+INCLUDES =  
 BLAS_LAPACK_LIB = -lblas -llapack
 
 # for compiling with Intel compiler and MKL
@@ -9,8 +9,8 @@ BLAS_LAPACK_LIB = -lblas -llapack
 #INCLUDES := -I$(MKLROOT)/include -DMKL
 #BLAS_LAPACK_LIB = -L$(MKLROOT)/lib/em64t -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread
 
-DEBUG := -g -O0 -Wall
-#OPT := -O3
+#DEBUG := -g -O0 -Wall
+OPT := -O3
 CFLAGS := $(OPT) $(DEBUG) $(INCLUDES)
 
 LDFLAGS := 
