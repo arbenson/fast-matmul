@@ -19,6 +19,7 @@ void usage(char **argv)
 	printf("    --method <string>         choose from the following options:\n");
 	printf("                                - als: use alternating least squares to iteratively improve residual\n");
 	printf("                                - sparsify: apply transformation to solution to inject sparsity (does not affect residual)\n");
+	printf("                                - round: round factor matrices to nearest power of two\n");
 	printf("	--maxiters <int>          maximum iterations to perform\n");
 	printf("	--maxsecs <int>           maximum time (in sec)\n");
 	printf("	--printitn <int>          print every <int>th iteration; 0 for no printing\n");
@@ -29,6 +30,8 @@ void usage(char **argv)
 	printf("    --alpha <float>           regularization weighting parameter\n");
 	printf("    --M <int>                 regularization parameter for max number of nonzeros sought in factor matrices (same for all 3)\n");
 	printf("    --M{0,1,2} <int>          regularization parameter for max number of nonzeros in factor matrix {0,1,2}\n");
+	printf("    --rndfin                  rounds final solution to nearest power of two\n");
+	printf("    --pwrof2                  sets power of two for rounding\n");
     printf("	--verbose                 print more information\n");
 
 }
@@ -97,7 +100,7 @@ int main(int argc, char* argv[])
     
     // Initialize other variables
 	int i, j, k, numIters, mkn, tidx[3];
-    double err, errOld, errChange = 0.0, start_als, start_search, elapsed;
+    double err, errOld, errChange = 0.0, start_als, start_search, elapsed, threshold;
     
     // Compute tensor dimensions
     prm.dims[0] = prm.matDims[0]*prm.matDims[1];
@@ -200,7 +203,8 @@ int main(int argc, char* argv[])
         // Main ALS Loop
         //--------------------------------------------------
         start_als = wall_time();
-        err = 1.0;
+        err = 1.0; 
+        threshold = 1e-4;
         for (numIters = 0; numIters < maxIters && (wall_time()-start_als) < maxSecs; numIters++)
         {
             errOld = err;
@@ -211,10 +215,36 @@ int main(int argc, char* argv[])
                 err = als( prm );
             }
             else if (!strcmp(prm.method,"sparsify"))
-            {
+            {   
+                // print stats before sparsifying
+                printf("Old residual: %1.2e\n",compute_residual(prm,2,true));
+                printf("Old nnz (larger than %1.1e): %d %d %d\n", threshold, nnz(prm.U[0],prm.dims[0]*prm.rank,threshold), nnz(prm.U[1],prm.dims[1]*prm.rank,threshold), nnz(prm.U[2],prm.dims[2]*prm.rank,threshold) );
+                
                 // sparsify and return
+                printf("\nSparsifying...\n\n");
                 sparsify( prm );
                 numIters = maxIters;
+                
+                // print stats after sparsifying
+                printf("New residual: %1.2e\n",compute_residual(prm,2,true));
+                printf("New nnz (larger than %1.1e): %d %d %d\n", threshold, nnz(prm.U[0],prm.dims[0]*prm.rank,threshold), nnz(prm.U[1],prm.dims[1]*prm.rank,threshold), nnz(prm.U[2],prm.dims[2]*prm.rank,threshold) );
+            }
+            else if (!strcmp(prm.method,"round"))
+            {
+                // print stats before rounding
+                printf("Old residual: %1.2e\n",compute_residual(prm,2,true));
+                printf("Old nnz (larger than %1.1e): %d %d %d\n", threshold, nnz(prm.U[0],prm.dims[0]*prm.rank,threshold), nnz(prm.U[1],prm.dims[1]*prm.rank,threshold), nnz(prm.U[2],prm.dims[2]*prm.rank,threshold) );
+                // round and return
+                for (i = 0; i < 3; i++)
+                {
+                    capping(prm.U[i],prm.dims[i]*prm.rank,prm.rnd_maxVal);
+                    rounding(prm.U[i],prm.dims[i]*prm.rank,prm.rnd_pwrOfTwo);
+                }
+                numIters = maxIters;
+                
+                // print stats after rounding
+                printf("New residual: %1.2e\n",compute_residual(prm,2,true));
+                printf("New nnz (larger than %1.1e): %d %d %d\n", threshold, nnz(prm.U[0],prm.dims[0]*prm.rank,threshold), nnz(prm.U[1],prm.dims[1]*prm.rank,threshold), nnz(prm.U[2],prm.dims[2]*prm.rank,threshold) );
             }
             else
                 die("Invalid method\n");   
@@ -322,12 +352,15 @@ int main(int argc, char* argv[])
     elapsed = wall_time()-start_search;
     
     // Print stats
-    printf("\n\n------------------------------------------------------------\n");
-    printf("Time elapsed:                \t%1.1e\tseconds\n",elapsed);
-    printf("Total number of seeds tried: \t%d\n",numSeeds);
-    printf("Total number of good seeds:  \t%d",numGoodSeeds);
-    printf("\t(residual < %2.1e)\n",printTol);   
-    printf("------------------------------------------------------------\n");
+    if (!strcmp(prm.method,"als"))
+    {
+        printf("\n\n------------------------------------------------------------\n");
+        printf("Time elapsed:                \t%1.1e\tseconds\n",elapsed);
+        printf("Total number of seeds tried: \t%d\n",numSeeds);
+        printf("Total number of good seeds:  \t%d",numGoodSeeds);
+        printf("\t(residual < %2.1e)\n",printTol);   
+        printf("------------------------------------------------------------\n");
+    }
 
     
     // free allocated memory

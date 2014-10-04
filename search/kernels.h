@@ -50,7 +50,7 @@ void capping(double* A, int numVals, double maxVal);
 void setSmallestToZero(double* A, double* work, int* indices, int numVals, int M);
 
 // count number of nonzeros
-int nnz(double* A, int n);
+int nnz(double* A, int n, double threshold = 0.0);
 
 // computes A = U (kr) V
 void khatri_rao(double* A, int n, double* U, int mU, int ldu, double* V, int mV, int ldv);

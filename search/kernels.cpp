@@ -259,11 +259,11 @@ void setSmallestToZero(double* A, double* work, int* indices, int numVals, int M
 }
 
 // Counts number of nonzeros
-int nnz(double* A, int n)
+int nnz(double* A, int n, double threshold)
 {
     int count = 0;
     for (int i = 0; i < n; i++)
-        if ( A[i] != 0 )
+        if ( fabs(A[i]) > threshold )
             count++;
     return count;
 }
