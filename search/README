@@ -1,1 +1,10 @@
 This directory contains code for searching for fast matrix multiplication algorithms.
+
+To compile...
+    on a Mac: uncomment the appropriate lines in the Makefile and type make
+    on a Linux machine with MKL: uncomment the appropriate lines in the Makefile, run the mklvars.sh script to set environment vars, and type make
+
+To see runtime options...
+    type ./fast-matmul-search
+
+There are three main methods implemented in the code. 
