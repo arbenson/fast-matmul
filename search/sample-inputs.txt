@@ -1,5 +1,0 @@
-./fast-matmul-search --m 2 --k 2 --n 2 --rank 7 --M 12 --rndfin --numseeds 10
-
-./fast-matmul-search --m 3 --k 2 --n 2 --rank 11 --M 16 --rndfin --numseeds 20
-
-./fast-matmul-search --m 3 --k 3 --n 2 --rank 15 --M 32 --rndfin --numseeds 1000

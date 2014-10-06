@@ -1,0 +1,24 @@
+# the following command will find an algorithm similar to Strassen's (7 multiplies and 18 adds)
+# it searches for a rank 7 solution to 2x2x2 multiplication with regularization parameters set to encourage 12 nonzeros in each of the factor matrices; it tries random seeds 0-9 and rounds the final solutions to check for exact decompositions; seed 9 gives an exact solution
+./fast-matmul-search --m 2 --k 2 --n 2 --rank 7 --M 12 --rndfin --numseeds 10
+
+# the following command will find 4 algorithms for 3x2x2 multiplication in 11 multiplies
+# the regularization parameters seek 16 nonzeros per factor matrix; it tries random seeds 0-19; 2 of the solutions achieve this sparsity (seeds 12 and 18), and 2 include 50 total nonzeros
+./fast-matmul-search --m 3 --k 2 --n 2 --rank 11 --M 16 --rndfin --numseeds 20
+
+# the following command will find a rank 15 algorithm for 3x3x2 multiplication with 58 adds
+# it searches over 1000 seeds and should take around 30 seconds
+./fast-matmul-search --m 3 --k 3 --n 2 --rank 15 --M 32 --rndfin --numseeds 1000
+
+# the following command sparsifies a dense solution for 2x2x2 with rank 7
+# the method guarantees two zeros in U and one zero in V, but for this example 6 zeros are created in U, 3 in V, and 3 in W
+# (first use als command to generate a dense solution)
+./fast-matmul-search --m 2 --k 2 --n 2 --rank 7 --method als --output m222r7-dense
+# (this is the sparsify command)
+./fast-matmul-search --m 2 --k 2 --n 2 --rank 7 --method sparsify --input m222r7-dense --output m222r7-sparse
+
+# the following command rounds a dense solution (with residual 1.3e-6) for 2x2x2 with rank 7 and finds an exact {-1,0,1} solution (residual 0)
+# (first run the sparsify command above and then use ALS to improve the sparser solution)
+./fast-matmul-search --m 2 --k 2 --n 2 --rank 7 --method als --M 15 --input m222r7-sparse --output m222r7-numerical
+# (this is the rounding command)
+./fast-matmul-search --m 2 --k 2 --n 2 --rank 7 --method round --input m222r7-numerical --output m222r7-discrete 
