@@ -28,7 +28,7 @@
 /*!
   @file TTB_RandomMT.h
   @brief Class declaration for a Mersenne Twister random number generator.
- */
+  */
 
 
 #ifndef RANDOMMT_H
@@ -37,47 +37,47 @@
 //! Mersenne Twister random number generator.
 class RandomMT
 {
-  public:
+	public:
 
-    //! Constructor.
-    RandomMT (const unsigned long  nnSeed);
+		//! Constructor.
+		RandomMT (const unsigned long  nnSeed);
 
-    //! Destructor.
-    ~RandomMT (void);
-
-
-    //! Return a uniform random number on the interval [0,0xffffffff].
-    unsigned long  genrnd_int32 (void);
-
-    //! Return a uniform random number on the interval [0,1).
-    double genrnd_double (void);
-
-    //! Return a uniform random number on the interval [0,1].
-    double  genrnd_doubleInclusive (void);
-
-    //! Return a uniform random number on the interval [0,1).
-    /*!
-     *  Calling this method generates the same stream of random samples as
-     *  the following Matlab code:
-     *    > rstrm = RandStream('mt19937ar', 'Seed', 1);
-     *    > rand (rstrm, 1, 10);
-     *
-     *  Note that the C++ instance must be constructed with the same seed as
-     *  Matlab, and the seed must be positive.  The Matlab generator skips
-     *  every other Mersenne Twister value, so this method runs twice as slow
-     *  as genrnd_double().
-     *
-     *  Matlab RandStream "features" were observed in version 7.10 (2010a).
-     */
-    double  genMatlabMT (void);
+		//! Destructor.
+		~RandomMT (void);
 
 
-  private:
+		//! Return a uniform random number on the interval [0,0xffffffff].
+		unsigned long  genrnd_int32 (void);
 
-    //! By design, there is no copy constructor.
-    RandomMT (const RandomMT &);
-    //! By design, there is no assignment operator.
-    RandomMT &  operator=(const RandomMT &);
+		//! Return a uniform random number on the interval [0,1).
+		double genrnd_double (void);
+
+		//! Return a uniform random number on the interval [0,1].
+		double  genrnd_doubleInclusive (void);
+
+		//! Return a uniform random number on the interval [0,1).
+		/*!
+		 *  Calling this method generates the same stream of random samples as
+		 *  the following Matlab code:
+		 *    > rstrm = RandStream('mt19937ar', 'Seed', 1);
+		 *    > rand (rstrm, 1, 10);
+		 *
+		 *  Note that the C++ instance must be constructed with the same seed as
+		 *  Matlab, and the seed must be positive.  The Matlab generator skips
+		 *  every other Mersenne Twister value, so this method runs twice as slow
+		 *  as genrnd_double().
+		 *
+		 *  Matlab RandStream "features" were observed in version 7.10 (2010a).
+		 */
+		double  genMatlabMT (void);
+
+
+	private:
+
+		//! By design, there is no copy constructor.
+		RandomMT (const RandomMT &);
+		//! By design, there is no assignment operator.
+		RandomMT &  operator=(const RandomMT &);
 };
 
 
