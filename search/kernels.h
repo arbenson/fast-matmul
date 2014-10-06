@@ -6,30 +6,30 @@
 
 /* define struct for passing parameters through functions */
 typedef struct {
-    int rank;
-    int matDims[3];
-    int dims[3];
-    char* method;
-    int mkn2;
-    double xNorm;
-    int mtCols[3];
-    double** U;
-    double* lambda;
-    double** X;
-    double* A;
-    double* tau;
-    double* work;
-    int lwork;
-    double* NE_coeff;
-    double* NE_rhs;
-    double* residual;
-    double** model;
-    int* iwork;
-    double alpha;
-    int M[3];
-    bool rnd;
-    int rnd_pwrOfTwo;
-    double rnd_maxVal;
+	int rank;
+	int matDims[3];
+	int dims[3];
+	char* method;
+	int mkn2;
+	double xNorm;
+	int mtCols[3];
+	double** U;
+	double* lambda;
+	double** X;
+	double* A;
+	double* tau;
+	double* work;
+	int lwork;
+	double* NE_coeff;
+	double* NE_rhs;
+	double* residual;
+	double** model;
+	int* iwork;
+	double alpha;
+	int M[3];
+	bool rnd;
+	int rnd_pwrOfTwo;
+	double rnd_maxVal;
 } parameters;
 
 // file I/O

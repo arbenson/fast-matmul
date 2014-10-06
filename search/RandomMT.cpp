@@ -52,17 +52,17 @@ static int            _mti;
 //-----------------------------------------------------------------------------
 RandomMT::RandomMT (const unsigned long  nnSeed)
 {
-    _mti = N + 1;
+	_mti = N + 1;
 
-    _mt[0]= nnSeed & 0xffffffffUL;
-    for (_mti = 1; _mti < N; _mti++)
-    {
-        _mt[_mti] = 
-            (1812433253UL * (_mt[_mti - 1] ^ (_mt[_mti - 1] >> 30)) + _mti);
-        _mt[_mti] &= 0xffffffffUL;
-    }
+	_mt[0]= nnSeed & 0xffffffffUL;
+	for (_mti = 1; _mti < N; _mti++)
+	{
+		_mt[_mti] = 
+			(1812433253UL * (_mt[_mti - 1] ^ (_mt[_mti - 1] >> 30)) + _mti);
+		_mt[_mti] &= 0xffffffffUL;
+	}
 
-    return;
+	return;
 }
 
 
@@ -71,7 +71,7 @@ RandomMT::RandomMT (const unsigned long  nnSeed)
 //-----------------------------------------------------------------------------
 RandomMT::~RandomMT (void)
 {
-    return;
+	return;
 }
 
 
@@ -79,40 +79,40 @@ RandomMT::~RandomMT (void)
 //  Method:  genrnd_int32
 //-----------------------------------------------------------------------------
 /** The core random number generator, called by the other methods.
- */
+*/
 unsigned long  RandomMT::genrnd_int32 (void)
 {
-    static unsigned long  mag01[2]={0x0UL, MATRIX_A};
-    unsigned long  y;
+	static unsigned long  mag01[2]={0x0UL, MATRIX_A};
+	unsigned long  y;
 
-    if (_mti >= N) { /* generate N words at one time */
-        int  kk;
+	if (_mti >= N) { /* generate N words at one time */
+		int  kk;
 
-        for (kk = 0; kk < N-M; kk++)
-        {
-            y = (_mt[kk] & UPPER_MASK) | (_mt[kk+1] & LOWER_MASK);
-            _mt[kk] = _mt[kk+M] ^ (y >> 1) ^ mag01[y & 0x1UL];
-        }
-        for ( ; kk < N-1; kk++)
-        {
-            y = (_mt[kk] & UPPER_MASK) |(_mt[kk+1] & LOWER_MASK);
-            _mt[kk] = _mt[kk+(M-N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
-        }
-        y = (_mt[N-1] & UPPER_MASK) |(_mt[0] & LOWER_MASK);
-        _mt[N-1] = _mt[M-1] ^ (y >> 1) ^ mag01[y & 0x1UL];
+		for (kk = 0; kk < N-M; kk++)
+		{
+			y = (_mt[kk] & UPPER_MASK) | (_mt[kk+1] & LOWER_MASK);
+			_mt[kk] = _mt[kk+M] ^ (y >> 1) ^ mag01[y & 0x1UL];
+		}
+		for ( ; kk < N-1; kk++)
+		{
+			y = (_mt[kk] & UPPER_MASK) |(_mt[kk+1] & LOWER_MASK);
+			_mt[kk] = _mt[kk+(M-N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
+		}
+		y = (_mt[N-1] & UPPER_MASK) |(_mt[0] & LOWER_MASK);
+		_mt[N-1] = _mt[M-1] ^ (y >> 1) ^ mag01[y & 0x1UL];
 
-        _mti = 0;
-    }
-  
-    y = _mt[_mti++];
+		_mti = 0;
+	}
 
-    /* Tempering */
-    y ^= (y >> 11);
-    y ^= (y << 7) & 0x9d2c5680UL;
-    y ^= (y << 15) & 0xefc60000UL;
-    y ^= (y >> 18);
+	y = _mt[_mti++];
 
-    return( y );
+	/* Tempering */
+	y ^= (y >> 11);
+	y ^= (y << 7) & 0x9d2c5680UL;
+	y ^= (y << 15) & 0xefc60000UL;
+	y ^= (y >> 18);
+
+	return( y );
 }
 
 
@@ -121,8 +121,8 @@ unsigned long  RandomMT::genrnd_int32 (void)
 //-----------------------------------------------------------------------------
 double  RandomMT::genrnd_double (void)
 {
-    //---- DIVIDE BY 2^32 TO CONFORM WITH [0,1).
-    return( genrnd_int32() * (1.0 / 4294967296.0) );
+	//---- DIVIDE BY 2^32 TO CONFORM WITH [0,1).
+	return( genrnd_int32() * (1.0 / 4294967296.0) );
 }
 
 
@@ -131,8 +131,8 @@ double  RandomMT::genrnd_double (void)
 //-----------------------------------------------------------------------------
 double  RandomMT::genrnd_doubleInclusive (void)
 {
-    //---- DIVIDE BY 2^32 - 1 TO CONFORM WITH [0,1].
-    return( genrnd_int32() * (1.0 / 4294967295.0) );
+	//---- DIVIDE BY 2^32 - 1 TO CONFORM WITH [0,1].
+	return( genrnd_int32() * (1.0 / 4294967295.0) );
 }
 
 
@@ -141,7 +141,7 @@ double  RandomMT::genrnd_doubleInclusive (void)
 //-----------------------------------------------------------------------------
 double  RandomMT::genMatlabMT (void)
 {
-    double  dResult = genrnd_double();
-    genrnd_double();
-    return( dResult );
+	double  dResult = genrnd_double();
+	genrnd_double();
+	return( dResult );
 }
