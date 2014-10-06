@@ -12,27 +12,27 @@ void usage(char **argv)
 {
 	printf("Usage: %s [options]\n",argv[0]);
 	printf("options:\n");
-	printf("	--m <int>                 first matrix dimension (rows of A/rows of C)\n");
-	printf("	--k <int>                 second matrix dimension (cols of A/rows of B)\n");
-	printf("	--n <int>                 third matrix dimension (cols of B/cols of C)\n");
+	printf("	--m <int>                 first matrix dimension (rows of A / rows of C)\n");
+	printf("	--k <int>                 second matrix dimension (cols of A / rows of B)\n");
+	printf("	--n <int>                 third matrix dimension (cols of B / cols of C)\n");
 	printf("	--rank <int>              rank of factorization\n");
-	printf("    --method <string>         choose from the following options:\n");
-	printf("                                - als: use alternating least squares to iteratively improve residual\n");
-	printf("                                - sparsify: apply transformation to solution to inject sparsity (does not affect residual)\n");
-	printf("                                - round: round factor matrices to nearest power of two\n");
-	printf("	--maxiters <int>          maximum iterations to perform\n");
-	printf("	--maxsecs <int>           maximum time (in sec)\n");
-	printf("	--printitn <int>          print every <int>th iteration; 0 for no printing\n");
+	printf("	--method <string>         choose from the following options:\n");
+	printf("					- als: use alternating least squares to iteratively improve residual\n");
+	printf("					- sparsify: apply transformation to solution to inject sparsity (does not affect residual)\n");
+	printf("					- round: round factor matrices to nearest power of two\n");
+	printf("	--maxiters <int>          maximum iterations to perform per initial guess\n");
+	printf("	--maxsecs <int>           maximum time (in sec) to use per initial guess\n");
+	printf("	--printitn <int>          print every <int>th iteration; 0 for no printing is default\n");
 	printf("	--printtol <float>        print info if residual breaks threshold\n");
 	printf("	--tol <float>             stopping tolerance (change in residual norm squared)\n");
 	printf("	--seed <int>              seed for random number generator used in initial guess\n");
 	printf("	--numseeds <int>          number of seeds to try\n");
-	printf("    --alpha <float>           regularization weighting parameter\n");
-	printf("    --M <int>                 regularization parameter for max number of nonzeros sought in factor matrices (same for all 3)\n");
-	printf("    --M{0,1,2} <int>          regularization parameter for max number of nonzeros in factor matrix {0,1,2}\n");
-	printf("    --rndfin                  rounds final solution to nearest power of two\n");
-	printf("    --pwrof2                  sets power of two for rounding\n");
-    printf("	--verbose                 print more information\n");
+	printf("	--alpha <float>           regularization weighting parameter\n");
+	printf("	--M <int>                 regularization parameter for max number of nonzeros sought in factor matrices (same for all 3)\n");
+	printf("	--M{0,1,2} <int>          regularization parameter for max number of nonzeros in factor matrix {0,1,2}\n");
+	printf("	--rndfin                  rounds final solution to nearest power of two\n");
+	printf("	--pwrof2                  sets power of two for rounding\n");
+	printf("	--verbose                 print more information\n");
 
 }
 
@@ -86,15 +86,31 @@ int main(int argc, char* argv[])
         printf("\n\n---------------------------------------------------------\n");
     	printf("PARAMETERS\n");
     	printf("dimensions = %d %d %d\n",prm.matDims[0],prm.matDims[1],prm.matDims[2]);
-    	printf("rank = %d\n",prm.rank);
-    	printf("method = %s\n",prm.method);
-    	printf("maxiters = %d\n",maxIters);
-    	printf("printitn = %d\n",printItn);
-    	printf("printtol = %1.2e\n",printTol);
-    	printf("tol = %1.2e\n",tol);
-    	printf("seed = %d\n",seed);
-    	printf("numseeds = %d\n",numSeeds);
-    	printf("alpha = %1.2e\n",prm.alpha);
+    	printf("rank       = %d\n",prm.rank);
+    	printf("method     = %s\n",prm.method);
+    	if (infile)
+    	    printf("input      = %s\n",infile);
+    	else
+    	{
+    	    if (numSeeds == 1)
+    	        printf("input      = seed %d\n",seed); 
+    	    else
+    	        printf("inputs     = seeds %d-%d\n",seed,seed+numSeeds-1);
+    	}
+    	if (outfile)
+    	    printf("output     = %s\n",outfile);
+    	else
+    	    printf("output     = none\n"); 
+    	if (!strcmp(prm.method,"als"))
+    	{
+    	    printf("tol        = %1.2e\n",tol);
+    	    printf("alpha      = %1.2e\n",prm.alpha);
+            printf("M's        = (%d,%d,%d)\n",prm.M[0],prm.M[1],prm.M[2]);
+            printf("maxiters   = %d\n",maxIters);
+    	    printf("maxsecs    = %d\n",maxSecs);
+    	    printf("printitn   = %d\n",printItn);
+    	    printf("printtol   = %1.2e\n",printTol);
+    	}
         printf("---------------------------------------------------------\n");
     }
     
@@ -180,24 +196,24 @@ int main(int argc, char* argv[])
         for (i = 0; i < prm.rank; i++)
             prm.lambda[i] = 1.0;  
             
-        if (verbose) 
-        {  
-            printf("STARTING POINT...\n");
-            for (i = 0; i < 3; i++)
-            {
-                printf("Factor matrix %d:\n",i);
-                print_matrix(U0[i],prm.dims[i],prm.rank,prm.dims[i]);
-            }
-            printf("\n");
-        }
-    
         // Copy starting point
         for (i = 0; i < 3; i++)
             cblas_dcopy(prm.dims[i]*prm.rank,U0[i],1,prm.U[i],1); 
             
         // read from file if input is given    
         if( infile )
-	        read_input( infile, prm );    
+	    read_input( infile, prm ); 
+
+        if (verbose)
+        { 
+            printf("\nSTARTING POINT...\n");
+            for (i = 0; i < 3; i++)
+            {
+                printf("Factor matrix %d:\n",i);
+                print_matrix(prm.U[i],prm.dims[i],prm.rank,prm.dims[i]);
+            }
+            printf("\n");
+        }   
                 
         //--------------------------------------------------
         // Main ALS Loop
@@ -292,7 +308,7 @@ int main(int argc, char* argv[])
     
         // Print final info
         elapsed = wall_time() - start_als;
-        if (printItn > 0 || verbose)
+        if ((printItn > 0 || verbose) && !strcmp(prm.method,"als"))
         {
             if (infile)
                 printf("\nInput %s ",infile);
@@ -307,7 +323,7 @@ int main(int argc, char* argv[])
             for (i = 0; i < 3; i++)
             {
                 printf("Factor matrix %d:\n",i);
-                if (roundFinal)
+                if (roundFinal || !strcmp(prm.method,"round"))
                     print_int_matrix(prm.U[i], prm.dims[i], prm.rank, prm.dims[i], prm.rnd_pwrOfTwo);
                 else
                     print_matrix(prm.U[i],prm.dims[i],prm.rank,prm.dims[i]);
