@@ -36,7 +36,7 @@ Some simple codes that use the fast algorithms are in the `examples` directory.
 For example, you can build and run the (4, 3, 3) algorithm:
 
 	make fast433
-	./out/fast433
+	./build/fast433
 
 Building tests
 --------

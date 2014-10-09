@@ -5,10 +5,10 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  int m = 14000;
-  int k = 7200;
-  int n = 7200;
-  int numsteps = 2;
+  int m = 8000;
+  int k = 3600;
+  int n = 3600;
+  int numsteps = 1;
 
   Matrix<double> A = RandomMatrix<double>(m, k);
   Matrix<double> B = RandomMatrix<double>(k, n);
