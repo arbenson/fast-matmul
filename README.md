@@ -81,7 +81,7 @@ For an example, run
 
 
 
-DGEMM curves
+DGEMM curve benchmarks
 --------
 Build and run the benchmark for the dgemm curves:
 	
@@ -108,5 +108,21 @@ To run without dynamic threads (mkl_set_dynamic(0)), append a second argument, e
 
 
 
+Fast algorithms benchmarks
+--------
+Build benchmarking code for all of the fast algorithms:
+
+	  make matmul_benchmarks
+
+The build takes a while because we are compiling all of the algorithms.
+To run a small test to benchmark MKL against Strassen with one, two, and three levels of recursion:
+
+   ./build/matmul_benchmarks -square_test 1
+
+The output format is specified in `data/README.md`.
+
+To run all of the benchmarks for the tall-and-skinny matrix multiplied by a small square matrix (N x k x k for fixed k):
+
+   ./build/matmul_benchmarks -ts_square_like 1
 
 
