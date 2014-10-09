@@ -10,7 +10,7 @@ Copyright 2014 Sandia Corporation. Under the terms of Contract DE-AC04-94AL85000
 For additional information about this research project, please see the paper [A Framework for Practical Parallel Fast Matrix Multiplication](http://arxiv.org/pdf/1409.2908v1.pdf).
 To cite this work, please use:
 
-Benson, Austin R., and Grey Ballard. "A Framework for Practical Parallel Fast Matrix Multiplication." arXiv preprint arXiv:1409.2908 (2014).
+    Benson, Austin R., and Grey Ballard. "A Framework for Practical Parallel Fast Matrix Multiplication." arXiv preprint arXiv:1409.2908 (2014).
 
 
 
