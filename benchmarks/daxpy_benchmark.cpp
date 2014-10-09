@@ -17,18 +17,18 @@ enum {
 
 void FillRandom(double *vec, int m, int n) {
   for (int j = 0; j < n; ++j) {
-	for (int i = 0; i < m; ++i) {
-	  vec[i + j * m] = ((double) rand() / RAND_MAX) * 1024;
-	}
+    for (int i = 0; i < m; ++i) {
+      vec[i + j * m] = ((double) rand() / RAND_MAX) * 1024;
+    }
   }
 }
 
 void manual_add(double *vec1, double *vec2, int m, int n) {
   assert(m != n && m > n);
   for (int j = 0; j < n; ++j) {
-	for (int i = 0; i < m; ++i) {
-	  vec1[i + j * m] += 4.0 * vec2[i + j * m];
-	}
+    for (int i = 0; i < m; ++i) {
+      vec1[i + j * m] += 4.0 * vec2[i + j * m];
+    }
   }
 }
 
@@ -37,7 +37,7 @@ void daxpy_add(double *vec1, double *vec2, int m, int n) {
   int incy = 1;
   double alpha = 4.0;
   for (int j = 0; j < n; ++j) {
-	daxpy_(&m, &alpha, vec2 + j * m, &incx, vec1 + j * m, &incy);
+    daxpy_(&m, &alpha, vec2 + j * m, &incx, vec1 + j * m, &incy);
   }
 }
 
@@ -51,13 +51,13 @@ double benchmark(int m, int n, int type) {
   int num_trials = 10;
 
   auto func = [&] {
-	for (int i = 0; i < num_trials; ++i) {
-	  if (type == MANUAL) {
-		manual_add(vec1, vec2, m, n);
-	  } else {
-		daxpy_add(vec1, vec2, m, n);
-	  }
-	}
+    for (int i = 0; i < num_trials; ++i) {
+      if (type == MANUAL) {
+        manual_add(vec1, vec2, m, n);
+      } else {
+        daxpy_add(vec1, vec2, m, n);
+      }
+    }
   };
 
   double time = Time(func);
@@ -70,15 +70,15 @@ double benchmark(int m, int n, int type) {
 
 void benchmark_all(int m, int n) {
   {
-  std::cout << "MANUAL" << std::endl;
-  double time = benchmark(m, n, MANUAL);
-  std::cout << time << std::endl;
+    std::cout << "MANUAL" << std::endl;
+    double time = benchmark(m, n, MANUAL);
+    std::cout << time << std::endl;
   }
 
   {
-  std::cout << "MKL_DAXPY" << std::endl;
-  double time = benchmark(m, n, MKL_DAXPY);
-  std::cout << time << std::endl;
+    std::cout << "MKL_DAXPY" << std::endl;
+    double time = benchmark(m, n, MKL_DAXPY);
+    std::cout << time << std::endl;
   }
 }
 

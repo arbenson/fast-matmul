@@ -17,9 +17,9 @@ void SingleBenchmark(int m, int k, int n, int num_steps, int algorithm) {
   int num_trials = 5;
   std::vector<double> times(num_trials);
   for (int trial = 0; trial < num_trials; ++trial) {
-	Matrix<double> A = RandomMatrix<double>(m, k);
-	Matrix<double> B = RandomMatrix<double>(k, n);
-	Matrix<double> C1(m, n);
+    Matrix<double> A = RandomMatrix<double>(m, k);
+    Matrix<double> B = RandomMatrix<double>(k, n);
+    Matrix<double> C1(m, n);
     times[trial] = RunAlgorithm(algorithm, A, B, C1, num_steps);
   }
 
@@ -53,7 +53,7 @@ void BenchmarkSet(std::vector<int>& m_vals, std::vector<int>& k_vals,
 void SquareTest() {
   std::vector<int> m_vals;
   for (int i = 1000; i <= 7500; i += 500) {
-	m_vals.push_back(i);
+    m_vals.push_back(i);
   }
   std::vector<int> num_levels = {0};
   BenchmarkSet(m_vals, m_vals, m_vals, num_levels, MKL);
@@ -115,12 +115,12 @@ void SquareBenchmark(int which) {
 #ifdef _PARALLEL_
   std::vector<int> m_vals;
   for (int i = 9000; i <= 13000; i += 500) {
-	m_vals.push_back(i);
+    m_vals.push_back(i);
   }
 #else
   std::vector<int> m_vals;
   for (int i = 1000; i <= 7500; i += 500) {
-	m_vals.push_back(i);
+    m_vals.push_back(i);
   }
 #endif
   std::vector<int> num_levels_MKL = {0};
@@ -209,12 +209,12 @@ void OuterProductBenchmark(int which) {
   std::vector<int> m_vals;
 #ifdef _PARALLEL_
   for (int i = 3000; i <= 18000; i += 500) {
-      m_vals.push_back(i);
+    m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 2800);
 #else
   for (int i = 2000; i <= 12000; i += 500) {
-      m_vals.push_back(i);
+    m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 1600);
 #endif
@@ -267,12 +267,12 @@ void TSSquareBenchmark(int which) {
   std::vector<int> m_vals;
 #ifdef _PARALLEL_
   for (int i = 3000; i <= 20000; i += 500) {
-      m_vals.push_back(i);
+    m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 3000);
 #else
   for (int i = 10000; i <= 18000; i += 500) {
-	m_vals.push_back(i);
+    m_vals.push_back(i);
   }
   std::vector<int> k_vals(m_vals.size(), 2400);
 #endif

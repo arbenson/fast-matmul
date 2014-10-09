@@ -39,13 +39,13 @@ void RunSingleTest(Matrix<double>& A, Matrix<double>& B, Matrix<double>& C) {
   double time = Time(func);
   
   std::cout << " " << A.m() << " " << A.n() << " " << B.n()
-	    << " " << num_trials << " " << time << ";";
+			<< " " << num_trials << " " << time << ";";
 }
 
 
 // Run the timing tests for all dimensions.  The "type" is either
 // SQUARE, OUTER_PRODUCT, or TS_SQUARE, corresponding to
-// (N, N, N), (N, 2000, N), or (N, 2500, 2500) computations.
+// (N, N, N), (N, 800, N), or (N, 800, 800) computations.
 void RunAllDimensions(int type) {
   std::vector<int> N_vals;
 #ifdef _PARALLEL_
