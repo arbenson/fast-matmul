@@ -73,7 +73,7 @@ In your make include file in the `make.incs` directory, to use DFS:
     MODE=openmp
     DEFINES += -D_PARALLEL_=1
 
-Switch the _PARALLEL_ define to 2 for BFS or 3 for HYBRID.
+Switch the `_PARALLEL_` define to 2 for BFS or 3 for HYBRID.
 For an example, run
 
     make fast424
@@ -81,19 +81,32 @@ For an example, run
 
 
 
-Building benchmarks
+DGEMM curves
 --------
-Build the benchmarking code:
-
-    make benchmark	 
-
-Run the dgemm curves:
+Build and run the benchmark for the dgemm curves:
 	
 	make dgemm_curves
-	./out/dgemm_curves 1  # N x N x N
-	./out/dgemm_curves 2  # N x 800 x N
-	./out/dgemm_curves 3  # N x 800 x 800
+	./build/dgemm_curves 1  # N x N x N
+	./build/dgemm_curves 2  # N x 800 x N
+	./build/dgemm_curves 3  # N x 800 x 800
 
+The output is a semi-colon separated list, where each item loooks like:
+
+    M K N num_trials time;
+
+The M, K, and N terms specify the matrix dimensions: M x K multiplied by K x N.
+The time is in milliseconds and is the total time to run num_trials multiplies.
+For example,
+
+	1200 800 1200 5 104.87;
+
+means that it took 104.87 milliseconds to multiply a 1200 x 800 matrix by a 800 x 1200 matrix five times.
+To build with parallelism enabled, you need to define the `_PARALLEL_` (see `make.incs/make.inc.linux').
 To run without dynamic threads (mkl_set_dynamic(0)), append a second argument, e.g.:
 
-	./out/dgemm_curves 1 1  # Square timings without dynamic thread allocation
+	./build/dgemm_curves 1 1  # Square timings without dynamic thread allocation
+
+
+
+
+
