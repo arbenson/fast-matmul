@@ -15,7 +15,9 @@ We also include:
 
 *  Strassen's algorithm: `strassen222.hpp`.
 
-*  Bini's rank-10 approximation algorithm for \<3, 3, 2\>: `bini332.hpp`.
+*  Bini's rank-10 approximation algorithm for \<3, 3, 2\>: `bini332.hpp`:
+
+    Bini, Dario, et al. "O(n^{2.7799}) complexity for< i> n x n approximate matrix multiplication." Information processing letters 8.5 (1979): 234-235.
 
 *  Schönhage's rank-21 approximation or \<3, 3, 3\>: `schonhage333_21_117_approx.hpp`.
 
