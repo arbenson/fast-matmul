@@ -101,8 +101,8 @@ For example,
 	1200 800 1200 5 104.87;
 
 means that it took 104.87 milliseconds to multiply a 1200 x 800 matrix by a 800 x 1200 matrix five times.
-To build with parallelism enabled, you need to define the `_PARALLEL_` (see `make.incs/make.inc.linux').
-To run without dynamic threads (mkl_set_dynamic(0)), append a second argument, e.g.:
+To build with parallelism enabled, you need to define the `_PARALLEL_` (see `make.incs/make.inc.linux`).
+To run without dynamic threads (i.e., mkl_set_dynamic(0)), append a second argument, e.g.:
 
 	./build/dgemm_curves 1 1  # Square timings without dynamic thread allocation
 
