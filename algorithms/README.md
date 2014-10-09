@@ -13,7 +13,9 @@ We also include:
 
     Smirnov, A. V. "The bilinear complexity and practical algorithms for matrix multiplication." Computational Mathematics and Mathematical Physics 53.12 (2013): 1781-1795.
 
-*  Strassen's algorithm: `strassen222.hpp`.
+*  Strassen's algorithm: `strassen222.hpp`:
+
+    Strassen, Volker. "Gaussian elimination is not optimal." Numerische Mathematik 13.4 (1969): 354-356.
 
 *  Bini's rank-10 approximation algorithm for \<3, 3, 2\>: `bini332.hpp`:
 
