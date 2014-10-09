@@ -5,21 +5,21 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-    int m = 16000;
-    int k = 4000;
-    int n = 16000;
-    int numsteps = 2;
+  int m = 16000;
+  int k = 4000;
+  int n = 16000;
+  int numsteps = 2;
 
-    Matrix<double> A = RandomMatrix<double>(m, k);
-    Matrix<double> B = RandomMatrix<double>(k, n);
-    Matrix<double> C1(m, n), C2(m, n);
+  Matrix<double> A = RandomMatrix<double>(m, k);
+  Matrix<double> B = RandomMatrix<double>(k, n);
+  Matrix<double> C1(m, n), C2(m, n);
 
-    Time([&] { MatMul(A, B, C1); }, "Classical gemm");
-    Time([&] { grey323_15_103::FastMatmul(A, B, C2, numsteps); },
-	 "Fast (3, 2, 3)");
+  Time([&] { MatMul(A, B, C1); }, "Classical gemm");
+  Time([&] { grey323_15_103::FastMatmul(A, B, C2, numsteps); },
+       "Fast (3, 2, 3)");
 
-    // Test for correctness.
-    std::cout << "Maximum relative difference: " << MaxRelativeDiff(C1, C2) << std::endl;
+  // Test for correctness.
+  std::cout << "Maximum relative difference: " << MaxRelativeDiff(C1, C2) << std::endl;
     
-    return 0;
+  return 0;
 }
