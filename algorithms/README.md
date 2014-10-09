@@ -9,7 +9,7 @@ and nnz is the number of nonzeros coefficients.
 
 We also include:
 
-*  The \<3, 3, 3\> and \<3, 3, 6\> algorithms from Smirnov: `smirnov333_23_139.hpp` and `smirnov336_40_960.hpp`.
+*  The \<3, 3, 3\> and \<3, 3, 6\> algorithms from Smirnov: `smirnov333_23_139.hpp` and `smirnov336_40_960.hpp`:
 
     Smirnov, A. V. "The bilinear complexity and practical algorithms for matrix multiplication." Computational Mathematics and Mathematical Physics 53.12 (2013): 1781-1795.
 
@@ -21,7 +21,7 @@ We also include:
 
     Bini, Dario, et al. "O(n^{2.7799}) complexity for n x n approximate matrix multiplication." Information processing letters 8.5 (1979): 234-235.
 
-*  Schönhage's rank-21 approximation or \<3, 3, 3\>: `schonhage333_21_117_approx.hpp`.
+*  Schönhage's rank-21 approximation or \<3, 3, 3\>: `schonhage333_21_117_approx.hpp`:
 
     Schönhage, Arnold. "Partial and total matrix multiplication." SIAM Journal on Computing 10.3 (1981): 434-455.
 
