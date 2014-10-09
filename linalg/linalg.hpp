@@ -1,7 +1,7 @@
 #ifndef _LINALG_HPP_
 #define _LINALG_HPP_
 
-#include "lapack_wrap.hpp"
+#include "blas_wrap.hpp"
 
 #ifdef _PARALLEL_
 # include <omp.h>
@@ -228,14 +228,14 @@ void MatMul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
   assert(A.m() == C.m() && A.n() == B.m() && B.n() == C.n());
   assert(A.m() > 0 && A.n() > 0);
   Scalar alpha = C.multiplier();
-  lapack::Gemm('N', 'N', A.m(), B.n(), A.n(), A.data(), A.stride(), B.data(),
+  blas::Gemm('N', 'N', A.m(), B.n(), A.n(), A.data(), A.stride(), B.data(),
                B.stride(), C.data(), C.stride(), alpha, beta);
 }
 
 // C <-- alpha * A + C.  n is the number of entries.
 template<typename Scalar>
 void AxpyWrap(Scalar *C, Scalar *A, int n, Scalar alpha) {
-  lapack::Axpy(C, A, n, alpha, 1, 1);
+  blas::Axpy(C, A, n, alpha, 1, 1);
 }
 
 
