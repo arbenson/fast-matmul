@@ -5,9 +5,10 @@ Then, on a Mac:
 
     make
 
-Or on Linux:
+On Linux, first set the MKL variables (your path may be different) and then run make:
 
-    mklvars.sh && make
+   /opt/intel/composerxe/mkl/bin/mklvars.sh 
+   make
 
 See run-time options:
 
