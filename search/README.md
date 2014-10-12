@@ -7,8 +7,8 @@ Then, on a Mac:
 
 On Linux, first set the MKL variables (your path may be different) and then run make:
 
-   /opt/intel/composerxe/mkl/bin/mklvars.sh 
-   make
+    /opt/intel/composerxe/mkl/bin/mklvars.sh 
+    make
 
 See run-time options:
 
