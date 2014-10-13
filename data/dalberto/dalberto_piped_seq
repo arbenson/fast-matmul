@@ -1,0 +1,458 @@
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 2000 x 2000 
+      B 2000 x 2000 
+ Thus C 2000 x 2000 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 6.862460e-01 sec<------
+ average 0.686246
+ Time Cold 6.862460e-01 
+ MUL OPS 1.600000e+10
+ WM_PIPE OPS 1.600000e+10 MFLOPS COLD 2.331525e+04
+----------> get time 1.343004e+00 sec<------
+ average 0.671502 times 2 
+----------> get time 2.746259e+00 sec<------
+ average 0.686565 times 4 
+----------> get time 5.425554e+00 sec<------
+ average 0.678194 times 8 
+----------> get time 1.086156e+01 sec<------
+ average 0.678848 times 16 
+----------> get time 2.169932e+01 sec<------
+ average 0.678104 times 32 
+ Time HOT 6.781036e-01 
+ MUL OPS 1.600000e+10
+ WM_PIPE OPS 1.600000e+10 MFLOPS HOT  2.359521e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 2500 x 2500 
+      B 2500 x 2500 
+ Thus C 2500 x 2500 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 1.283161e+00 sec<------
+ average 1.283161
+ Time Cold 1.283161e+00 
+ MUL OPS 3.125000e+10
+ WM_PIPE OPS 3.125000e+10 MFLOPS COLD 2.435392e+04
+----------> get time 2.527942e+00 sec<------
+ average 1.263971 times 2 
+----------> get time 5.059134e+00 sec<------
+ average 1.264784 times 4 
+----------> get time 1.034223e+01 sec<------
+ average 1.292779 times 8 
+----------> get time 2.092297e+01 sec<------
+ average 1.307686 times 16 
+ Time HOT 1.307686e+00 
+ MUL OPS 3.125000e+10
+ WM_PIPE OPS 3.125000e+10 MFLOPS HOT  2.389718e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 3000 x 3000 
+      B 3000 x 3000 
+ Thus C 3000 x 3000 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 2.243687e+00 sec<------
+ average 2.243687
+ Time Cold 2.243687e+00 
+ MUL OPS 5.400000e+10
+ WM_PIPE OPS 5.400000e+10 MFLOPS COLD 2.406753e+04
+----------> get time 4.418286e+00 sec<------
+ average 2.209143 times 2 
+----------> get time 8.937847e+00 sec<------
+ average 2.234462 times 4 
+----------> get time 1.801939e+01 sec<------
+ average 2.252424 times 8 
+----------> get time 3.691522e+01 sec<------
+ average 2.307201 times 16 
+ Time HOT 2.307201e+00 
+ MUL OPS 5.400000e+10
+ WM_PIPE OPS 5.400000e+10 MFLOPS HOT  2.340498e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 3500 x 3500 
+      B 3500 x 3500 
+ Thus C 3500 x 3500 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 3.400837e+00 sec<------
+ average 3.400837
+ Time Cold 3.400837e+00 
+ MUL OPS 8.575000e+10
+ WM_PIPE OPS 8.575000e+10 MFLOPS COLD 2.521438e+04
+----------> get time 6.692350e+00 sec<------
+ average 3.346175 times 2 
+----------> get time 1.310420e+01 sec<------
+ average 3.276049 times 4 
+----------> get time 2.596077e+01 sec<------
+ average 3.245096 times 8 
+ Time HOT 3.245096e+00 
+ MUL OPS 8.575000e+10
+ WM_PIPE OPS 8.575000e+10 MFLOPS HOT  2.642449e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 4000 x 4000 
+      B 4000 x 4000 
+ Thus C 4000 x 4000 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 4.817351e+00 sec<------
+ average 4.817351
+ Time Cold 4.817351e+00 
+ MUL OPS 1.280000e+11
+ WM_PIPE OPS 1.280000e+11 MFLOPS COLD 2.657062e+04
+----------> get time 9.766592e+00 sec<------
+ average 4.883296 times 2 
+----------> get time 1.923950e+01 sec<------
+ average 4.809876 times 4 
+----------> get time 3.884525e+01 sec<------
+ average 4.855656 times 8 
+ Time HOT 4.855656e+00 
+ MUL OPS 1.280000e+11
+ WM_PIPE OPS 1.280000e+11 MFLOPS HOT  2.636101e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 4500 x 4500 
+      B 4500 x 4500 
+ Thus C 4500 x 4500 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 7.022497e+00 sec<------
+ average 7.022497
+ Time Cold 7.022497e+00 
+ MUL OPS 1.822500e+11
+ WM_PIPE OPS 1.822500e+11 MFLOPS COLD 2.595231e+04
+----------> get time 1.364385e+01 sec<------
+ average 6.821927 times 2 
+----------> get time 2.719325e+01 sec<------
+ average 6.798311 times 4 
+ Time HOT 6.798311e+00 
+ MUL OPS 1.822500e+11
+ WM_PIPE OPS 1.822500e+11 MFLOPS HOT  2.680813e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 5000 x 5000 
+      B 5000 x 5000 
+ Thus C 5000 x 5000 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 9.551797e+00 sec<------
+ average 9.551797
+ Time Cold 9.551797e+00 
+ MUL OPS 2.500000e+11
+ WM_PIPE OPS 2.500000e+11 MFLOPS COLD 2.617309e+04
+----------> get time 1.821415e+01 sec<------
+ average 9.107077 times 2 
+----------> get time 3.676376e+01 sec<------
+ average 9.190941 times 4 
+ Time HOT 9.190941e+00 
+ MUL OPS 2.500000e+11
+ WM_PIPE OPS 2.500000e+11 MFLOPS HOT  2.720070e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 5500 x 5500 
+      B 5500 x 5500 
+ Thus C 5500 x 5500 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 1.230945e+01 sec<------
+ average 12.309455
+ Time Cold 1.230945e+01 
+ MUL OPS 3.327500e+11
+ WM_PIPE OPS 3.327500e+11 MFLOPS COLD 2.703207e+04
+----------> get time 2.431086e+01 sec<------
+ average 12.155430 times 2 
+ Time HOT 1.215543e+01 
+ MUL OPS 3.327500e+11
+ WM_PIPE OPS 3.327500e+11 MFLOPS HOT  2.737460e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 6000 x 6000 
+      B 6000 x 6000 
+ Thus C 6000 x 6000 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 1.598663e+01 sec<------
+ average 15.986629
+ Time Cold 1.598663e+01 
+ MUL OPS 4.320000e+11
+ WM_PIPE OPS 4.320000e+11 MFLOPS COLD 2.702258e+04
+----------> get time 3.093793e+01 sec<------
+ average 15.468964 times 2 
+ Time HOT 1.546896e+01 
+ MUL OPS 4.320000e+11
+ WM_PIPE OPS 4.320000e+11 MFLOPS HOT  2.792689e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 6500 x 6500 
+      B 6500 x 6500 
+ Thus C 6500 x 6500 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 1.923985e+01 sec<------
+ average 19.239854
+ Time Cold 1.923985e+01 
+ MUL OPS 5.492500e+11
+ WM_PIPE OPS 5.492500e+11 MFLOPS COLD 2.854751e+04
+----------> get time 3.851085e+01 sec<------
+ average 19.255423 times 2 
+ Time HOT 1.925542e+01 
+ MUL OPS 5.492500e+11
+ WM_PIPE OPS 5.492500e+11 MFLOPS HOT  2.852443e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 7000 x 7000 
+      B 7000 x 7000 
+ Thus C 7000 x 7000 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 2.392385e+01 sec<------
+ average 23.923848
+ Time Cold 2.392385e+01 
+ MUL OPS 6.860000e+11
+ WM_PIPE OPS 6.860000e+11 MFLOPS COLD 2.867432e+04
+----------> get time 4.815861e+01 sec<------
+ average 24.079305 times 2 
+ Time HOT 2.407931e+01 
+ MUL OPS 6.860000e+11
+ WM_PIPE OPS 6.860000e+11 MFLOPS HOT  2.848919e+04
+A [n/t/c]
+0  A[n]
+B [n/t/c]
+0  B[n]
+Beta A 
+B[1.000000e+00]
+Beta B 
+B[1.000000e+00]
+Beta C 
+C[0.000000e+00]
+ <a.m,a.n,b.m,b.n> ?
+ size of the matrix element 8
+ You selected the following problem 
+      A 7500 x 7500 
+      B 7500 x 7500 
+ Thus C 7500 x 7500 
+Creation ...
+Initialization ...
+A - 
+B - 
+C - 
+T - 
+
+ MUL ... 
+----------> get time 2.956097e+01 sec<------
+ average 29.560972
+ Time Cold 2.956097e+01 
+ MUL OPS 8.437500e+11
+ WM_PIPE OPS 8.437500e+11 MFLOPS COLD 2.854270e+04
+----------> get time 5.744601e+01 sec<------
+ average 28.723007 times 2 
+ Time HOT 2.872301e+01 
+ MUL OPS 8.437500e+11
+ WM_PIPE OPS 8.437500e+11 MFLOPS HOT  2.937541e+04
+
+ + --------------------------------------------------------------------------
+ +        Job name: DALBERTO
+ +          Job Id: 1678488.edique02
+ +          System: edison
+ +     Queued Time: Fri Sep  5 11:01:44 2014
+ +      Start Time: Fri Sep  5 11:02:16 2014
+ + Completion Time: Fri Sep  5 11:16:17 2014
+ +            User: arbenson
+ +        MOM Host: nid02433
+ +           Queue: debug
+ +  Req. Resources: mppnodect=1,mppnppn=24,mppwidth=24,walltime=00:30:00
+ +  Used Resources: cput=00:14:16,mem=2201060kb,vmem=2311828kb,walltime=00:14:03
+ +     Acct String: mp156
+ +   PBS_O_WORKDIR: /global/u1/a/arbenson/fmm
+ +     Submit Args: submit_fmm.sh
+ + --------------------------------------------------------------------------
+
