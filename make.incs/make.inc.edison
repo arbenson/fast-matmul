@@ -1,0 +1,15 @@
+# Need to load these libraries:
+# module load mkl
+# module load gcc/4.8.0
+
+CXX = icpc
+
+MODE = sequential
+MODE = openmp
+
+MKL_ROOT := /opt/intel/composer_xe_2013.5.192/mkl
+
+DEFINES := -DNDEBUG
+#DEFINES += -D_PARALLEL_=1  # DFS
+#DEFINES += -D_PARALLEL_=2  # BFS
+DEFINES += -D_PARALLEL_=3  # HYBRID
