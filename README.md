@@ -36,14 +36,14 @@ Building examples
 --------
 First, use the code generator to generate the algorithms:
           
-	cd codegen
-	bash gen_all_algorithms.sh 0
+	  cd codegen
+	  bash gen_all_algorithms.sh 0
 
 Some simple codes that use the fast algorithms are in the `examples` directory.
 For example, you can build and run the (4, 3, 3) algorithm:
 
-	make fast433
-	./build/fast433
+    make fast433
+    ./build/fast433
 
 Building tests
 --------
@@ -52,7 +52,7 @@ We now assume that all of the algorithms have been gernated with the code genera
 The tests are built and run with:
 
     make matmul_tests
-	./build/matmul_tests -all 1
+    ./build/matmul_tests -all 1
 
 The tests are just for correctness of the algorithms, not for performance.
 You should see output like:
@@ -91,11 +91,11 @@ For an example, run
 DGEMM curve benchmarks
 --------
 Build and run the benchmark for the dgemm curves:
-	
-	make dgemm_curves
-	./build/dgemm_curves 1  # N x N x N
-	./build/dgemm_curves 2  # N x 800 x N
-	./build/dgemm_curves 3  # N x 800 x 800
+      
+      make dgemm_curves
+      ./build/dgemm_curves 1  # N x N x N
+      ./build/dgemm_curves 2  # N x 800 x N
+      ./build/dgemm_curves 3  # N x 800 x 800
 
 The output is a semi-colon separated list, where each item loooks like:
 
@@ -105,13 +105,13 @@ The M, K, and N terms specify the matrix dimensions: M x K multiplied by K x N.
 The time is in milliseconds and is the total time to run num_trials multiplies.
 For example,
 
-	1200 800 1200 5 104.87;
+    1200 800 1200 5 104.87;
 
 means that it took 104.87 milliseconds to multiply a 1200 x 800 matrix by a 800 x 1200 matrix five times.
 To build with parallelism enabled, you need to define the `_PARALLEL_` (see `make.incs/make.inc.linux`).
 To run without dynamic threads (i.e., mkl_set_dynamic(0)), append a second argument, e.g.:
 
-	./build/dgemm_curves 1 1  # Square timings without dynamic thread allocation
+   ./build/dgemm_curves 1 1  # Square timings without dynamic thread allocation
 
 
 
@@ -131,5 +131,4 @@ The output format is specified in `data/README.md`.
 To run all of the benchmarks for the tall-and-skinny matrix multiplied by a small square matrix (N x k x k for fixed k):
 
     ./build/matmul_benchmarks -ts_square_like 1
-
 
