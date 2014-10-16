@@ -25,7 +25,7 @@ You must specify this file in the first line of the Makefile.
 For an example, see the file `make.incs/make.inc.edison`, which contains the information for running
 on NERSC's Edison machine.
 The `MODE` variable specifies sequential or parallel mode.
-The `DEFINES` variable can specifies the type of parallelism if running in parallel mode.
+The `DEFINES` variable can specify the type of parallelism if running in parallel mode.
 The `MKL_ROOT` variable must be set for your machine.
 
 We did most testing using the Intel compiler (icpc).
