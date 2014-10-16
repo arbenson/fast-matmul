@@ -26,6 +26,9 @@ For an example, see the file `make.incs/make.inc.edison`, which contains the inf
 on NERSC's Edison machine.
 The `MODE` variable specifies sequential or parallel mode.
 The `DEFINES` variable can specify the type of parallelism if running in parallel mode.
+The `DEFINES` variable also specifies the naming convention for BLAS routines.
+By default, names are considered to be like "dgemm".
+However, by defining BLAS_POST, names are considered to be like "dgemm_", i.e., the routines have a trailing underscore.
 The `MKL_ROOT` variable must be set for your machine.
 
 We did most testing using the Intel compiler (icpc).

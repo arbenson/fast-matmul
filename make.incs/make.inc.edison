@@ -1,15 +1,22 @@
-# Need to load these libraries:
+# Makefile configurations for building on Edison at NERSC.
+
+# Need to load these libraries on Edison:
 # module load mkl
 # module load gcc/4.8.0
 
 CXX = icpc
 
 MODE = sequential
-MODE = openmp
+#MODE = openmp
 
 MKL_ROOT := /opt/intel/composer_xe_2013.5.192/mkl
 
 DEFINES := -DNDEBUG
+
+# Defining BLAS_POST means that the BLAS routines are like "dgemm_" instead of
+# just "dgemm".
+DEFINES += -DBLAS_POST
+
 #DEFINES += -D_PARALLEL_=1  # DFS
 #DEFINES += -D_PARALLEL_=2  # BFS
-DEFINES += -D_PARALLEL_=3  # HYBRID
+#DEFINES += -D_PARALLEL_=3  # HYBRID
