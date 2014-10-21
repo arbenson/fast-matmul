@@ -27,7 +27,10 @@ void usage(char **argv)
 	printf("	--tol <float>             stopping tolerance (change in residual norm squared)\n");
 	printf("	--seed <int>              seed for random number generator used in initial guess\n");
 	printf("	--numseeds <int>          number of seeds to try\n");
+    printf("	--input <string>          input file for initial guess (overrides seed/numseeds)\n");
+    printf("	--output <string>         output file for final solution\n");
 	printf("	--alpha <float>           regularization weighting parameter\n");
+	printf("	--maxval <float>          maximum value of solution entries\n");
 	printf("	--M <int>                 regularization parameter for max number of nonzeros sought in factor matrices (same for all 3)\n");
 	printf("	--M{0,1,2} <int>          regularization parameter for max number of nonzeros in factor matrix {0,1,2}\n");
 	printf("	--rndfin                  rounds final solution to nearest power of two\n");
@@ -105,6 +108,7 @@ int main(int argc, char* argv[])
 		{
 			printf("tol        = %1.2e\n",tol);
 			printf("alpha      = %1.2e\n",prm.alpha);
+			printf("maval      = %1.2e\n",prm.rnd_maxVal);
 			printf("M's        = (%d,%d,%d)\n",prm.M[0],prm.M[1],prm.M[2]);
 			printf("maxiters   = %d\n",maxIters);
 			printf("maxsecs    = %d\n",maxSecs);
@@ -328,6 +332,9 @@ int main(int argc, char* argv[])
 				else
 					print_matrix(prm.U[i],prm.dims[i],prm.rank,prm.dims[i]);
 			}
+			
+			if (err < printTol)
+				numGoodSeeds++;
 		}
 		else if (err < printTol)
 		{
@@ -335,9 +342,9 @@ int main(int argc, char* argv[])
 
 			printf("\n\n***************************************\n");
 			if (infile)
-				printf("\nInput %s: ",infile);
+				printf("Input %s: ",infile);
 			else
-				printf("\nInitial seed %d: ",mySeed);
+				printf("Initial seed %d: ",mySeed);
 			printf("after %d iterations, achieved residual %1.3e with final residual change of %1.3e\n", numIters, err, errChange);
 			if (roundFinal)
 			{
