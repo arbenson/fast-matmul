@@ -43,8 +43,8 @@ BENCHMARKS_SRC = matmul_benchmarks.cpp \
     square54_benchmark.cpp
 
 TESTS_SRC = matmul_tests.cpp \
-    fast_lu_test.cpp \
-    fast_qr_test.cpp
+    bini_stability.cpp \
+    schonhage_stability.cpp
 
 
 OBJ_DIR = obj
