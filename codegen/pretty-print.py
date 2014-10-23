@@ -35,7 +35,7 @@ def main():
         coeff_file = sys.argv[1]
         dim  = int(sys.argv[2])
         rank = int(sys.argv[3])
-        print 'Printing coefficients for a %d x %d x %d rank-%d algorithm' % (dim,dim,dim,rank)
+        print 'Printing coefficients for a %d x %d x %d rank-%d algorithm\n' % (dim,dim,dim,rank)
     except:
         raise Exception('USAGE: python pretty-print.py coeff_file dimension rank')
 
@@ -63,26 +63,39 @@ def main():
             sys.stdout.write('\n')
         sys.stdout.write('\n')
 	
-	''' count how many matrices of each rank are in factors and count nnz '''	
-    rank_cnts = [0] * dim
+	''' count how many matrices of each rank are in factors '''	
+    rc = [0] * dim
+    for i in xrange(dim):
+    	rc[i] = [0] * dim
+    	for j in xrange(dim):
+    	    rc[i][j] = [0]* dim
+    rs = [0,0,0]
+    for triplet in xrange(rank):
+        for fac in xrange(3):
+            facmat = zip(*coeffs[fac])
+            A = numpy.matrix(facmat[triplet]).reshape(dim,dim)
+            rs[fac] = numpy.linalg.matrix_rank(A)
+        rc[rs[0]-1][rs[1]-1][rs[2]-1] += 1
+    
+    ''' count nnz in solution '''
     nnz = 0
     for fac in xrange(3):
-        facmat = zip(*coeffs[fac])
         for col in xrange(rank):
-            A = numpy.matrix(facmat[col]).reshape(dim,dim)
-            for i in xrange(dim):
-                for j in xrange(dim):
-                    if int(A[i,j]) != 0:
-                        nnz = nnz + 1
-            r = numpy.linalg.matrix_rank(A)
-            rank_cnts[r-1] = rank_cnts[r-1] + 1
+           for row in xrange(dim*dim):
+               if int(coeffs[fac][row][col]) != 0:
+                   nnz = nnz + 1
+
 	
-    print 'Coefficient matrix rank counts'
-    for d in xrange(dim):
-        print '\tRank %d:\t%d' % (d+1,rank_cnts[d])
+    print 'Triplets rank counts'
+    for i in xrange(dim):
+        for j in xrange(dim):
+            for k in xrange(dim):
+                if rc[i][j][k] > 0:
+                    print '\tRank (%d,%d,%d):\t%d' % (i+1,j+1,k+1,rc[i][j][k])
         
     print '\nTotal number of nonzeros:\t%d' % nnz
     print 'Number of naive adds/subs:\t%d' % int(nnz-2*rank-dim*dim)
+    print '\n'
 
 if __name__ == '__main__':
     main()
