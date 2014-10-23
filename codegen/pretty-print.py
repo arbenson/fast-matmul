@@ -82,7 +82,7 @@ def main():
         print '\tRank %d:\t%d' % (d+1,rank_cnts[d])
         
     print '\nTotal number of nonzeros:\t%d' % nnz
-    print 'Number of naive adds/subs:\t%d' % int(nnz-2*rank-d*d)
+    print 'Number of naive adds/subs:\t%d' % int(nnz-2*rank-dim*dim)
 
 if __name__ == '__main__':
     main()
