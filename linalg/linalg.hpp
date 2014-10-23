@@ -106,6 +106,12 @@ public:
   int m() { return m_; }
   int n() { return n_; }
 
+  int height() { return m_; }
+  int width() { return n_; }
+
+  const Scalar& operator()(int i, int j) const {  return data_[i + j * stride_]; }
+  Scalar& operator()(int i, int j) {  return data_[i + j * stride_]; }
+
 
   void allocate() {
     if (n_ > 0 && m_ > 0) {
