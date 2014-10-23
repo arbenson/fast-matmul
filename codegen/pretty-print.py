@@ -63,18 +63,26 @@ def main():
             sys.stdout.write('\n')
         sys.stdout.write('\n')
 	
-	''' count how many matrices of each rank are in factors '''	
+	''' count how many matrices of each rank are in factors and count nnz '''	
     rank_cnts = [0] * dim
+    nnz = 0
     for fac in xrange(3):
         facmat = zip(*coeffs[fac])
         for col in xrange(rank):
             A = numpy.matrix(facmat[col]).reshape(dim,dim)
+            for i in xrange(dim):
+                for j in xrange(dim):
+                    if int(A[i,j]) != 0:
+                        nnz = nnz + 1
             r = numpy.linalg.matrix_rank(A)
             rank_cnts[r-1] = rank_cnts[r-1] + 1
 	
     print 'Coefficient matrix rank counts'
     for d in xrange(dim):
         print '\tRank %d:\t%d' % (d+1,rank_cnts[d])
+        
+    print '\nTotal number of nonzeros:\t%d' % nnz
+    print 'Number of naive adds/subs:\t%d' % int(nnz-2*rank-d*d)
 
 if __name__ == '__main__':
     main()
