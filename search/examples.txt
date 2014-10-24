@@ -10,6 +10,9 @@
 # it searches over 1000 seeds and should take around 30 seconds
 ./fast-matmul-search --m 3 --k 3 --n 2 --rank 15 --M 32 --rndfin --numseeds 1000
 
+# the following command will find a rank 23 algorithm for 3x3x3 multiplication with 94 adds
+ ./fast-matmul-search --m 3 --k 3 --n 3 --rank 23 --M 50 --rndfin --numseeds 100
+
 # the following command sparsifies a dense solution for 2x2x2 with rank 7
 # the method guarantees two zeros in U and one zero in V, but for this example 6 zeros are created in U, 3 in V, and 3 in W
 # (first use als command to generate a dense solution)
