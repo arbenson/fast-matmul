@@ -58,6 +58,7 @@ python ${SCRIPT} ${ALGS_DIR}/smirnov333-23-139 3,3,3 ${OUT_DIR}/smirnov333_23_13
 python ${SCRIPT} ${ELIM_DIR}/smirnov333-23-128 3,3,3 ${OUT_DIR}/smirnov333_23_128.hpp ${OPTIONS}
 python ${SCRIPT} ${ALGS_DIR}/classical333-27-81 3,3,3 ${OUT_DIR}/classical333.hpp ${OPTIONS}
 python ${SCRIPT} ${ALGS_DIR}/schonhage333-21-117-approx 3,3,3 ${OUT_DIR}/schonhage333_21_117_approx.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/smirnov333-20-182-approx 3,3,3 ${OUT_DIR}/smirnov333_20_182_approx.hpp ${OPTIONS}
 
 # 3,3,2
 python ${SCRIPT} ${ALGS_DIR}/grey332-15-103 3,3,2 ${OUT_DIR}/fast332_15_103.hpp ${OPTIONS}
@@ -69,7 +70,7 @@ python ${SCRIPT} ${ELIM_DIR}/grey323-15-89 3,2,3 ${OUT_DIR}/fast323_15_89.hpp ${
 
 # 3,2,2
 python ${SCRIPT} ${ALGS_DIR}/grey322-11-50 3,2,2 ${OUT_DIR}/fast322_11_50.hpp ${OPTIONS}
-python ${SCRIPT} ${ALGS_DIR}/bini322 3,2,2 ${OUT_DIR}/bini322.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/bini322-10-52-approx 3,2,2 ${OUT_DIR}/bini322_10_52_approx.hpp ${OPTIONS}
 
 # 2,2,2
 python ${SCRIPT} ${ALGS_DIR}/strassen 2,2,2 ${OUT_DIR}/strassen.hpp ${OPTIONS}

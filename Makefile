@@ -44,7 +44,8 @@ BENCHMARKS_SRC = matmul_benchmarks.cpp \
 
 TESTS_SRC = matmul_tests.cpp \
     bini_stability.cpp \
-    schonhage_stability.cpp
+    schonhage_stability.cpp \
+    smirnov333_stability.cpp
 
 
 OBJ_DIR = obj

@@ -45,7 +45,7 @@ void S_Add2(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<S
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(0.5) * dataS1[i + j * strideS1] -dataS2[i + j * strideS2] + Scalar(0.5) * dataS3[i + j * strideS3] + Scalar(0.5) * dataS4[i + j * strideS4];
+            dataC[i + j * strideC] = Scalar(.5) * dataS1[i + j * strideS1] -dataS2[i + j * strideS2] + Scalar(.5) * dataS3[i + j * strideS3] + Scalar(.5) * dataS4[i + j * strideS4];
         }
     }
 }
@@ -485,7 +485,7 @@ void S_Add25(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(-0.5) * dataS1[i + j * strideS1] + Scalar(0.5) * dataS2[i + j * strideS2] + Scalar(-0.5) * dataS3[i + j * strideS3] -dataS4[i + j * strideS4];
+            dataC[i + j * strideC] = Scalar(-.5) * dataS1[i + j * strideS1] + Scalar(.5) * dataS2[i + j * strideS2] + Scalar(-.5) * dataS3[i + j * strideS3] -dataS4[i + j * strideS4];
         }
     }
 }
@@ -1188,7 +1188,7 @@ void M_Add7(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = Scalar(-0.5) * dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + beta * dataC[i + j * strideC];
+                dataC[i + j * strideC] = Scalar(-.5) * dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + beta * dataC[i + j * strideC];
             }
         }
     } else {
@@ -1197,7 +1197,7 @@ void M_Add7(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = Scalar(-0.5) * dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3];
+                dataC[i + j * strideC] = Scalar(-.5) * dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3];
             }
         }
     }
@@ -1227,7 +1227,7 @@ void M_Add8(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = Scalar(-0.5) * dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + Scalar(0.5) * dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6] + dataM7[i + j * strideM7] + beta * dataC[i + j * strideC];
+                dataC[i + j * strideC] = Scalar(-.5) * dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + Scalar(.5) * dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6] + dataM7[i + j * strideM7] + beta * dataC[i + j * strideC];
             }
         }
     } else {
@@ -1236,7 +1236,7 @@ void M_Add8(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = Scalar(-0.5) * dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + Scalar(0.5) * dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6] + dataM7[i + j * strideM7];
+                dataC[i + j * strideC] = Scalar(-.5) * dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + Scalar(.5) * dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6] + dataM7[i + j * strideM7];
             }
         }
     }
@@ -1258,7 +1258,7 @@ void M_Add9(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = Scalar(0.5) * dataM1[i + j * strideM1] + Scalar(0.5) * dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + beta * dataC[i + j * strideC];
+                dataC[i + j * strideC] = Scalar(.5) * dataM1[i + j * strideM1] + Scalar(.5) * dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + beta * dataC[i + j * strideC];
             }
         }
     } else {
@@ -1267,7 +1267,7 @@ void M_Add9(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = Scalar(0.5) * dataM1[i + j * strideM1] + Scalar(0.5) * dataM2[i + j * strideM2] + dataM3[i + j * strideM3];
+                dataC[i + j * strideC] = Scalar(.5) * dataM1[i + j * strideM1] + Scalar(.5) * dataM2[i + j * strideM2] + dataM3[i + j * strideM3];
             }
         }
     }
@@ -1357,7 +1357,7 @@ void M_Add12(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = Scalar(-0.5) * dataM1[i + j * strideM1] + Scalar(-0.5) * dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+                dataC[i + j * strideC] = Scalar(-.5) * dataM1[i + j * strideM1] + Scalar(-.5) * dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
             }
         }
     } else {
@@ -1366,7 +1366,7 @@ void M_Add12(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = Scalar(-0.5) * dataM1[i + j * strideM1] + Scalar(-0.5) * dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4];
+                dataC[i + j * strideC] = Scalar(-.5) * dataM1[i + j * strideM1] + Scalar(-.5) * dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4];
             }
         }
     }
@@ -1392,7 +1392,7 @@ void M_Add13(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + Scalar(-0.5) * dataM3[i + j * strideM3] -dataM4[i + j * strideM4] -dataM5[i + j * strideM5] + beta * dataC[i + j * strideC];
+                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + Scalar(-.5) * dataM3[i + j * strideM3] -dataM4[i + j * strideM4] -dataM5[i + j * strideM5] + beta * dataC[i + j * strideC];
             }
         }
     } else {
@@ -1401,7 +1401,7 @@ void M_Add13(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + Scalar(-0.5) * dataM3[i + j * strideM3] -dataM4[i + j * strideM4] -dataM5[i + j * strideM5];
+                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + Scalar(-.5) * dataM3[i + j * strideM3] -dataM4[i + j * strideM4] -dataM5[i + j * strideM5];
             }
         }
     }
@@ -1452,7 +1452,7 @@ void M_Add15(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] + Scalar(0.5) * dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + beta * dataC[i + j * strideC];
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + Scalar(.5) * dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + beta * dataC[i + j * strideC];
             }
         }
     } else {
@@ -1461,7 +1461,7 @@ void M_Add15(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] + Scalar(0.5) * dataM2[i + j * strideM2] -dataM3[i + j * strideM3];
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + Scalar(.5) * dataM2[i + j * strideM2] -dataM3[i + j * strideM3];
             }
         }
     }
@@ -1761,7 +1761,7 @@ void MX_Add3(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataMX1[i + j * strideMX1] + Scalar(0.5) * dataMX2[i + j * strideMX2];
+            dataC[i + j * strideC] = dataMX1[i + j * strideMX1] + Scalar(.5) * dataMX2[i + j * strideMX2];
         }
     }
 }
@@ -1779,7 +1779,7 @@ void MX_Add4(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(-0.5) * dataMX1[i + j * strideMX1] + dataMX2[i + j * strideMX2];
+            dataC[i + j * strideC] = Scalar(-.5) * dataMX1[i + j * strideMX1] + dataMX2[i + j * strideMX2];
         }
     }
 }
@@ -1797,7 +1797,7 @@ void MX_Add5(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataMX1[i + j * strideMX1] + Scalar(0.5) * dataMX2[i + j * strideMX2];
+            dataC[i + j * strideC] = dataMX1[i + j * strideMX1] + Scalar(.5) * dataMX2[i + j * strideMX2];
         }
     }
 }
@@ -1815,7 +1815,7 @@ void MX_Add6(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(0.5) * dataMX1[i + j * strideMX1] -dataMX2[i + j * strideMX2];
+            dataC[i + j * strideC] = Scalar(.5) * dataMX1[i + j * strideMX1] -dataMX2[i + j * strideMX2];
         }
     }
 }
@@ -1833,7 +1833,7 @@ void MX_Add7(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(0.5) * dataMX1[i + j * strideMX1] + Scalar(-0.5) * dataMX2[i + j * strideMX2];
+            dataC[i + j * strideC] = Scalar(.5) * dataMX1[i + j * strideMX1] + Scalar(-.5) * dataMX2[i + j * strideMX2];
         }
     }
 }
@@ -1869,7 +1869,7 @@ void MX_Add9(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, double
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(-0.5) * dataMX1[i + j * strideMX1] + Scalar(0.5) * dataMX2[i + j * strideMX2];
+            dataC[i + j * strideC] = Scalar(-.5) * dataMX1[i + j * strideMX1] + Scalar(.5) * dataMX2[i + j * strideMX2];
         }
     }
 }
@@ -1905,7 +1905,7 @@ void MX_Add11(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, doubl
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(-0.5) * dataMX1[i + j * strideMX1] + Scalar(0.5) * dataMX2[i + j * strideMX2];
+            dataC[i + j * strideC] = Scalar(-.5) * dataMX1[i + j * strideMX1] + Scalar(.5) * dataMX2[i + j * strideMX2];
         }
     }
 }
@@ -1941,7 +1941,7 @@ void MX_Add13(Matrix<Scalar>& MX1, Matrix<Scalar>& MX2, Matrix<Scalar>& C, doubl
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(0.5) * dataMX1[i + j * strideMX1] + dataMX2[i + j * strideMX2];
+            dataC[i + j * strideC] = Scalar(.5) * dataMX1[i + j * strideMX1] + dataMX2[i + j * strideMX2];
         }
     }
 }
@@ -2131,7 +2131,7 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
     TX_Add6(B21, B23, B_X6, x, false);
 
 
-    // M1 = (1.0 * A_X1 + 1.0 * A_X2 + 1.0 * A_X3 + 1.0 * A_X4) * (1.0 * B_X1)
+    // M1 = (1 * A_X1 + 1 * A_X2 + 1 * A_X3 + 1 * A_X4) * (1 * B_X1)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential1) shared(mem_mngr, locker) untied
     {
@@ -2142,6 +2142,7 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
     Matrix<Scalar> S1(A11.m(), A11.n());
 #endif
     S_Add1(A_X1, A_X2, A_X3, A_X4, S1, x, sequential1);
+    M1.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, S1, B_X1, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 26, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S1.deallocate();
@@ -2157,7 +2158,7 @@ locker.Decrement();
     }
 #endif
 
-    // M2 = (0.5 * A21 + -1.0 * A22 + 0.5 * A31 + 0.5 * A41) * (-1.0 * B21 + 1.0 * B_X2)
+    // M2 = (.5 * A21 + -1 * A22 + .5 * A31 + .5 * A41) * (-1 * B21 + 1 * B_X2)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential2) shared(mem_mngr, locker) untied
     {
@@ -2190,7 +2191,7 @@ locker.Decrement();
     }
 #endif
 
-    // M3 = (-1.0 * A_X1 + 1.0 * A_X2 + 1.0 * A_X5 + 1.0 * A_X6) * (-1.0 * B14 + 1.0 * B_X3)
+    // M3 = (-1 * A_X1 + 1 * A_X2 + 1 * A_X5 + 1 * A_X6) * (-1 * B14 + 1 * B_X3)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential3) shared(mem_mngr, locker) untied
     {
@@ -2223,7 +2224,7 @@ locker.Decrement();
     }
 #endif
 
-    // M4 = (1.0 * A21 + 1.0 * A_X2 + 1.0 * A_X3 + 1.0 * A_X4) * (1.0 * B21 + 1.0 * B_X1)
+    // M4 = (1 * A21 + 1 * A_X2 + 1 * A_X3 + 1 * A_X4) * (1 * B21 + 1 * B_X1)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential4) shared(mem_mngr, locker) untied
     {
@@ -2256,12 +2257,13 @@ locker.Decrement();
     }
 #endif
 
-    // M5 = (-1.0 * A42) * (1.0 * B_X4)
+    // M5 = (-1 * A42) * (1 * B_X4)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential5) shared(mem_mngr, locker) untied
     {
 #endif
     M5.UpdateMultiplier(Scalar(-1));
+    M5.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A42, B_X4, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 26, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif
@@ -2276,7 +2278,7 @@ locker.Decrement();
     }
 #endif
 
-    // M6 = (-1.0 * A11 + -1.0 * A12 + -1.0 * A_X6) * (1.0 * B22 + 1.0 * B24)
+    // M6 = (-1 * A11 + -1 * A12 + -1 * A_X6) * (1 * B22 + 1 * B24)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential6) shared(mem_mngr, locker) untied
     {
@@ -2309,7 +2311,7 @@ locker.Decrement();
     }
 #endif
 
-    // M7 = (-1.0 * A32 + -1.0 * A42 + 1.0 * A_X2) * (1.0 * B21 + 1.0 * B24 + 1.0 * B_X1)
+    // M7 = (-1 * A32 + -1 * A42 + 1 * A_X2) * (1 * B21 + 1 * B24 + 1 * B_X1)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential7) shared(mem_mngr, locker) untied
     {
@@ -2342,7 +2344,7 @@ locker.Decrement();
     }
 #endif
 
-    // M8 = (1.0 * A21 + 1.0 * A31 + 1.0 * A41) * (1.0 * B11 + 1.0 * B21)
+    // M8 = (1 * A21 + 1 * A31 + 1 * A41) * (1 * B11 + 1 * B21)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential8) shared(mem_mngr, locker) untied
     {
@@ -2375,7 +2377,7 @@ locker.Decrement();
     }
 #endif
 
-    // M9 = (1.0 * A21 + -1.0 * A22 + 1.0 * A_X3 + 1.0 * A_X4) * (-1.0 * B21)
+    // M9 = (1 * A21 + -1 * A22 + 1 * A_X3 + 1 * A_X4) * (-1 * B21)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential9) shared(mem_mngr, locker) untied
     {
@@ -2402,7 +2404,7 @@ locker.Decrement();
     }
 #endif
 
-    // M10 = (1.0 * A32 + -1.0 * A42 + 1.0 * A_X2) * (1.0 * B23 + 1.0 * B24 + 1.0 * B_X3 + 1.0 * B_X5)
+    // M10 = (1 * A32 + -1 * A42 + 1 * A_X2) * (1 * B23 + 1 * B24 + 1 * B_X3 + 1 * B_X5)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential10) shared(mem_mngr, locker) untied
     {
@@ -2435,7 +2437,7 @@ locker.Decrement();
     }
 #endif
 
-    // M11 = (-1.0 * A11 + -1.0 * A_X6) * (1.0 * B24 + -1.0 * B_X4)
+    // M11 = (-1 * A11 + -1 * A_X6) * (1 * B24 + -1 * B_X4)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential11) shared(mem_mngr, locker) untied
     {
@@ -2468,12 +2470,13 @@ locker.Decrement();
     }
 #endif
 
-    // M12 = (-1.0 * A12) * (1.0 * B24)
+    // M12 = (-1 * A12) * (1 * B24)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential12) shared(mem_mngr, locker) untied
     {
 #endif
     M12.UpdateMultiplier(Scalar(-1));
+    M12.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A12, B24, M12, total_steps, steps_left - 1, (start_index + 12 - 1) * 26, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif
@@ -2488,11 +2491,12 @@ locker.Decrement();
     }
 #endif
 
-    // M13 = (1.0 * A_X6) * (-1.0 * B12)
+    // M13 = (1 * A_X6) * (-1 * B12)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential13) shared(mem_mngr, locker) untied
     {
 #endif
+    M13.UpdateMultiplier(Scalar(1));
     M13.UpdateMultiplier(Scalar(-1));
     FastMatmulRecursive(locker, mem_mngr, A_X6, B12, M13, total_steps, steps_left - 1, (start_index + 13 - 1) * 26, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
@@ -2508,7 +2512,7 @@ locker.Decrement();
     }
 #endif
 
-    // M14 = (-1.0 * A11) * (-1.0 * B14)
+    // M14 = (-1 * A11) * (-1 * B14)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential14) shared(mem_mngr, locker) untied
     {
@@ -2529,7 +2533,7 @@ locker.Decrement();
     }
 #endif
 
-    // M15 = (-1.0 * A11 + 1.0 * A41) * (1.0 * B14 + -1.0 * B24 + 1.0 * B_X4)
+    // M15 = (-1 * A11 + 1 * A41) * (1 * B14 + -1 * B24 + 1 * B_X4)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential15) shared(mem_mngr, locker) untied
     {
@@ -2562,7 +2566,7 @@ locker.Decrement();
     }
 #endif
 
-    // M16 = (1.0 * A21 + -1.0 * A32 + 1.0 * A41) * (1.0 * B21 + 1.0 * B23 + -1.0 * B_X2 + 1.0 * B_X4)
+    // M16 = (1 * A21 + -1 * A32 + 1 * A41) * (1 * B21 + 1 * B23 + -1 * B_X2 + 1 * B_X4)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential16) shared(mem_mngr, locker) untied
     {
@@ -2595,7 +2599,7 @@ locker.Decrement();
     }
 #endif
 
-    // M17 = (1.0 * A_X3) * (-1.0 * B_X2 + 1.0 * B_X4 + 1.0 * B_X6)
+    // M17 = (1 * A_X3) * (-1 * B_X2 + 1 * B_X4 + 1 * B_X6)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential17) shared(mem_mngr, locker) untied
     {
@@ -2606,6 +2610,7 @@ locker.Decrement();
     Matrix<Scalar> T17(B11.m(), B11.n());
 #endif
     T_Add17(B_X2, B_X4, B_X6, T17, x, sequential17);
+    M17.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A_X3, T17, M17, total_steps, steps_left - 1, (start_index + 17 - 1) * 26, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     T17.deallocate();
@@ -2621,7 +2626,7 @@ locker.Decrement();
     }
 #endif
 
-    // M18 = (1.0 * A21 + -1.0 * A31 + 1.0 * A41) * (-1.0 * B22 + 1.0 * B23 + 1.0 * B_X3)
+    // M18 = (1 * A21 + -1 * A31 + 1 * A41) * (-1 * B22 + 1 * B23 + 1 * B_X3)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential18) shared(mem_mngr, locker) untied
     {
@@ -2654,7 +2659,7 @@ locker.Decrement();
     }
 #endif
 
-    // M19 = (1.0 * A21 + -1.0 * A31 + -1.0 * A41) * (-1.0 * B13)
+    // M19 = (1 * A21 + -1 * A31 + -1 * A41) * (-1 * B13)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential19) shared(mem_mngr, locker) untied
     {
@@ -2681,7 +2686,7 @@ locker.Decrement();
     }
 #endif
 
-    // M20 = (1.0 * A_X5) * (1.0 * B12 + 1.0 * B22 + -1.0 * B_X2 + -1.0 * B_X6)
+    // M20 = (1 * A_X5) * (1 * B12 + 1 * B22 + -1 * B_X2 + -1 * B_X6)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential20) shared(mem_mngr, locker) untied
     {
@@ -2692,6 +2697,7 @@ locker.Decrement();
     Matrix<Scalar> T20(B11.m(), B11.n());
 #endif
     T_Add20(B12, B22, B_X2, B_X6, T20, x, sequential20);
+    M20.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A_X5, T20, M20, total_steps, steps_left - 1, (start_index + 20 - 1) * 26, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     T20.deallocate();
@@ -2707,7 +2713,7 @@ locker.Decrement();
     }
 #endif
 
-    // M21 = (-1.0 * A21 + 1.0 * A_X2 + 1.0 * A_X5 + 1.0 * A_X6) * (1.0 * B23 + 1.0 * B_X3 + 1.0 * B_X5)
+    // M21 = (-1 * A21 + 1 * A_X2 + 1 * A_X5 + 1 * A_X6) * (1 * B23 + 1 * B_X3 + 1 * B_X5)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential21) shared(mem_mngr, locker) untied
     {
@@ -2740,7 +2746,7 @@ locker.Decrement();
     }
 #endif
 
-    // M22 = (1.0 * A22) * (-1.0 * B_X2 + -1.0 * B_X6)
+    // M22 = (1 * A22) * (-1 * B_X2 + -1 * B_X6)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential22) shared(mem_mngr, locker) untied
     {
@@ -2751,6 +2757,7 @@ locker.Decrement();
     Matrix<Scalar> T22(B11.m(), B11.n());
 #endif
     T_Add22(B_X2, B_X6, T22, x, sequential22);
+    M22.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A22, T22, M22, total_steps, steps_left - 1, (start_index + 22 - 1) * 26, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     T22.deallocate();
@@ -2766,7 +2773,7 @@ locker.Decrement();
     }
 #endif
 
-    // M23 = (1.0 * A22 + -1.0 * A32 + -1.0 * A42) * (-1.0 * B23)
+    // M23 = (1 * A22 + -1 * A32 + -1 * A42) * (-1 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential23) shared(mem_mngr, locker) untied
     {
@@ -2793,7 +2800,7 @@ locker.Decrement();
     }
 #endif
 
-    // M24 = (1.0 * A21 + 1.0 * A22 + -1.0 * A_X5 + -1.0 * A_X6) * (1.0 * B22 + -1.0 * B23)
+    // M24 = (1 * A21 + 1 * A22 + -1 * A_X5 + -1 * A_X6) * (1 * B22 + -1 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential24) shared(mem_mngr, locker) untied
     {
@@ -2826,7 +2833,7 @@ locker.Decrement();
     }
 #endif
 
-    // M25 = (-0.5 * A21 + 0.5 * A31 + -0.5 * A41 + -1.0 * A42) * (1.0 * B23 + 1.0 * B_X4)
+    // M25 = (-.5 * A21 + .5 * A31 + -.5 * A41 + -1 * A42) * (1 * B23 + 1 * B_X4)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential25) shared(mem_mngr, locker) untied
     {
@@ -2859,7 +2866,7 @@ locker.Decrement();
     }
 #endif
 
-    // M26 = (1.0 * A21 + -1.0 * A22) * (-1.0 * B_X2)
+    // M26 = (1 * A21 + -1 * A22) * (-1 * B_X2)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential26) shared(mem_mngr, locker) untied
     {
