@@ -147,7 +147,7 @@ void S_Add7(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<S
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(x) * dataS1[i + j * strideS1] + Scalar(-2e2) * dataS2[i + j * strideS2] + Scalar(1.0 / (x * x)) * dataS3[i + j * strideS3] + Scalar(-(1.0 / (x))) * dataS4[i + j * strideS4];
+            dataC[i + j * strideC] = Scalar(x) * dataS1[i + j * strideS1] + Scalar(-(2.0 * (x * x))) * dataS2[i + j * strideS2] + Scalar(1.0 / (x * x)) * dataS3[i + j * strideS3] + Scalar(-(1.0 / (x))) * dataS4[i + j * strideS4];
         }
     }
 }
@@ -423,7 +423,7 @@ void T_Add1(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<S
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataT1[i + j * strideT1] + Scalar(x) * dataT2[i + j * strideT2] + Scalar(1.0 / (x)) * dataT3[i + j * strideT3] + Scalar(1.0 / (x * x)) * dataT4[i + j * strideT4] + Scalar(2e3) * dataT5[i + j * strideT5];
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] + Scalar(x) * dataT2[i + j * strideT2] + Scalar(1.0 / (x)) * dataT3[i + j * strideT3] + Scalar(1.0 / (x * x)) * dataT4[i + j * strideT4] + Scalar(2.0 * (x * x * x)) * dataT5[i + j * strideT5];
         }
     }
 }
@@ -733,7 +733,7 @@ void T_Add17(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = Scalar(-(x)) * dataT1[i + j * strideT1] + Scalar(x * x * x) * dataT2[i + j * strideT2] + Scalar(1.0 / (x)) * dataT3[i + j * strideT3] + Scalar(-2e3) * dataT4[i + j * strideT4];
+            dataC[i + j * strideC] = Scalar(-(x)) * dataT1[i + j * strideT1] + Scalar(x * x * x) * dataT2[i + j * strideT2] + Scalar(1.0 / (x)) * dataT3[i + j * strideT3] + Scalar(-(2.0 * (x * x * x))) * dataT4[i + j * strideT4];
         }
     }
 }
@@ -1287,7 +1287,7 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
 
 
 
-    // M1 = (x * A11 + -(x * x * x) * A13 + 1.0 / (x) * A31 + 1.0 / (x * x) * A33) * (1 * B11 + x * B12 + 1.0 / (x) * B21 + 1.0 / (x * x) * B31 + 2e3 * B33)
+    // M1 = (x * A11 + -(x * x * x) * A13 + 1.0 / (x) * A31 + 1.0 / (x * x) * A33) * (1 * B11 + x * B12 + 1.0 / (x) * B21 + 1.0 / (x * x) * B31 + 2.0 * (x * x * x) * B33)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential1) shared(mem_mngr, locker) untied
     {
@@ -1485,7 +1485,7 @@ locker.Decrement();
     }
 #endif
 
-    // M7 = (x * A11 + -2e2 * A12 + 1.0 / (x * x) * A31 + -(1.0 / (x)) * A32) * (x * B11 + x * x * x * B13 + 1.0 / (x) * B21)
+    // M7 = (x * A11 + -(2.0 * (x * x)) * A12 + 1.0 / (x * x) * A31 + -(1.0 / (x)) * A32) * (x * B11 + x * x * x * B13 + 1.0 / (x) * B21)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential7) shared(mem_mngr, locker) untied
     {
@@ -1791,7 +1791,7 @@ locker.Decrement();
     }
 #endif
 
-    // M17 = (1.0 / (x) * A31) * (-(x) * B12 + x * x * x * B13 + 1.0 / (x) * B21 + -2e3 * B33)
+    // M17 = (1.0 / (x) * A31) * (-(x) * B12 + x * x * x * B13 + 1.0 / (x) * B21 + -(2.0 * (x * x * x)) * B33)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential17) shared(mem_mngr, locker) untied
     {

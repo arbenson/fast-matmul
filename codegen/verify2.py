@@ -13,47 +13,47 @@ class Number:
                 try:
                     self.val[0] = int(arg1)
                 except:
-                    if arg1 == "e":
+                    if arg1 == "x":
                         self.val[1] = 1
-                    elif arg1 == "ei":
+                    elif arg1 == "xi":
                         self.val[-1] = 1
-                    elif arg1 == "-e":
+                    elif arg1 == "-x":
                         self.val[1] = -1
-                    elif arg1 == "-ei":
+                    elif arg1 == "-xi":
                         self.val[-1] = -1
-                    elif arg1 == "e2":
+                    elif arg1 == "x2":
                         self.val[2] = 1
-                    elif arg1 == "-e2":
+                    elif arg1 == "-x2":
                         self.val[2] = -1
-                    elif arg1 == "e2i":
+                    elif arg1 == "x2i":
                         self.val[-2] = 1
-                    elif arg1 == "-e2i":
+                    elif arg1 == "-x2i":
                         self.val[-2] = -1
-                    elif arg1 == "-2e2":
+                    elif arg1 == "-2x2":
                         self.val[2] = -2
-                    elif arg1 == "e3":
+                    elif arg1 == "x3":
                         self.val[3] = 1
-                    elif arg1 == "-e3":
+                    elif arg1 == "-x3":
                         self.val[3] = -1
-                    elif arg1 == "2e3":
+                    elif arg1 == "2x3":
                         self.val[3] = 2
-                    elif arg1 == "-2e3":
+                    elif arg1 == "-2x3":
                         self.val[3] = -2
-                    elif arg1 == "e4":
+                    elif arg1 == "x4":
                         self.val[4] = 1
-                    elif arg1 == "(1+-e3)":
+                    elif arg1 == "(1+-x3)":
                         self.val[0] = 1
                         self.val[3] = -1
-                    elif arg1 == "(e+-e2)":
+                    elif arg1 == "(x+-x2)":
                         self.val[1] = 1
                         self.val[2] = -1
-                    elif arg1 == "(-e2+-e3)":
+                    elif arg1 == "(-x2+-x3)":
                         self.val[2] = -1
                         self.val[3] = -1
-                    elif arg1 == "(-e+e2)":
+                    elif arg1 == "(-x+x2)":
                         self.val[1] = -1
                         self.val[2] = 1
-                    elif arg1 == "(e+-e4)":
+                    elif arg1 == "(x+-x4)":
                         self.val[1] = 1
                         self.val[4] = -1
                     else:
@@ -111,22 +111,22 @@ class Number:
             return "1"
         if self.exacteq(Number("-1")):
             return "-1"
-        if self.exacteq(Number("e")):
-            return "e"
-        if self.exacteq(Number("-e")):
-            return "-e"
-        if self.exacteq(Number("ei")):
-            return "ei"
-        if self.exacteq(Number("-ei")):
-            return "-ei"
-        if self.exacteq(Number("e2")):
-            return "e2"
-        if self.exacteq(Number("-e2")):
-            return "-e2"
-        if self.exacteq(Number("e2i")):
-            return "e2i"
-        if self.exacteq(Number("-e2i")):
-            return "-e2i"
+        if self.exacteq(Number("x")):
+            return "x"
+        if self.exacteq(Number("-x")):
+            return "-x"
+        if self.exacteq(Number("xi")):
+            return "xi"
+        if self.exacteq(Number("-xi")):
+            return "-xi"
+        if self.exacteq(Number("x2")):
+            return "x2"
+        if self.exacteq(Number("-x2")):
+            return "-x2"
+        if self.exacteq(Number("x2i")):
+            return "x2i"
+        if self.exacteq(Number("-x2i")):
+            return "-x2i"
         return str(self.orig)
 
 
