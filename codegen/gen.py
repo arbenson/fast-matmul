@@ -104,7 +104,7 @@ def parse_coeff(coeff):
     coeff = coeff.strip()
     # First try to convert to float
     try:
-        coeff = float(coeff)
+        val = float(coeff)
         return coeff
     except:
         pass
@@ -114,11 +114,23 @@ def parse_coeff(coeff):
         # Coeff is like 'x'.  We will use 'x' instead of whatever is provided.
         # For now, this means that we only support one paramterized coefficient.
         return 'x'
+    elif coeff[0] == '(':
+        assert(coeff[-1] == ')')
+        expr = coeff[1:-1].split('+')
+        return '(' + ' + '.join([parse_coeff(e) for e in expr]) + ')'
     elif coeff[0] == '-':
         return '-(%s)' % parse_coeff(coeff[1:])
     elif coeff[-1] == 'i':
         return '1.0 / (%s)' % parse_coeff(coeff[:-1])
     else:
+        # Test for a multiplier out in front
+        try:
+            mult = float(coeff[0])
+            return '%s * (%s)' % (mult, parse_coeff(coeff[1:]))
+        except:
+            pass
+
+        # Test for an exponent
         try:
             exp = int(coeff[-1])
             return ' * '.join([parse_coeff(coeff[:-1]) for i in xrange(exp)])
@@ -590,11 +602,11 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
     a_nonzero_coeffs = filter(is_nonzero, a_coeffs)
     b_nonzero_coeffs = filter(is_nonzero, b_coeffs)
     if len(a_nonzero_coeffs) == 1 and a_nonzero_coeffs[0] != 1:
-        write_line(header, 1, '%s.UpdateMultiplier(Scalar(%d));' % (res_mat,
+        write_line(header, 1, '%s.UpdateMultiplier(Scalar(%s));' % (res_mat,
                                                                     a_nonzero_coeffs[0]))
 
     if len(b_nonzero_coeffs) == 1 and b_nonzero_coeffs[0] != 1:
-        write_line(header, 1, '%s.UpdateMultiplier(Scalar(%d));' % (res_mat,
+        write_line(header, 1, '%s.UpdateMultiplier(Scalar(%s));' % (res_mat,
                                                                     b_nonzero_coeffs[0]))
 
     def subblock_name(coeffs, mat_name, tmp_name, mat_dims):
@@ -857,7 +869,7 @@ def main():
     try:
         coeff_file = sys.argv[1]
         dims = tuple([int(d) for d in sys.argv[2].split(',')])
-        outfile = 'output/fast.hpp'
+        outfile = 'fast.hpp'
         if len(sys.argv) > 3:
             outfile = sys.argv[3]
 

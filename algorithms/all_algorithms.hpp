@@ -28,7 +28,7 @@
 #include "fast252_18_99.hpp"
 
 // Other fast algorithms and classical algorithms
-#include "bini322.hpp"
+#include "bini322_10_52_approx.hpp"
 #include "classical222.hpp"
 #include "classical423.hpp"
 #include "classical333.hpp"
@@ -51,7 +51,7 @@
 // All of the algorithms
 enum {
   MKL,
-  BINI322,
+  BINI322_10_52_APPROX,
   CLASSICAL222,
   CLASSICAL423,
   CLASSICAL333,
@@ -99,7 +99,7 @@ double RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
     // Just run the classical version with zero steps of recursion.
     return classical222_8_24::FastMatmul(A, B, C1, 0);
     break;
-  case BINI322:
+  case BINI322_10_52_APPROX:
     // These values of x provide the minimum error, on average.
     switch (num_steps) {
     case 2:
@@ -117,7 +117,7 @@ double RunAlgorithm(int algorithm, Matrix<Scalar>& A, Matrix<Scalar>& B,
       x = 1e-8;
       break;
     }
-    return bini322::FastMatmul(A, B, C1, num_steps, x);
+    return bini322_10_52_approx::FastMatmul(A, B, C1, num_steps, x);
     break;
   case SCHONHAGE333_21_117_APPROX:
     // These values of x provide the minimum error, on average.
@@ -248,8 +248,8 @@ std::string Alg2Str(int algorithm) {
   switch (algorithm) {
   case MKL:
     return "MKL";
-  case BINI322:
-    return "BINI322";
+  case BINI322_10_52_APPROX:
+    return "BINI322_10_52_APPROX";
   case CLASSICAL222:
     return "CLASSICAL222";
   case CLASSICAL423:

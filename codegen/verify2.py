@@ -5,6 +5,7 @@ from collections import defaultdict
 # internal storage is a dict from powers of epsilon to coefficients
 class Number:
     def __init__( self, arg1, arg2=None ):
+        self.orig = arg1
         self.val = defaultdict(lambda:0)
         if arg2 == None:
             if type(arg1) == type( "1" ):
@@ -28,6 +29,33 @@ class Number:
                         self.val[-2] = 1
                     elif arg1 == "-e2i":
                         self.val[-2] = -1
+                    elif arg1 == "-2e2":
+                        self.val[2] = -2
+                    elif arg1 == "e3":
+                        self.val[3] = 1
+                    elif arg1 == "-e3":
+                        self.val[3] = -1
+                    elif arg1 == "2e3":
+                        self.val[3] = 2
+                    elif arg1 == "-2e3":
+                        self.val[3] = -2
+                    elif arg1 == "e4":
+                        self.val[4] = 1
+                    elif arg1 == "(1+-e3)":
+                        self.val[0] = 1
+                        self.val[3] = -1
+                    elif arg1 == "(e+-e2)":
+                        self.val[1] = 1
+                        self.val[2] = -1
+                    elif arg1 == "(-e2+-e3)":
+                        self.val[2] = -1
+                        self.val[3] = -1
+                    elif arg1 == "(-e+e2)":
+                        self.val[1] = -1
+                        self.val[2] = 1
+                    elif arg1 == "(e+-e4)":
+                        self.val[1] = 1
+                        self.val[4] = -1
                     else:
                         print "Not supported", arg1
                         raise NotImplemented
@@ -99,7 +127,8 @@ class Number:
             return "e2i"
         if self.exacteq(Number("-e2i")):
             return "-e2i"
-        return "(...)"
+        return str(self.orig)
+
         
 # the sizes; we check mxnxk matmul with q products, assuming row-major ordering.
 m = int(sys.argv[1])

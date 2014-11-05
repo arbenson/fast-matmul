@@ -447,11 +447,13 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
 
 
 
-    // M1 = (1.0 * A11) * (1.0 * B11)
+    // M1 = (1 * A11) * (1 * B11)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential1) shared(mem_mngr, locker) untied
     {
 #endif
+    M1.UpdateMultiplier(Scalar(1));
+    M1.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A11, B11, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 8, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif
@@ -466,11 +468,13 @@ locker.Decrement();
     }
 #endif
 
-    // M2 = (1.0 * A12) * (1.0 * B21)
+    // M2 = (1 * A12) * (1 * B21)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential2) shared(mem_mngr, locker) untied
     {
 #endif
+    M2.UpdateMultiplier(Scalar(1));
+    M2.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A12, B21, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 8, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif
@@ -485,11 +489,13 @@ locker.Decrement();
     }
 #endif
 
-    // M3 = (1.0 * A11) * (1.0 * B12)
+    // M3 = (1 * A11) * (1 * B12)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential3) shared(mem_mngr, locker) untied
     {
 #endif
+    M3.UpdateMultiplier(Scalar(1));
+    M3.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A11, B12, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 8, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif
@@ -504,11 +510,13 @@ locker.Decrement();
     }
 #endif
 
-    // M4 = (1.0 * A12) * (1.0 * B22)
+    // M4 = (1 * A12) * (1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential4) shared(mem_mngr, locker) untied
     {
 #endif
+    M4.UpdateMultiplier(Scalar(1));
+    M4.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A12, B22, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 8, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif
@@ -523,11 +531,13 @@ locker.Decrement();
     }
 #endif
 
-    // M5 = (1.0 * A21) * (1.0 * B11)
+    // M5 = (1 * A21) * (1 * B11)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential5) shared(mem_mngr, locker) untied
     {
 #endif
+    M5.UpdateMultiplier(Scalar(1));
+    M5.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A21, B11, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 8, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif
@@ -542,11 +552,13 @@ locker.Decrement();
     }
 #endif
 
-    // M6 = (1.0 * A22) * (1.0 * B21)
+    // M6 = (1 * A22) * (1 * B21)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential6) shared(mem_mngr, locker) untied
     {
 #endif
+    M6.UpdateMultiplier(Scalar(1));
+    M6.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A22, B21, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 8, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif
@@ -561,11 +573,13 @@ locker.Decrement();
     }
 #endif
 
-    // M7 = (1.0 * A21) * (1.0 * B12)
+    // M7 = (1 * A21) * (1 * B12)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential7) shared(mem_mngr, locker) untied
     {
 #endif
+    M7.UpdateMultiplier(Scalar(1));
+    M7.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A21, B12, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 8, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif
@@ -580,11 +594,13 @@ locker.Decrement();
     }
 #endif
 
-    // M8 = (1.0 * A22) * (1.0 * B22)
+    // M8 = (1 * A22) * (1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential8) shared(mem_mngr, locker) untied
     {
 #endif
+    M8.UpdateMultiplier(Scalar(1));
+    M8.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A22, B22, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 8, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
 #endif

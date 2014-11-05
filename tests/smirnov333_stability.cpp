@@ -1,5 +1,5 @@
 #include "linalg.hpp"
-#include "bini322_10_52_approx.hpp"
+#include "smirnov333_20_182_approx.hpp"
 #include "float.h"
 #include "timing.hpp"
 
@@ -7,9 +7,9 @@
 
 int main(int argc, char **argv) {
   int m = 90;
-  int k = 80;
-  int n = 80;
-  int numsteps = 2;
+  int k = 90;
+  int n = 90;
+  int numsteps = 1;
 
   Matrix<double> A = RandomMatrix<double>(m, k);
   Matrix<double> B = RandomMatrix<double>(k, n);
@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 	double lambda = DBL_EPSILON;
 	std::cout << numsteps << std::endl;
 	while (lambda < 1) {
-	  bini322_10_52_approx::FastMatmul(A, B, C2, numsteps, lambda);
+	  smirnov333_20_182_approx::FastMatmul(A, B, C2, numsteps, lambda);
 	  std::cout << lambda << ", " << MaxRelativeDiff(C1, C2) << "; ";
 	  lambda *= 2;
 	}
