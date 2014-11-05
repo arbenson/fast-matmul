@@ -1,7 +1,6 @@
-import convert
-import gen
-import subexpr_elim
 import sys
+from convert import read_coeffs
+from subexpr_elim import transpose
 from verify2 import Number
 
 '''
@@ -21,9 +20,9 @@ def compute_phi(coeffs):
         where u_i^{(r)}, v_j^{(r)}, and w_k^{(r)} are entries of the rth column of U, V, and W.
     '''
 
-    U = subexpr_elim.transpose(coeffs[0])
-    V = subexpr_elim.transpose(coeffs[1])
-    W = subexpr_elim.transpose(coeffs[2])
+    U = transpose(coeffs[0])
+    V = transpose(coeffs[1])
+    W = transpose(coeffs[2])
     
     def smallest_exponent(u, v, w):
         def min_exp(num):
@@ -92,7 +91,7 @@ def main():
     except:
         raise Exception('USAGE: python counts.py coeff_file m,k,n')
 
-    coeffs = convert.read_coeffs(coeff_file)
+    coeffs = read_coeffs(coeff_file)
 
     phi = compute_phi(coeffs)
     print 'phi   =', phi
@@ -104,14 +103,14 @@ def main():
     print 'omega =', omega
 
     # One recursive step
-    print 'optimal epsilon (1 recursive step)  = ', 2.0 ** -(53 / (float(phi + sigma)))
-    print 'error (1 recursive step)            = ', 2.0 ** -(53 / omega)
+    print 'optimal lambda (1 recursive step)  = ', 2.0 ** -(53 / (float(phi + sigma)))
+    print 'error (1 recursive step)           = ', 2.0 ** -(53 / omega)
 
     # Two recursive steps
     phi *= 2
     omega = 1.0 + float(phi) / sigma
-    print 'optimal epsilon (2 recursive steps) = ', 2.0 ** -(53 / (float(phi + sigma)))
-    print 'error (2 recursive steps)           = ', 2.0 ** -(53 / omega)
+    print 'optimal lambda (2 recursive steps) = ', 2.0 ** -(53 / (float(phi + sigma)))
+    print 'error (2 recursive steps)          = ', 2.0 ** -(53 / omega)
     
     
 if __name__ == '__main__':

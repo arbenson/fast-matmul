@@ -1,7 +1,8 @@
-import convert
-import gen
-import subexpr_elim
 import sys
+from convert import read_coeffs
+from gen import num_nonzero, is_nonzero
+from subexpr_elim import transpose
+
 
 '''
 This script takes a coefficient file (not eliminated) and computes the
@@ -18,16 +19,16 @@ def main():
     except:
         raise Exception('USAGE: python counts.py coeff_file m,k,n')
 
-    coeffs = convert.read_coeffs(coeff_file)
+    coeffs = read_coeffs(coeff_file)
 
     # Using the notation of the Bini and Lottis paper
-    a_vec = [gen.num_nonzero(row) for row in subexpr_elim.transpose(coeffs[0])]
-    b_vec = [gen.num_nonzero(row) for row in subexpr_elim.transpose(coeffs[1])]
+    a_vec = [num_nonzero(row) for row in transpose(coeffs[0])]
+    b_vec = [num_nonzero(row) for row in transpose(coeffs[1])]
 
     def stability(row):
         val = 0
         for i, coeff in enumerate(row):
-            if gen.is_nonzero(coeff):
+            if is_nonzero(coeff):
                 val += a_vec[i] * b_vec[i]
         return val
 
