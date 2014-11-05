@@ -7,7 +7,7 @@ import subexpr_elim
 This script takes a coefficient file (eliminated or not) and counts the number
 of additions, read, and writes performed by the algorithm. Example usage:
 
-     python counts.py eliminated/grey333-23-125 3,3,3
+     python counts.py algorithms/eliminated/grey333-23-125 3,3,3
 
 This produces the following output:
 
