@@ -131,7 +131,7 @@ void SquareBenchmark(int which) {
     BenchmarkSet(m_vals, m_vals, m_vals, num_levels_MKL, MKL);
     break;
   case 1:
-    BenchmarkSet(m_vals, m_vals, m_vals, num_levels, BINI322);
+    BenchmarkSet(m_vals, m_vals, m_vals, num_levels, BINI322_10_52_APPROX);
     break;
   case 2:
     BenchmarkSet(m_vals, m_vals, m_vals, num_levels, STRASSEN);
@@ -245,7 +245,7 @@ void OuterProductBenchmark(int which) {
     BenchmarkSet(m_vals, k_vals, m_vals, num_levels, STRASSEN);
     break;
   case 7:
-    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, BINI322);
+    BenchmarkSet(m_vals, k_vals, m_vals, num_levels, BINI322_10_52_APPROX);
     break;
   case 8:
     BenchmarkSet(m_vals, k_vals, m_vals, num_levels, SCHONHAGE333_21_117_APPROX);
@@ -302,7 +302,7 @@ void TSSquareBenchmark(int which) {
     BenchmarkSet(m_vals, k_vals, k_vals, num_levels, STRASSEN);
     break;
   case 7:
-    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, BINI322);
+    BenchmarkSet(m_vals, k_vals, k_vals, num_levels, BINI322_10_52_APPROX);
     break;
   case 8:
     BenchmarkSet(m_vals, k_vals, k_vals, num_levels, SCHONHAGE333_21_117_APPROX);

@@ -1,5 +1,5 @@
 #include "linalg.hpp"
-#include "bini322.hpp"
+#include "bini322_10_52_approx.hpp"
 #include "float.h"
 #include "timing.hpp"
 
@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 	double lambda = DBL_EPSILON;
 	std::cout << numsteps << std::endl;
 	while (lambda < 1) {
-	  bini322::FastMatmul(A, B, C2, numsteps, lambda);
+	  bini322_10_52_approx::FastMatmul(A, B, C2, numsteps, lambda);
 	  std::cout << lambda << ", " << MaxRelativeDiff(C1, C2) << "; ";
 	  lambda *= 2;
 	}

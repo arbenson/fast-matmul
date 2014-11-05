@@ -1,5 +1,5 @@
 #include "linalg.hpp"
-#include "bini322.hpp"
+#include "bini322_10_52_approx.hpp"
 #include "timing.hpp"
 
 #include <iostream>
@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
   Matrix<double> C1(m, n), C2(m, n);
 
   Time([&] { MatMul(A, B, C1); }, "Classical gemm");
-  Time([&] { bini322::FastMatmul(A, B, C2, numsteps, 1e-4); }, "Bini");
+  Time([&] { bini322_10_52_approx::FastMatmul(A, B, C2, numsteps, 1e-4); }, "Bini");
 
   // Test for correctness.
   std::cout << "Maximum relative difference: " << MaxRelativeDiff(C1, C2) << std::endl;
