@@ -44,6 +44,15 @@ class Number:
                     elif arg1 == "(1+-x3)":
                         self.val[0] = 1
                         self.val[3] = -1
+                    elif arg1 == "(1+x2)":
+                        self.val[0] = 1
+                        self.val[2] = 1
+                    elif arg1 == "(x+x2)":
+                        self.val[1] = 1
+                        self.val[2] = 1
+                    elif arg1 == "(x2+x3)":
+                        self.val[2] = 1
+                        self.val[3] = 1
                     elif arg1 == "(x+-x2)":
                         self.val[1] = 1
                         self.val[2] = -1
