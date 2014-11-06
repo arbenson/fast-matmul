@@ -73,8 +73,7 @@ def compute_sigma(coeffs, dims):
                             sum = Number("0")
                             for i in xrange(q):
                                 sum += Number(U[rU][i]) * Number(V[rV][i]) * Number(W[rW][i])
-
-                            errors = filter(lambda keyval: keyval[0] > 0 and keyval[1] > 0,
+                            errors = filter(lambda keyval: keyval[0] > 0 and keyval[1] != 0,
                                             sum.val.items())
                             if len(errors) > 0:
                                 smallest = min([keyval[0] for keyval in errors])
