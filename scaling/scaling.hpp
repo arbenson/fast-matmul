@@ -1,10 +1,13 @@
+#ifndef _SCALING_HPP_
+#define _SCALING_HPP_
+
 #include <cmath>
 #include "linalg.hpp"
 
 
 // Scale the rows of A by the vector specified in scales.
 template <typename Scalar>
-void RowScale(Matrix<Scalar>& A, std::vector<Scalar> scales) {
+void RowScale(Matrix<Scalar>& A, std::vector<Scalar>& scales) {
     for (int j = 0; j < A.width(); ++j) {
 	for (int i = 0; i < A.height(); ++i) {
 	    A(i, j) *= scales[i];
@@ -15,7 +18,7 @@ void RowScale(Matrix<Scalar>& A, std::vector<Scalar> scales) {
 
 // Scale the columns of A by the vector specified in scales.
 template <typename Scalar>
-void ColScale(Matrix<Scalar>& A, std::vector<Scalar> scales) {
+void ColScale(Matrix<Scalar>& A, std::vector<Scalar>& scales) {
     for (int j = 0; j < A.width(); ++j) {
 	for (int i = 0; i < A.height(); ++i) {
 	    A(i, j) *= scales[j];
@@ -23,9 +26,10 @@ void ColScale(Matrix<Scalar>& A, std::vector<Scalar> scales) {
     }
 }
 
+
 // Get the entry-wise inverse of a vector.
 template <typename Scalar>
-std::vector<Scalar> InverseVector(std::vector<Scalar> vals) {
+std::vector<Scalar> InverseVector(std::vector<Scalar>& vals) {
     std::vector<Scalar> vals_inv(vals.size());
     for (int k = 0; < A.width(); ++k) {
 	vals_inv[k] = 1.0 / vals[k];
@@ -127,3 +131,6 @@ void AlternatingScaling(Matrix<Scalar>& A, Matrix<Scalar>& B, int max_steps,
 	UpdateVals(s_vals, y_vals);
     }
 }
+
+
+#endif  // _SCALING_HPP_
