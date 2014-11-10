@@ -1,10 +1,10 @@
 #include <cmath>
 #include "linalg.hpp"
 
-// Outline of code for alternating scaling.
 
 // Scale the rows of A by the vector specified in scales.
-void RowScale(Matrix<Scalar>& A, std::vector<double> scales) {
+template <typename Scalar>
+void RowScale(Matrix<Scalar>& A, std::vector<Scalar> scales) {
     for (int j = 0; j < A.width(); ++j) {
 	for (int i = 0; i < A.height(); ++i) {
 	    A(i, j) *= scales[i];
@@ -12,8 +12,10 @@ void RowScale(Matrix<Scalar>& A, std::vector<double> scales) {
     }
 }
 
+
 // Scale the columns of A by the vector specified in scales.
-void ColScale(Matrix<Scalar>& A, std::vector<double> scales) {
+template <typename Scalar>
+void ColScale(Matrix<Scalar>& A, std::vector<Scalar> scales) {
     for (int j = 0; j < A.width(); ++j) {
 	for (int i = 0; i < A.height(); ++i) {
 	    A(i, j) *= scales[j];
@@ -22,8 +24,9 @@ void ColScale(Matrix<Scalar>& A, std::vector<double> scales) {
 }
 
 // Get the entry-wise inverse of a vector.
-std::vector<double> InverseVector(std::vector<double> vals) {
-    std::vector<double> vals_inv(vals.size());
+template <typename Scalar>
+std::vector<Scalar> InverseVector(std::vector<Scalar> vals) {
+    std::vector<Scalar> vals_inv(vals.size());
     for (int k = 0; < A.width(); ++k) {
 	vals_inv[k] = 1.0 / vals[k];
     }
@@ -45,6 +48,7 @@ double MaxAbsRow(Matrix<Scalar>& A, int row) {
     return max_val;
 }
 
+
 // Get the maximum absolute column value
 double MaxAbsCol(Matrix<Scalar>& A, int col) {
     assert (0 <= col && col < A.width());
@@ -58,13 +62,14 @@ double MaxAbsCol(Matrix<Scalar>& A, int col) {
     return max_val;
 }
 
+
 // Perform outer scaling on A and B.
 // x_vals and y_vals are set to the scales used for the rows of A and
 // the columns of B, respectively.
 template<typename Scalar>
 void OuterScaling(Matrix<Scalar>& A, Matrix<Scalar>& B,
-		  std::vector<double>& x_vals,
-		  std::vector<double>& y_vals) {
+		  std::vector<Scalar>& x_vals,
+		  std::vector<Scalar>& y_vals) {
     x_vals.resize(A.height(), 0.0);
     y_vals.resize(B.width(), 0.0);
 
@@ -86,7 +91,7 @@ void OuterScaling(Matrix<Scalar>& A, Matrix<Scalar>& B,
 template<typename Scalar>
 void InnerScaling(Matrix<Scalar>& A, Matrix<Scalar>& B) {
     assert(A.width() == B.height());
-    std::vector<double> z_vals(A.width(), 0.0);
+    std::vector<Scalar> z_vals(A.width(), 0.0);
     for (int k = 0; k < A.width(); ++k) {
 	z_vals[k] = sqrt(MaxAbsCol(A, k) / MaxAbsRow(B, k));
     }
@@ -97,22 +102,28 @@ void InnerScaling(Matrix<Scalar>& A, Matrix<Scalar>& B) {
 }
 
 
+// Update the result (C := A * B) with the scaling values.  The r_vals and
+// s_vals are the result of the AlternatingScaling() function.
+template <typename Scalar>
+void PostProcessScaling(Matrix<Scalar>& C, std::vector<Scalar>& r_vals,
+			std::vector<Scalar>& s_vals) {
+    RowScale(C, r_vals);
+    ColScale(C, s_vals);
+}
+
+
 // Perform alternating on the matrices A and B.  This consists of a sequence of
 // alternating steps that each consist of an outer scaling followed by an inner scaling.
 template<typename Scalar>
-void AlternatingScaling(Matrix<Scalar>& A, Matrix<Scalar>& B, int max_steps) {
-    std::vector<double> r_vals(A.height(), 1.0);
-    std::vector<double> s_vals(B.width(), 1.0);
+void AlternatingScaling(Matrix<Scalar>& A, Matrix<Scalar>& B, int max_steps,
+			std::vector<Scalar>& r_vals, std::vector<Scalar>& s_vals) {
+    r_vals.resize(A.height(), 1.0);
+    s_vals.resize(B.width(), 1.0);
 
     for (int i = 0; i < max_steps; ++i) {
-	std::vector<double> x_vals, y_vals;
+	std::vector<Scalar> x_vals, y_vals;
 	OuterScaling(A, B, x_vals, y_vals);
 	UpdateVals(r_vals, x_vals);
 	UpdateVals(s_vals, y_vals);
     }
-
-    // TODO Matrix multiplication call would go here.
-    // C = A * B
-    // RowScale(C, r_vals);
-    // ColScale(C, s_vals);
 }
