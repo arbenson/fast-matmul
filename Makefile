@@ -1,6 +1,6 @@
 include make.incs/make.inc.linux
 
-INCLUDES := -I$(MKL_ROOT)/include -I./algorithms -I./linalg -I./util
+INCLUDES := -I$(MKL_ROOT)/include -I./algorithms -I./linalg -I./util -I./scaling
 MKL_SEQ_LIBS =  -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread
 MKL_PAR_LIBS := -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread
 
