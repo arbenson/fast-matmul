@@ -47,6 +47,7 @@ TESTS_SRC = matmul_tests.cpp \
     schonhage_stability.cpp \
     smirnov333_stability.cpp \
     strassen_scaling.cpp \
+    strassen_bad_case.cpp \
     fast_scaling.cpp
 
 
