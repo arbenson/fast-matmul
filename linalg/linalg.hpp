@@ -215,11 +215,9 @@ void DynamicPeeling(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
 // Streams out all entries in the matrix.
 template <typename Scalar>
 std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
-  Scalar *data = mat.data();
-  int stride = mat.stride();
   for (int i = 0; i < mat.m(); ++i) {
     for (int j = 0; j < mat.n(); ++j) {
-      os << data[i + j * stride] << " ";
+      os << C(i, j) << " ";
     }
     os << std::endl;
   }
@@ -235,8 +233,9 @@ void MatMul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
   assert(A.m() > 0 && A.n() > 0);
   Scalar alpha = C.multiplier();
   blas::Gemm('N', 'N', A.m(), B.n(), A.n(), A.data(), A.stride(), B.data(),
-               B.stride(), C.data(), C.stride(), alpha, beta);
+             B.stride(), C.data(), C.stride(), alpha, beta);
 }
+
 
 // C <-- alpha * A + C.  n is the number of entries.
 template<typename Scalar>
@@ -249,15 +248,11 @@ void AxpyWrap(Scalar *C, Scalar *A, int n, Scalar alpha) {
 template<typename Scalar>
 double MaxRelativeDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
   assert(A.m() == B.m() && A.n() == B.n());
-  const int strideA = A.stride();
-  const int strideB = B.stride();
-  const Scalar *dataA = A.data();
-  const Scalar *dataB = B.data();
   double max_rel_diff = 0;
   for (int j = 0; j < A.n(); ++j) {
     for (int i = 0; i < A.m(); ++i) {
-      Scalar a = dataA[i + j * strideA];
-      Scalar b = dataB[i + j * strideB];
+      Scalar a = A(i, j);
+      Scalar b = B(i, j);
       Scalar curr_rel_diff = std::abs(a - b) / std::abs(a);
       if (curr_rel_diff > max_rel_diff) {
         max_rel_diff = curr_rel_diff;
@@ -273,15 +268,11 @@ template<typename Scalar>
 double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
   assert(A.m() == B.m() && A.n() == B.n());
   double diff = 0.0;
-  const int strideA = A.stride();
-  const int strideB = B.stride();
-  const Scalar *dataA = A.data();
-  const Scalar *dataB = B.data();
   for (int j = 0; j < A.n(); ++j) {
     for (int i = 0; i < A.m(); ++i) {
-      Scalar a = dataA[i + j * strideA];
-      Scalar b = dataB[i + j * strideB];
-      Scalar local_diff = (a - b);
+      Scalar a = A(i, j);
+      Scalar b = B(i, j);
+      Scalar local_diff = a - b;
       diff += local_diff * local_diff;
     }
   }
@@ -309,17 +300,12 @@ double FrobeniusNorm(Matrix<Scalar>& A) {
 template<typename Scalar>
 void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
   assert(A.m() == C.m() && A.n() == C.n());
-  const int strideA = A.stride();
-  const int strideC = C.stride();
-  const Scalar *dataA = A.data();
-  Scalar *dataC = C.data();
 #ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
   for (int j = 0; j < C.n(); ++j) {
     for (int i = 0; i < C.m(); ++i) {
-      Scalar a = dataA[i + j * strideA];
-      dataC[i + j * strideC] = -a;
+      C(i, j) = -A(i, j);
     }
   }
 }
@@ -329,17 +315,12 @@ void Negate(Matrix<Scalar>& A, Matrix<Scalar>& C) {
 template<typename Scalar>
 void Copy(Matrix<Scalar>& A, Matrix<Scalar>& C) {
   assert(A.m() == C.m() && A.n() == C.n());
-  const int strideA = A.stride();
-  const int strideC = C.stride();
-  const Scalar *dataA = A.data();
-  Scalar *dataC = C.data();
 #ifdef _PARALLEL_
 # pragma omp parallel for collapse(2)
 #endif
   for (int j = 0; j < C.n(); ++j) {
     for (int i = 0; i < C.m(); ++i) {
-      Scalar a = dataA[i + j * strideA];
-      dataC[i + j * strideC] = a;
+      C(i, j) = A(i, j);
     }
   }
 }
@@ -350,78 +331,9 @@ template <typename Scalar>
 void Copy(Matrix<Scalar>& A1,
           Scalar alpha1,
           Matrix<Scalar>& C) {
-  const int strideA1 = A1.stride();
-  Scalar *dataA1 = A1.data();
-
-  const int strideC = C.stride();
-  Scalar *dataC = C.data();
-
   for (int j = 0; j < C.n(); ++j) {
-    const Scalar *dataA_curr = dataA1 + j * strideA1;
-    Scalar *dataC_curr = dataC + j * strideC;
     for (int i = 0; i < C.m(); ++i) {
-      dataC_curr[i] = alpha1 * dataA_curr[i];
-    }
-  }
-}
-
-
-// C += alpha1 * A1
-template <typename Scalar>
-void UpdateAdd(Matrix<Scalar>& A1,
-               Scalar alpha1,
-               Matrix<Scalar>& C) {
-  const int strideA1 = A1.stride();
-  Scalar *dataA1 = A1.data();
-
-  const int strideC = C.stride();
-  Scalar *dataC = C.data();
-
-  for (int j = 0; j < C.n(); ++j) {
-    const Scalar *dataA_curr = dataA1 + j * strideA1;
-    Scalar *dataC_curr = dataC + j * strideC;
-    for (int i = 0; i < C.m(); ++i) {
-      dataC_curr[i] += alpha1 * dataA_curr[i];
-    }
-  }
-}
-
-
-// C += A1
-template <typename Scalar>
-void UpdateAdd(Matrix<Scalar>& A1,
-               Matrix<Scalar>& C) {
-  const int strideA1 = A1.stride();
-  Scalar *dataA1 = A1.data();
-
-  const int strideC = C.stride();
-  Scalar *dataC = C.data();
-
-  for (int j = 0; j < C.n(); ++j) {
-    const Scalar *dataA_curr = dataA1 + j * strideA1;
-    Scalar *dataC_curr = dataC + j * strideC;
-    for (int i = 0; i < C.m(); ++i) {
-      dataC_curr[i] += dataA_curr[i];
-    }
-  }
-}
-
-
-// C -= A1
-template <typename Scalar>
-void UpdateSub(Matrix<Scalar>& A1,
-               Matrix<Scalar>& C) {
-  const int strideA1 = A1.stride();
-  Scalar *dataA1 = A1.data();
-
-  const int strideC = C.stride();
-  Scalar *dataC = C.data();
-
-  for (int j = 0; j < C.n(); ++j) {
-    const Scalar *dataA_curr = dataA1 + j * strideA1;
-    Scalar *dataC_curr = dataC + j * strideC;
-    for (int i = 0; i < C.m(); ++i) {
-      dataC_curr[i] -= dataA_curr[i];
+      C(i, j) = alpha1 * A1(i, j);
     }
   }
 }
@@ -449,18 +361,15 @@ void UpdateAddDaxpy(Matrix<Scalar>& A1,
 // C := 0
 template <typename Scalar>
 void ZeroOut(Matrix<Scalar>& C) {
-  const int strideC = C.stride();
-  Scalar *dataC = C.data();
-
   for (int j = 0; j < C.n(); ++j) {
     for (int i = 0; i < C.m(); ++i) {
-      dataC[i + j * strideC] = Scalar(0);
+      C(i, j) = Scalar(0);
     }
   }
 }
 
 
-// Generate a matrix with random uniform entries on [0, 1024]
+// Generate a matrix with random uniform entries on [0, 1]
 template <typename Scalar>
 Matrix<Scalar> RandomMatrix(int m, int n) {
   Matrix<Scalar> A(m, n);
@@ -468,28 +377,11 @@ Matrix<Scalar> RandomMatrix(int m, int n) {
   // still slow on some systems.
   for (int j = 0; j < A.n(); ++j) {
     for (int i = 0; i < A.m(); ++i) {
-      double val = static_cast<double>(rand()) / RAND_MAX;
-      A.data()[i + j * A.stride()] = val;
+      A(i, j) =  static_cast<double>(rand()) / RAND_MAX;
     }
   }  
   return A;
 }
 
-
-// Return A^T as a copy.
-template <typename Scalar>
-Matrix<Scalar> TransposedCopy(Matrix<Scalar>& A) {
-  Matrix<Scalar> At(A.n(), A.m());
-  Scalar *A_data = A.data();
-  Scalar *At_data = At.data();
-  int A_stride = A.stride();
-  int At_stride = At.stride();
-  for (int j = 0; j < A.n(); ++j) {
-    for (int i = 0; i < A.m(); ++i) {
-      At_data[j + i * At_stride] = A_data[i + j * A_stride];
-    }
-  }
-  return At;
-}
 
 #endif  // _LINALG_HPP_
