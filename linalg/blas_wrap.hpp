@@ -43,6 +43,11 @@ extern "C" {
   void BLAS_NAME(strmm) (char *side, char *uplo, char *transt, char *diag,
                          int *m, int *n, float *alpha, float *T, int *ldt,
                          float *B, int *ldb);
+
+  double BLAS_NAME(dlange) (char *norm, int *m, int *n, double *A, int *lda,
+                            double *work);
+  float BLAS_NAME(slange) (char *norm, int *m, int *n, float *A, int *lda,
+                           float *work);
 }
 
 
@@ -116,6 +121,33 @@ namespace blas {
     BLAS_NAME(saxpy) (&n, &alpha, A, &incx, C, &incy);
   }
 
+  double Lange(char norm, int m, int n, double *A, int lda) {
+    double *work = NULL;
+    // Only need workspace for the infinity norm.
+    bool is_inf_norm = (norm == 'I' || norm == 'i');
+    if (is_inf_norm) {
+      work = new double[m];
+    }
+    double ret = BLAS_NAME(dlange) (&norm, &m, &n, A, &lda, work);
+    if (is_inf_norm) {
+      delete [] work;
+    }
+    return ret;
+  }
+
+  float Lange (char norm, int m, int n, float *A, int lda) {
+    float *work = NULL;
+    // Only need workspace for the infinity norm.
+    bool is_inf_norm = (norm == 'I' || norm == 'i');
+    if (is_inf_norm) {
+      work = new float[m];
+    }
+    float ret = BLAS_NAME(slange) (&norm, &m, &n, A, &lda, work);
+    if (is_inf_norm) {
+      delete [] work;
+    }
+    return ret;
+  }
 }  // end namespace blas
 
 
