@@ -284,11 +284,9 @@ double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
 template<typename Scalar>
 double FrobeniusNorm(Matrix<Scalar>& A) {
   double norm = 0.0;
-  const int strideA = A.stride();
-  const Scalar *dataA = A.data();
   for (int j = 0; j < A.n(); ++j) {
     for (int i = 0; i < A.m(); ++i) {
-      Scalar a = dataA[i + j * strideA];
+      Scalar a = A(i, j);
       norm += a * a;
     }
   }
