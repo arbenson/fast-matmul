@@ -17,7 +17,7 @@ else
   LDLIBS := $(MKL_SEQ_LIBS) 
 endif
 
-vpath %.cpp examples benchmarks tests
+vpath %.cpp examples benchmarks tests scaling
 
 EXAMPLES_SRC = bini322.cpp \
     classical.cpp \
@@ -46,7 +46,8 @@ TESTS_SRC = matmul_tests.cpp \
     bini_stability.cpp \
     schonhage_stability.cpp \
     smirnov333_stability.cpp \
-    strassen_scaling.cpp
+    strassen_scaling.cpp \
+    fast_scaling.cpp
 
 
 OBJ_DIR = obj
