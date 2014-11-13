@@ -4,11 +4,25 @@
 // Grey Ballard
 // ************************************************************************
 
+
+#include <stddef.h> // NULL
+#include <stdio.h> // printf, stdout, setbuf
+#include <string.h> // strcmp
+#include <math.h> // sqrt, fabs
+#include <stdlib.h> // malloc, calloc, free
+
+#ifdef CPLX
+#include "complex_wrapper.h"
+#endif
+
 #include "aux.h"
-#include "RandomMT.h"
+// #include "RandomMT.h"
+#include "RandomMT_C.h"
 #include "kernels.h"
 
-void usage(char **argv)
+void usage(char const* const*);
+
+void usage(char const* const* argv)
 {
 	printf("Usage: %s [options]\n",argv[0]);
 	printf("options:\n");
@@ -27,8 +41,8 @@ void usage(char **argv)
 	printf("	--tol <float>             stopping tolerance (change in residual norm squared)\n");
 	printf("	--seed <int>              seed for random number generator used in initial guess\n");
 	printf("	--numseeds <int>          number of seeds to try\n");
-    printf("	--input <string>          input file for initial guess (overrides seed/numseeds)\n");
-    printf("	--output <string>         output file for final solution\n");
+  printf("	--input <string>          input file for initial guess (overrides seed/numseeds)\n");
+  printf("	--output <string>         output file for final solution\n");
 	printf("	--alpha <float>           regularization weighting parameter\n");
 	printf("	--maxval <float>          maximum value of solution entries\n");
 	printf("	--M <int>                 regularization parameter for max number of nonzeros sought in factor matrices (same for all 3)\n");
@@ -57,7 +71,7 @@ int main(int argc, char* argv[])
 	prm.matDims[1] = read_int(argc, argv, "--k", 2);
 	prm.matDims[2] = read_int(argc, argv, "--n", 2);
 	prm.rank = read_int(argc, argv, "--rank", 7);
-	prm.method = read_string(argc, argv, "--method", (char *)"als");
+	prm.method = read_string(argc, argv, "--method", "als");
 	int maxIters = read_int(argc, argv, "--maxiters", 1000);
 	int maxSecs = read_int(argc, argv, "--maxsecs", 1000);
 	double tol = read_double(argc, argv, "--tol", 1e-8);
@@ -81,8 +95,8 @@ int main(int argc, char* argv[])
 		prm.M[1] = read_int(argc, argv, "--M1", -1);
 		prm.M[2] = read_int(argc, argv, "--M2", -1);
 	}
-	char * infile = read_string(argc, argv, "--input", NULL);
-	char * outfile = read_string(argc, argv, "--output", NULL);
+	char const* infile = read_string(argc, argv, "--input", NULL);
+	char const* outfile = read_string(argc, argv, "--output", NULL);
 
 	if (verbose) {
 		setbuf(stdout, NULL);
@@ -137,9 +151,9 @@ int main(int argc, char* argv[])
 		prm.mtCols[i] = prm.mkn2 / prm.dims[i];
 
 	// Construct three matricizations of matmul tensor
-	prm.X = (double**) malloc( 3 * sizeof(double*) );
+	prm.X = (value_t**) malloc (3 * sizeof(value_t*));
 	for (i = 0; i < 3; i++)
-		prm.X[i] = (double*) calloc( prm.mkn2, sizeof(double) );
+		prm.X[i] = (value_t*) calloc (prm.mkn2, sizeof(value_t));
 	for (int mm = 0; mm < prm.matDims[0]; mm++)
 		for (int kk = 0; kk < prm.matDims[1]; kk++)
 			for (int nn = 0; nn < prm.matDims[2]; nn++)
@@ -147,42 +161,47 @@ int main(int argc, char* argv[])
 				tidx[0] = mm + kk*prm.matDims[0];
 				tidx[1] = kk + nn*prm.matDims[1];
 				tidx[2] = mm + nn*prm.matDims[0];
-				prm.X[0][tidx[0]+prm.dims[0]*(tidx[1]+prm.dims[1]*tidx[2])] = 1;
-				prm.X[1][tidx[1]+prm.dims[1]*(tidx[0]+prm.dims[0]*tidx[2])] = 1;
-				prm.X[2][tidx[2]+prm.dims[2]*(tidx[0]+prm.dims[0]*tidx[1])] = 1;
+#ifndef CPLX
+        value_t v_one = 1.;
+#else
+        value_t v_one = CMPLX(1.,0.);
+#endif
+        prm.X[0][tidx[0]+prm.dims[0]*(tidx[1]+prm.dims[1]*tidx[2])] = v_one;
+				prm.X[1][tidx[1]+prm.dims[1]*(tidx[0]+prm.dims[0]*tidx[2])] = v_one;
+				prm.X[2][tidx[2]+prm.dims[2]*(tidx[0]+prm.dims[0]*tidx[1])] = v_one;
 			}
 
 	// Allocate factor weights and matrices: working, initial, and model
-	prm.lambda = (double*) malloc( prm.rank * sizeof(double) );
-	prm.U  = (double**) malloc( 3 * sizeof(double*) );
-	double** U0 = (double**) malloc( 3 * sizeof(double*) );
-	prm.model = (double**) malloc( 3 * sizeof(double*) );
+	prm.lambda   = (double*)   malloc (prm.rank * sizeof(double));
+	prm.U        = (value_t**) malloc (3        * sizeof(value_t*));
+	value_t** U0 = (value_t**) malloc (3        * sizeof(value_t*));
+	prm.model    = (value_t**) malloc (3        * sizeof(value_t*));
 	for (i = 0; i < 3; i++)
 	{
-		prm.U[i] =  (double*) calloc( prm.mkn2, sizeof(double) );
-		U0[i] = (double*) calloc( prm.dims[i]*prm.rank, sizeof(double) );
-		prm.model[i] = (double*) calloc( prm.dims[i]*prm.rank, sizeof(double) );
+		prm.U[i]     = (value_t*) calloc (prm.mkn2,             sizeof(value_t));
+		U0[i]        = (value_t*) calloc (prm.dims[i]*prm.rank, sizeof(value_t));
+		prm.model[i] = (value_t*) calloc (prm.dims[i]*prm.rank, sizeof(value_t));
 	}
 
 	// Allocate coefficient matrix within ALS (Khatri-Rao product) 
 	int maxMatDim = prm.matDims[0];
 	if (maxMatDim < prm.matDims[1]) maxMatDim = prm.matDims[1];
 	if (maxMatDim < prm.matDims[2]) maxMatDim = prm.matDims[2];
-	prm.A = (double*) malloc( maxMatDim*mkn*prm.rank * sizeof(double) );
+	prm.A = (value_t*) malloc (maxMatDim*mkn*prm.rank * sizeof(value_t));
 
 	// Allocate workspaces
-	prm.tau = (double*) malloc( mkn * sizeof(double) );
+	prm.tau   = (value_t*) malloc (mkn       * sizeof(value_t));
 	prm.lwork = maxMatDim*mkn*prm.rank;
-	prm.work = (double*) malloc( prm.lwork * sizeof(double) );
-	prm.iwork = (int*) malloc( prm.mkn2 * sizeof(int) );    
+	prm.work  = (value_t*) malloc (prm.lwork * sizeof(value_t));
+	prm.iwork = (int*)     malloc (prm.mkn2  * sizeof(int));    
 
 	// Allocate matrices for normal equations 
 	int maxDim = prm.dims[0];
 	if (maxDim < prm.dims[1]) maxDim = prm.dims[1];
 	if (maxDim < prm.dims[2]) maxDim = prm.dims[2];
-	prm.NE_coeff = (double*) malloc( prm.rank*prm.rank * sizeof(double) );
-	prm.NE_rhs = (double*) malloc( maxDim*prm.rank * sizeof(double) );
-	prm.residual = (double*) malloc( prm.mkn2 * sizeof(double) );
+	prm.NE_coeff = (value_t*) malloc (prm.rank*prm.rank * sizeof(value_t));
+	prm.NE_rhs   = (value_t*) malloc (maxDim*prm.rank   * sizeof(value_t));
+	prm.residual = (value_t*) malloc (prm.mkn2          * sizeof(value_t));
 
 	//--------------------------------------------------
 	// Search Loop
@@ -192,21 +211,42 @@ int main(int argc, char* argv[])
 	for (int seed_cnt = 0; seed_cnt < numSeeds; ++seed_cnt)
 	{
 		// Set starting point from random seed (match Matlab Tensor Toolbox)
-		RandomMT cRMT(mySeed);
+		// RandomMT cRMT(mySeed);
+    RandomMT_create(mySeed);
 		for (i = 0; i < 3; i++)
 			for (j = 0; j < prm.dims[i]; j++)
 				for (k = 0; k < prm.rank; k++)
-					U0[i][j+k*prm.dims[i]] = cRMT.genMatlabMT();
+        {
+					// U0[i][j+k*prm.dims[i]] = cRMT.genMatlabMT();
+#ifndef CPLX
+          value_t random_val = genMatlabMT();
+#else     
+          // NB: By definition of the CMPLX macro (and the left-to-right evaluation of the binary '+' operator), 
+          // we can guarantee that the real component is always generated before the imaginary component.                                                                                   
+          // value_t random_val = CMPLX(genMatlabMT(), genMatlabMT()); 
+          // TODO: note that in some applications we want a zero complex value (match real case) ... check with Matlab code
+          value_t random_val = CMPLX(genMatlabMT(), 0.); 
+          // TODO: this will allow sanity-checking the complex code (need to flush imaginary roundoff in herk, etc.)
+#endif
+          U0[i][j+k*prm.dims[i]] = random_val;
+        }
 		for (i = 0; i < prm.rank; i++)
-			prm.lambda[i] = 1.0;  
+			prm.lambda[i] = 1.;  
 
 		// Copy starting point
 		for (i = 0; i < 3; i++)
-			cblas_dcopy(prm.dims[i]*prm.rank,U0[i],1,prm.U[i],1); 
+    {
+#ifndef CPLX
+			//cblas_dcopy(prm.dims[i]*prm.rank,U0[i],1,prm.U[i],1); 
+			dcopy_wrap (prm.dims[i]*prm.rank, U0[i], 1, prm.U[i], 1);
+#else
+			zcopy_wrap (prm.dims[i]*prm.rank, U0[i], 1, prm.U[i], 1);
+#endif
+    }
 
 		// read from file if input is given    
-		if( infile )
-			read_input( infile, prm ); 
+		if (infile)
+			read_input (infile, prm); 
 
 		if (verbose)
 		{ 
@@ -214,7 +254,7 @@ int main(int argc, char* argv[])
 			for (i = 0; i < 3; i++)
 			{
 				printf("Factor matrix %d:\n",i);
-				print_matrix(prm.U[i],prm.dims[i],prm.rank,prm.dims[i]);
+				print_matrix (prm.U[i], prm.dims[i], prm.rank, prm.dims[i]);
 			}
 			printf("\n");
 		}   
@@ -223,8 +263,8 @@ int main(int argc, char* argv[])
 		// Main ALS Loop
 		//--------------------------------------------------
 		start_als = wall_time();
-		err = 1.0; 
-		threshold = 1e-4;
+		err = 1.; 
+		threshold = 1.e-4;
 		for (numIters = 0; numIters < maxIters && (wall_time()-start_als) < maxSecs; numIters++)
 		{
 			errOld = err;
@@ -232,9 +272,9 @@ int main(int argc, char* argv[])
 			if (!strcmp(prm.method,"als"))
 			{
 				// Perform an iteration of ALS using NE with Smirnov's penalty term
-				err = als( prm );
+				err = als (prm);
 			}
-			else if (!strcmp(prm.method,"sparsify"))
+			else if (!strcmp(prm.method, "sparsify"))
 			{   
 				// print stats before sparsifying
 				printf("Old residual: %1.2e\n",compute_residual(prm,2,true));
@@ -289,14 +329,15 @@ int main(int argc, char* argv[])
 		if(roundFinal)
 		{
 			// normalize columns in A and B factors, put arbitrary weights into C
-			normalize_model( prm, 2 );
-
-			// cap large values and round to nearest power of 2
+			normalize_model (prm, 2);
+			
+      // cap large values and round to nearest power of 2
 			for (i = 0; i < 3; i++)
 			{
-				capping(prm.U[i],prm.dims[i]*prm.rank,prm.rnd_maxVal);
+			  capping(prm.U[i],prm.dims[i]*prm.rank,prm.rnd_maxVal);
 				rounding(prm.U[i],prm.dims[i]*prm.rank,prm.rnd_pwrOfTwo);
 			}
+
 
 			err = compute_residual(prm,0,true);
 		}    
@@ -357,7 +398,7 @@ int main(int argc, char* argv[])
 
 				int count = 0;
 				for (i = 0; i < 3; i++)
-					count += nnz(prm.U[i],prm.dims[i]*prm.rank);
+					count += nnz(prm.U[i],prm.dims[i]*prm.rank,0.);
 				printf("\ttotal nnz in solution: %d\n",count);
 				printf("\tnaive adds/subs:       %d\n",count - prm.dims[2] - 2*prm.rank);
 			}
