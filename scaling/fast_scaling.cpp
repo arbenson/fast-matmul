@@ -1,35 +1,68 @@
 #include "linalg.hpp"
-#include "fast442_26_257.hpp"
+#include "strassen.hpp"
 #include "random_matrices.hpp"
 #include "scaling.hpp"
 
 #include <iostream>
 
 int main(int argc, char **argv) {
-  int m = 160;
-  int k = 160;
-  int n = 160;
+  int m = 250;
+  int k = 250;
+  int n = 250;
   int numsteps = 2;
 
-  Matrix<double> A = UniformRandomMatrix<double>(m, k, 0.0, 1.0);
-  Matrix<double> B = UniformRandomMatrix<double>(k, n, 0.0, 1.0);
-  Matrix<double> C1(m, n), C2(m, n), C3(m, n);
-  MatMul(A, B, C1);
-  grey442_26_257::FastMatmul(A, B, C2, numsteps);
+  Matrix<double> A = KernelMatrix1<double>(n);
+  Matrix<double> B = KernelMatrix2<double>(n);
+  Matrix<double> C(m, n);
+  // Compute "ground truth".
+  MatMul(A, B, C);
 
-  int max_steps = 100;
-  std::vector<double> r_vals, s_vals;
-  int scaling_type = INNER_OUTER;
-  Scaling<double>(A, B, max_steps, r_vals, s_vals, scaling_type);
-  grey442_26_257::FastMatmul(A, B, C3, numsteps);
-  PostProcessScaling(C3, r_vals, s_vals);
-  
-  // Test for correctness.
-  std::cout << "Frobenius diff. 442 / Classical (no scaling): " << FrobeniusDiff(C1, C2) << std::endl;
-  std::cout << "Frobenius diff. 442 / Classical (w/ scaling): " << FrobeniusDiff(C1, C3) << std::endl;
+  // Fast matrix multiplication without scaling.
+  Matrix<float> A_flt = DoubleToFloat(A);
+  Matrix<float> B_flt = DoubleToFloat(B);
 
-  std::cout << "Max. rel. diff. 442 / Classical (no scaling): " << MaxRelativeDiff(C1, C2) << std::endl;
-  std::cout << "Max. rel. diff. 442 / Classical (w/ scaling): " << MaxRelativeDiff(C1, C3) << std::endl;
+  // Norm information
+  std::cout << "BEFORE SCALING" << std::endl;
+  std::cout << "||A||_1   = " << A_flt.OneNorm() << std::endl
+            << "||A||_inf = " << A_flt.InfNorm() << std::endl
+            << "||B||_1   = " << B_flt.OneNorm() << std::endl
+            << "||B||_inf = " << B_flt.InfNorm() << std::endl; 
+
+  Matrix<float> C_fast(m, n);
+  strassen::FastMatmul(A_flt, B_flt, C_fast, numsteps);
+
+  // Fast matrix multiplication without scaling.
+  int max_steps = 5;
+  std::vector<float> r_vals, s_vals;
+  int scaling_type = OUTER;
+  Scaling<float>(A_flt, B_flt, max_steps, r_vals, s_vals, scaling_type);
+
+  // Norm information
+  std::cout << "AFTER SCALING" << std::endl;
+  std::cout << "||A||_1   = " << A_flt.OneNorm() << std::endl
+            << "||A||_inf = " << A_flt.InfNorm() << std::endl
+            << "||B||_1   = " << B_flt.OneNorm() << std::endl
+            << "||B||_inf = " << B_flt.InfNorm() << std::endl; 
+
+  Matrix<float> C_fast_scale(m, n);
+  strassen::FastMatmul(A_flt, B_flt, C_fast_scale, numsteps);
+  PostProcessScaling(C_fast_scale, r_vals, s_vals);
+
+  Matrix<double> C_fast_dbl = FloatToDouble(C_fast);
+  Matrix<double> C_fast_scale_dbl = FloatToDouble(C_fast_scale);
+
+  Matrix<double> Diff_scale = Diff(C, C_fast_scale_dbl);
+  Matrix<double> Diff_no_scale = Diff(C, C_fast_dbl);
+
+  NormType norm = NormType::INFTY;
   
+  std::cout << "||C_comp - C|| / (||A|| ||B||) (no scaling): "
+            << Diff_no_scale.Norm(norm) / (A.Norm(norm) * B.Norm(norm))
+            << std::endl;
+
+  std::cout << "||C_comp - C|| / (||A|| ||B||) (w/ scaling): "
+            << Diff_scale.Norm(norm) / (A.Norm(norm) * B.Norm(norm))
+            << std::endl;
+
   return 0;
 }

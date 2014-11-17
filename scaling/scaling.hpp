@@ -1,9 +1,11 @@
 #ifndef _SCALING_HPP_
 #define _SCALING_HPP_
 
+#include "linalg.hpp"
+
+#include <cassert>
 #include <cmath>
 #include <stdexcept>
-#include "linalg.hpp"
 
 enum {
   OUTER_INNER = 0,
@@ -15,6 +17,7 @@ enum {
 // Scale the rows of A by the vector specified in scales.
 template <typename Scalar>
 void RowScale(Matrix<Scalar>& A, std::vector<Scalar>& scales) {
+  assert(scales.size() == A.height());
   for (int j = 0; j < A.width(); ++j) {
     for (int i = 0; i < A.height(); ++i) {
       A(i, j) *= scales[i];
@@ -26,6 +29,7 @@ void RowScale(Matrix<Scalar>& A, std::vector<Scalar>& scales) {
 // Scale the columns of A by the vector specified in scales.
 template <typename Scalar>
 void ColScale(Matrix<Scalar>& A, std::vector<Scalar>& scales) {
+  assert(scales.size() == A.width());
   for (int j = 0; j < A.width(); ++j) {
     for (int i = 0; i < A.height(); ++i) {
       A(i, j) *= scales[j];
@@ -80,7 +84,7 @@ template<typename Scalar>
 void UpdateVals(std::vector<Scalar>& vals, std::vector<Scalar>& mult_vals) {
   assert(vals.size() == mult_vals.size());
   for (int i = 0; i < vals.size(); ++i) {
-	vals[i] *= mult_vals[i];
+    vals[i] *= mult_vals[i];
   }
 }
 
@@ -140,45 +144,45 @@ void PostProcessScaling(Matrix<Scalar>& C, std::vector<Scalar>& r_vals,
 // scaling followed by an inner scaling.
 template<typename Scalar>
 void Scaling(Matrix<Scalar>& A, Matrix<Scalar>& B, int max_steps,
-			 std::vector<Scalar>& r_vals, std::vector<Scalar>& s_vals,
-			 int scaling_type) {
+             std::vector<Scalar>& r_vals, std::vector<Scalar>& s_vals,
+             int scaling_type) {
   r_vals.resize(A.height(), 1.0);
   s_vals.resize(B.width(), 1.0);
 
   switch (scaling_type) {
   case OUTER_INNER:
-	for (int i = 0; i < max_steps; ++i) {
-	  std::vector<Scalar> x_vals, y_vals;
-	  OuterScaling(A, B, x_vals, y_vals);
-	  UpdateVals(r_vals, x_vals);
-	  UpdateVals(s_vals, y_vals);
-	  InnerScaling(A, B);
-	}
-	break;
+    for (int i = 0; i < max_steps; ++i) {
+      std::vector<Scalar> x_vals, y_vals;
+      OuterScaling(A, B, x_vals, y_vals);
+      UpdateVals(r_vals, x_vals);
+      UpdateVals(s_vals, y_vals);
+      InnerScaling(A, B);
+    }
+    break;
   case INNER_OUTER:
-	for (int i = 0; i < max_steps; ++i) {
-	  InnerScaling(A, B);
-	  std::vector<Scalar> x_vals, y_vals;
-	  OuterScaling(A, B, x_vals, y_vals);
-	  UpdateVals(r_vals, x_vals);
-	  UpdateVals(s_vals, y_vals);
-	}
-	break;
+    for (int i = 0; i < max_steps; ++i) {
+      InnerScaling(A, B);
+      std::vector<Scalar> x_vals, y_vals;
+      OuterScaling(A, B, x_vals, y_vals);
+      UpdateVals(r_vals, x_vals);
+      UpdateVals(s_vals, y_vals);
+    }
+    break;
   case INNER:
-	for (int i = 0; i < max_steps; ++i) {
-	  InnerScaling(A, B);
-	}
-	break;
+    for (int i = 0; i < max_steps; ++i) {
+      InnerScaling(A, B);
+    }
+    break;
   case OUTER:
-	for (int i = 0; i < max_steps; ++i) {
-	  std::vector<Scalar> x_vals, y_vals;
-	  OuterScaling(A, B, x_vals, y_vals);
-	  UpdateVals(r_vals, x_vals);
-	  UpdateVals(s_vals, y_vals);
-	}
-	break;
+    for (int i = 0; i < max_steps; ++i) {
+      std::vector<Scalar> x_vals, y_vals;
+      OuterScaling(A, B, x_vals, y_vals);
+      UpdateVals(r_vals, x_vals);
+      UpdateVals(s_vals, y_vals);
+    }
+    break;
   default:
-	throw std::runtime_error("Unknown iteration type.");
+    throw std::runtime_error("Unknown iteration type.");
   }
 }
 

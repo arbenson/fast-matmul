@@ -13,12 +13,17 @@
 
 #include <assert.h>
 #include <cstddef>
+#include <stdexcept>
 #include <time.h>
 
 #include <cmath>
 #include <iostream>
 
 #include "timing.hpp"
+
+
+enum class NormType {ONE, FROBENIUS, MAX, INFTY};
+
 
 // This is a basic templated matrix class.
 // It stores the matrix data, the stride, and the dimensions.
@@ -112,6 +117,24 @@ public:
   const Scalar& operator()(int i, int j) const {  return data_[i + j * stride_]; }
   Scalar& operator()(int i, int j) {  return data_[i + j * stride_]; }
 
+  Scalar OneNorm() { return blas::Lange('1', m_, n_, data_, stride_); }
+  Scalar FroNorm() { return blas::Lange('F', m_, n_, data_, stride_); }
+  Scalar InfNorm() { return blas::Lange('I', m_, n_, data_, stride_); }
+  Scalar MaxNorm() { return blas::Lange('M', m_, n_, data_, stride_); }
+  Scalar Norm(NormType type) {
+    switch (type) {
+    case NormType::ONE:
+      return OneNorm();
+    case NormType::FROBENIUS:
+      return FroNorm();
+    case NormType::INFTY:
+      return InfNorm();
+    case NormType::MAX:
+      return MaxNorm();
+    default:
+      throw std::runtime_error("Unknown norm type");
+    }
+  }
 
   void allocate() {
     if (n_ > 0 && m_ > 0) {
@@ -263,6 +286,20 @@ double MaxRelativeDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
 }
 
 
+// returns A - B
+template<typename Scalar>
+Matrix<Scalar> Diff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
+  assert(A.m() == B.m() && A.n() == B.n());
+  Matrix<Scalar> C(A.m(), A.n());
+  for (int j = 0; j < A.n(); ++j) {
+    for (int i = 0; i < A.m(); ++i) {
+      C(i, j) = A(i, j) - B(i, j);
+    }
+  }
+  return C;
+}
+
+
 // Frobenius norm difference: \| A - B \|_F
 template<typename Scalar>
 double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
@@ -277,20 +314,6 @@ double FrobeniusDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
     }
   }
   return sqrt(diff);
-}
-
-
-// Frobenius norm \| A \|_F
-template<typename Scalar>
-double FrobeniusNorm(Matrix<Scalar>& A) {
-  double norm = 0.0;
-  for (int j = 0; j < A.n(); ++j) {
-    for (int i = 0; i < A.m(); ++i) {
-      Scalar a = A(i, j);
-      norm += a * a;
-    }
-  }
-  return sqrt(norm);
 }
 
 
@@ -382,14 +405,25 @@ Matrix<Scalar> RandomMatrix(int m, int n) {
 }
 
 
-Matrix<float> DoubleToFloat(Matrix<double> A) {
+Matrix<float> DoubleToFloat(Matrix<double>& A) {
   Matrix<float> A_float(A.height(), A.width());
   for (int j = 0; j < A.width(); ++j) {
-	for (int i = 0; i < A.height(); ++i) {
-	  A_float(i, j) = A(i, j);
-	}
+    for (int i = 0; i < A.height(); ++i) {
+      A_float(i, j) = A(i, j);
+    }
   }
   return A_float;
+}
+
+
+Matrix<double> FloatToDouble(Matrix<float>& A) {
+  Matrix<double> A_double(A.height(), A.width());
+  for (int j = 0; j < A.width(); ++j) {
+    for (int i = 0; i < A.height(); ++i) {
+      A_double(i, j) = A(i, j);
+    }
+  }
+  return A_double;
 }
 
 
