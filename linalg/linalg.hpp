@@ -405,12 +405,12 @@ Matrix<Scalar> RandomMatrix(int m, int n) {
 }
 
 
-Matrix<float> DoubleToFloat(Matrix<double>& A) {
+Matrix<float> DoubleToFloat(Matrix<double> A) {
   Matrix<float> A_float(A.height(), A.width());
   for (int j = 0; j < A.width(); ++j) {
-    for (int i = 0; i < A.height(); ++i) {
-      A_float(i, j) = A(i, j);
-    }
+	for (int i = 0; i < A.height(); ++i) {
+	  A_float(i, j) = A(i, j);
+	}
   }
   return A_float;
 }
@@ -425,6 +425,5 @@ Matrix<double> FloatToDouble(Matrix<float>& A) {
   }
   return A_double;
 }
-
 
 #endif  // _LINALG_HPP_
