@@ -6,13 +6,13 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  int m = 250;
-  int k = 250;
-  int n = 250;
-  int numsteps = 2;
+  int m = 256;
+  int k = 256;
+  int n = 256;
+  int numsteps = 3;
 
-  Matrix<double> A = KernelMatrix1<double>(n);
-  Matrix<double> B = KernelMatrix2<double>(n);
+  Matrix<double> A = UniformRandomMatrix<double>(m, k, 0.0, 1.0);
+  Matrix<double> B = SkewedUniformRandomMatrix1<double>(k, n, 0.0, 1.0);
   Matrix<double> C(m, n);
   // Compute "ground truth".
   MatMul(A, B, C);
@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   // Fast matrix multiplication without scaling.
   int max_steps = 5;
   std::vector<float> r_vals, s_vals;
-  int scaling_type = OUTER;
+  int scaling_type = INNER_OUTER;
   Scaling<float>(A_flt, B_flt, max_steps, r_vals, s_vals, scaling_type);
 
   // Norm information
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   Matrix<double> Diff_scale = Diff(C, C_fast_scale_dbl);
   Matrix<double> Diff_no_scale = Diff(C, C_fast_dbl);
 
-  NormType norm = NormType::INFTY;
+  NormType norm = NormType::MAX;
   
   std::cout << "||C_comp - C|| / (||A|| ||B||) (no scaling): "
             << Diff_no_scale.Norm(norm) / (A.Norm(norm) * B.Norm(norm))

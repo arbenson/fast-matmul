@@ -43,9 +43,28 @@ Matrix<Scalar> NormalRandomMatrix(int m, int n, double mu, double sigma) {
   return A;
 }
 
+
+// Generate a m x n matrix with entries A_{ij} ~ i^2 * Uniform(a, b)
+template <typename Scalar>
+Matrix<Scalar> SkewedUniformRandomMatrix1(int m, int n, double a, double b) {
+  std::random_device rdev;
+  std::default_random_engine generator(rdev());
+  std::uniform_real_distribution<double> distribution(a, b);
+  Matrix<Scalar> A(m, n);
+  // We can use fancier C++11 random number generators, but they are
+  // still slow on some systems.
+  for (int j = 0; j < A.n(); ++j) {
+    for (int i = 0; i < A.m(); ++i) {
+      A(i, j) = distribution(generator) * (i + 1) * (i + 1);
+    }
+  }  
+  return A;
+}
+
+
 // Generate a m x n matrix with entries A_{ij} ~ i * j * Uniform(a, b)
 template <typename Scalar>
-Matrix<Scalar> SkewedUniformRandomMatrix(int m, int n, double a, double b) {
+Matrix<Scalar> SkewedUniformRandomMatrix3(int m, int n, double a, double b) {
   std::random_device rdev;
   std::default_random_engine generator(rdev());
   std::uniform_real_distribution<double> distribution(a, b);
@@ -96,6 +115,21 @@ Matrix<Scalar> KernelMatrix2(int n) {
 	Scalar val = std::abs(x_step * (i - j));
 	A(i, j) = 1.0 / (val * val);
       }
+    }
+  }  
+  return A;
+}
+
+
+// cos((i + j) * freq / n)
+template <typename Scalar>
+Matrix<Scalar> OscillatoryMatrix1(int n, double freq, double scale) {
+  Matrix<Scalar> A(n, n);
+  // We can use fancier C++11 random number generators, but they are
+  // still slow on some systems.
+  for (int j = 0; j < A.n(); ++j) {
+    for (int i = 0; i < A.m(); ++i) {
+      A(i, j) = scale * cos((i + j) * freq / n);
     }
   }  
   return A;
