@@ -143,18 +143,21 @@ double als(parameters prm)
     // cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, prm.rank, prm.dims[i], prm.mtCols[i], 1.0, prm.A, prm.mtCols[i], prm.X[i], prm.dims[i], 0.0, prm.NE_rhs, prm.rank);
     dgemm_wrap('T', 'T', prm.rank, prm.dims[i], prm.mtCols[i], 1., prm.A, prm.mtCols[i], prm.X[i], prm.dims[i], 0., prm.NE_rhs, prm.rank);
 #else
-    zgemm_wrap('C', 'C', prm.rank, prm.dims[i], prm.mtCols[i], CMPLX(1.,0.), prm.A, prm.mtCols[i], prm.X[i], prm.dims[i], CMPLX(0.,0.), prm.NE_rhs, prm.rank);
+    // GB: I changed the second argument from conj-trans 'C' to transpose 'T' 
+    zgemm_wrap('C', 'T', prm.rank, prm.dims[i], prm.mtCols[i], CMPLX(1.,0.), prm.A, prm.mtCols[i], prm.X[i], prm.dims[i], CMPLX(0.,0.), prm.NE_rhs, prm.rank);
 #endif
 
 		// copy transpose of scaled previous solution to model 
 		for (j = 0; j < prm.dims[i]; j++)
 			for (k = 0; k < prm.rank; k++)
       {
-#ifndef CPLX
+        // GB: I changed this from conj transpose to transpose
         prm.model[i][k+j*prm.rank] = prm.U[i][j+k*prm.dims[i]];
-#else
-        prm.model[i][k+j*prm.rank] = conj(prm.U[i][j+k*prm.dims[i]]);
-#endif
+//#ifndef CPLX
+//        prm.model[i][k+j*prm.rank] = prm.U[i][j+k*prm.dims[i]];
+//#else
+//        prm.model[i][k+j*prm.rank] = conj(prm.U[i][j+k*prm.dims[i]]);
+//#endif
       }
 
 		// set all but largest M entries to zero
@@ -183,11 +186,13 @@ double als(parameters prm)
 		for (j = 0; j < prm.dims[i]; j++)
 			for (k = 0; k < prm.rank; k++)
       {
-#ifndef CPLX
+        // GB: replaced conjugate transpose with transpose
         prm.U[i][j+k*prm.dims[i]] = prm.NE_rhs[k+j*prm.rank];
-#else
-        prm.U[i][j+k*prm.dims[i]] = conj(prm.NE_rhs[k+j*prm.rank]);
-#endif
+//#ifndef CPLX
+//        prm.U[i][j+k*prm.dims[i]] = prm.NE_rhs[k+j*prm.rank];
+//#else
+//        prm.U[i][j+k*prm.dims[i]] = conj(prm.NE_rhs[k+j*prm.rank]);
+//#endif
       }
         
 	}
@@ -222,7 +227,8 @@ double compute_residual (parameters prm, int eqn, bool recompute)
 	// cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, prm.dims[eqn], prm.mtCols[eqn], prm.rank, 1.0, prm.U[eqn], prm.dims[eqn], prm.A, prm.mtCols[eqn], -1.0, prm.residual, prm.dims[eqn]);
 	dgemm_wrap ('N', 'T', prm.dims[eqn], prm.mtCols[eqn], prm.rank, 1., prm.U[eqn], prm.dims[eqn], prm.A, prm.mtCols[eqn], -1., prm.residual, prm.dims[eqn]);
 #else
-	zgemm_wrap ('N', 'C', prm.dims[eqn], prm.mtCols[eqn], prm.rank, CMPLX(1.,0.), prm.U[eqn], prm.dims[eqn], prm.A, prm.mtCols[eqn], CMPLX(-1.,0.), prm.residual, prm.dims[eqn]);
+    // GB: I changed the second argument from conj-trans 'C' to transpose 'T' to get consistent results across different choices of eqn
+	zgemm_wrap ('N', 'T', prm.dims[eqn], prm.mtCols[eqn], prm.rank, CMPLX(1.,0.), prm.U[eqn], prm.dims[eqn], prm.A, prm.mtCols[eqn], CMPLX(-1.,0.), prm.residual, prm.dims[eqn]);
 #endif
 
 	// compute norm

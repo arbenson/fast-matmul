@@ -41,8 +41,8 @@ void usage(char const* const* argv)
 	printf("	--tol <float>             stopping tolerance (change in residual norm squared)\n");
 	printf("	--seed <int>              seed for random number generator used in initial guess\n");
 	printf("	--numseeds <int>          number of seeds to try\n");
-  printf("	--input <string>          input file for initial guess (overrides seed/numseeds)\n");
-  printf("	--output <string>         output file for final solution\n");
+    printf("	--input <string>          input file for initial guess (overrides seed/numseeds)\n");
+    printf("	--output <string>         output file for final solution\n");
 	printf("	--alpha <float>           regularization weighting parameter\n");
 	printf("	--maxval <float>          maximum value of solution entries\n");
 	printf("	--M <int>                 regularization parameter for max number of nonzeros sought in factor matrices (same for all 3)\n");
@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
           // we can guarantee that the real component is always generated before the imaginary component.                                                                                   
           // value_t random_val = CMPLX(genMatlabMT(), genMatlabMT()); 
           // TODO: note that in some applications we want a zero complex value (match real case) ... check with Matlab code
-          value_t random_val = CMPLX(genMatlabMT(), 0.); 
+          value_t random_val = CMPLX(genMatlabMT(), genMatlabMT()); 
           // TODO: this will allow sanity-checking the complex code (need to flush imaginary roundoff in herk, etc.)
 #endif
           U0[i][j+k*prm.dims[i]] = random_val;
@@ -258,6 +258,7 @@ int main(int argc, char* argv[])
 			}
 			printf("\n");
 		}   
+		
 
 		//--------------------------------------------------
 		// Main ALS Loop
