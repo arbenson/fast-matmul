@@ -54,7 +54,7 @@ void write_output( char* filename, parameters & prm )
 		fputs("#\n",fp);
 		for( i = 0; i < prm.dims[k]; i++ ) {
 			for( j = 0; j < prm.rank; j++ ) {
-				sprintf(entry,"%2.20f ",prm.U[k][j*prm.dims[k]+i]);
+				sprintf(entry,"%.20e ",prm.U[k][j*prm.dims[k]+i]);
 				fputs(entry,fp);
 			}
 			fputs("\n",fp);
