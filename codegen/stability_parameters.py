@@ -88,7 +88,7 @@ def main():
         coeff_file = sys.argv[1]
         dims = tuple([int(d) for d in sys.argv[2].split(',')])
     except:
-        raise Exception('USAGE: python counts.py coeff_file m,k,n')
+        raise Exception('USAGE: python stability_parameters.py coeff_file m,k,n')
 
     coeffs = read_coeffs(coeff_file)
 
