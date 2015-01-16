@@ -1,6 +1,6 @@
 include make.incs/make.inc.linux
 
-INCLUDES := -I$(MKL_ROOT)/include -I./algorithms -I./linalg -I./util
+INCLUDES := -I$(MKL_ROOT)/include -I./algorithms -I./linalg -I./util -I./scaling
 MKL_SEQ_LIBS =  -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread
 MKL_PAR_LIBS := -L$(MKL_ROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -liomp5 -lpthread
 
@@ -17,7 +17,7 @@ else
   LDLIBS := $(MKL_SEQ_LIBS) 
 endif
 
-vpath %.cpp examples benchmarks tests
+vpath %.cpp examples benchmarks tests scaling
 
 EXAMPLES_SRC = bini322.cpp \
     classical.cpp \
@@ -46,7 +46,9 @@ TESTS_SRC = matmul_tests.cpp \
     bini_stability.cpp \
     schonhage_stability.cpp \
     smirnov333_stability.cpp \
-    strassen_scaling.cpp
+    strassen_scaling.cpp \
+    strassen_bad_case.cpp \
+    fast_scaling.cpp
 
 
 OBJ_DIR = obj

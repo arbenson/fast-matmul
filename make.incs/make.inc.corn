@@ -8,7 +8,8 @@ MODE = sequential
 
 MKL_ROOT := /farmshare/software/non-free/intel/composer_xe_2013_sp1.2.144/mkl
 
-DEFINES := -DNDEBUG
+DEFINES :=
+DEFINES += -DNDEBUG
 
 # Defining BLAS_POST means that the BLAS routines are like "dgemm_" instead of
 # just "dgemm".
