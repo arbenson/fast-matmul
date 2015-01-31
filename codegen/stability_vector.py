@@ -86,8 +86,8 @@ def main():
         vals = e_vec[(i * dims[2]):(i * dims[2] + dims[2])]
         print out_format % tuple(vals)
 
-    # The stability factor that goes in the exponent of the accuracy bound
-    # is just the maximum value of the stability vector.
+    print ''
+    print 'params = %d %d %d' % (nu, eta, emax)
     
 if __name__ == '__main__':
     main()
