@@ -5,13 +5,18 @@ Austin R. Benson and Grey Ballard
 This software contains implementations of fast matrix multiplication algorithms for
 sequential and shared-memory parallel environments.
 
-Copyright 2014 Sandia Corporation. Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive license for use of this work by or on behalf of the U.S. Government. Export of this program may require a license from the United States Government.
-
-For additional information about this research project, please see the paper [A Framework for Practical Parallel Fast Matrix Multiplication](http://arxiv.org/pdf/1409.2908v1.pdf).
 To cite this work, please use:
 
-Austin R. Benson and Grey Ballard. "A Framework for Practical Parallel Fast Matrix Multiplication." arXiv preprint arXiv:1409.2908 (2014).
+Austin R. Benson and Grey Ballard.  "A framework for practical parallel fast matrix multiplication". In Proceedings of the 20th ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming (PPoPP), 2015. 
 
+An extended version of the paper is available on [arxiv](http://arxiv.org/pdf/1409.2908v1.pdf).
+
+
+License
+--------
+Copyright 2014 Sandia Corporation. Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains certain rights in this software.
+
+This software is released under the BSD 2-Clause license. Please see the LICENSE file.
 
 
 Setup
@@ -35,6 +40,7 @@ We did most testing using the Intel compiler (icpc).
 Depending on the version of g++, the OpenMP task constructs can be different and the hybrid shared-memory
 parallel code may crash.  Sequential mode, DFS parallel, and BFS parallel should work with g++.
 
+
 Building examples
 --------
 First, use the code generator to generate the algorithms:
@@ -48,9 +54,9 @@ For example, you can build and run the (4, 3, 3) algorithm:
     make fast433
     ./build/fast433
 
+
 Building tests
 --------
-
 We now assume that all of the algorithms have been gernated with the code generator (see above).
 The tests are built and run with:
 
@@ -76,7 +82,6 @@ Typically, additional recursive steps leads to a larger error.
 
 Building with different parallel methods
 --------
-
 The BFS, DFS, and HYBRID parallel algorithms are compile-time options.
 In your make include file in the `make.incs` directory, to use DFS:
 
@@ -88,7 +93,6 @@ For an example, run
 
     make fast424
     ./build/fast424
-
 
 
 DGEMM curve benchmarks
@@ -117,7 +121,6 @@ To run without dynamic threads (i.e., mkl_set_dynamic(0)), append a second argum
    ./build/dgemm_curves 1 1  # Square timings without dynamic thread allocation
 
 
-
 Fast algorithms benchmarks
 --------
 Build benchmarking code for all of the fast algorithms:
@@ -134,4 +137,3 @@ The output format is specified in `data/README.md`.
 To run all of the benchmarks for the tall-and-skinny matrix multiplied by a small square matrix (N x k x k for fixed k):
 
     ./build/matmul_benchmarks -ts_square_like 1
-
