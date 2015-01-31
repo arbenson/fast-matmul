@@ -1,5 +1,14 @@
-#ifndef _TIME_HPP_
-#define _TIME_HPP_
+/**
+   Copyright (c) 2014-2015, Sandia Corporation
+   All rights reserved.
+
+   This file is part of fast-matmul and is under the BSD 2-Clause License, 
+   which can be found in the LICENSE file in the root directory, or at 
+   http://opensource.org/licenses/BSD-2-Clause.
+*/
+
+#ifndef _TIMING_HPP_
+#define _TIMING_HPP_
 
 #include <chrono>
 #include <iostream>
@@ -27,4 +36,4 @@ void Time(std::function<void ()> func, std::string msg) {
   std::cout << msg << ": " << time << " milliseconds." << std::endl;
 }
 
-#endif  // _TIME_HPP_
+#endif  // _TIMING_HPP_
