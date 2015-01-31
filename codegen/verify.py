@@ -48,7 +48,7 @@ for j in xrange(m*k):
     while line[0] == "#":
         line = sys.stdin.readline().split()
     if len(line) != q:
-        print "Trouble at line",j,"of W, should have",q,"entries, has",len(line)  
+        print "Trouble at line", j, "of W, should have", q, "entries, has", len(line)  
     for i in xrange(q):
         W[j].append(float(line[i]))
 
