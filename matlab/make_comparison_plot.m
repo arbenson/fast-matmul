@@ -15,7 +15,7 @@ plot(dims, MKL_6,  'black*-', ...
      dims, BFS_24, 'r^--', ...
      dims, HYBRID_24, 'md--', ...
      'LineWidth', lw, 'MarkerSize', msz);
- if use_legend
+ if 1 %use_legend
   legend('MKL, 6 cores', 'MKL, 24 cores', 'DFS, 6 cores', 'BFS, 6 cores', 'HYBRID, 6 cores', ...
       'DFS, 24 cores', 'BFS, 24 cores', 'HYBRID, 24 cores', 'Location', 'SouthEast');
  end
@@ -23,10 +23,10 @@ plot(dims, MKL_6,  'black*-', ...
   ylabel('Effective GFLOPS / core');
   ylim([0, 27]);
   
-  curtick = [0, 5000, 10000, 15000, 20000]; set(gca, 'XTickLabel', cellstr(num2str(curtick(:))));
+  %curtick = [0, 5000, 10000, 15000, 20000]; set(gca, 'XTickLabel', cellstr(num2str(curtick(:))));
   
   title(title_str); %, 'interpreter', 'latex');
-  
- make_plot_post(width, height);
  
- print(sprintf('fast-matmul_paper_figs/%s', out_name), '-depsc','-r300');
+ out_dir = 'fast-matmul_paper_figs';
+  make_plot_post(width, height, out_dir, out_name);
+ 

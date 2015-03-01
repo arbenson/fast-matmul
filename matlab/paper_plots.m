@@ -34,7 +34,7 @@ if 0
 outer6_perf();
 outer24_perf();
 end
-if 1
+if 0
 tssquare6_perf();
 tssquare24_perf();
 end
@@ -42,7 +42,11 @@ end
 % performance plot of different parallel algorithms (BFS, DFS, HYBRID)
 if 0
 comparison_tssquare();
+end
+if 1
 comparison_outer();
+end
+if 0
 comparison_square();
 end
 

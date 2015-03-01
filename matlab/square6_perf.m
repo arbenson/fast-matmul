@@ -66,6 +66,9 @@ SMIRNOV633_40_960_2_HYBRID6 = [ 9000 9000 9000 2 13105.3 ;  9500 9500 9500 2 162
 SCHONHAGE333_21_117_APPROX_1_HYBRID6 = [ 9000 9000 9000 1 9726.65 ;  9500 9500 9500 1 11545.8 ;  10000 10000 10000 1 13656.5 ;  10500 10500 10500 1 15298.2 ;  11000 11000 11000 1 17643.6 ;  11500 11500 11500 1 20195.4 ;  12000 12000 12000 1 22702.9 ;  12500 12500 12500 1 25765.1 ;  13000 13000 13000 1 28850.5 ; ];
 SCHONHAGE333_21_117_APPROX_2_HYBRID6 = [ 9000 9000 9000 2 9509.45 ;  9500 9500 9500 2 11628.9 ;  10000 10000 10000 2 13280.4 ;  10500 10500 10500 2 15511.9 ;  11000 11000 11000 2 17232.7 ;  11500 11500 11500 2 20390.6 ;  12000 12000 12000 2 22397.5 ;  12500 12500 12500 2 25757.9 ;  13000 13000 13000 2 28016.5 ; ];
 
+SMIRNOV433_29_204_1_HYBRID6 = [ 9000 9000 9000 1 9675 ;  9500 9500 9500 1 11535.9 ;  10000 10000 10000 1 13330.4 ;  10500 10500 10500 1 15498.4 ;  11000 11000 11000 1 17604.1 ;  11500 11500 11500 1 20016.9 ;  12000 12000 12000 1 22567.6 ;  12500 12500 12500 1 26129.4 ;  13000 13000 13000 1 28465.3 ; ];
+SMIRNOV433_29_204_2_HYBRID6 = [ 9000 9000 9000 2 10905.6 ;  9500 9500 9500 2 13033.8 ;  10000 10000 10000 2 14139.6 ;  10500 10500 10500 2 16187.5 ;  11000 11000 11000 2 19425.9 ;  11500 11500 11500 2 21865.3 ;  12000 12000 12000 2 23618.9 ;  12500 12500 12500 2 26076.8 ;  13000 13000 13000 2 29853.4 ; ];
+
 
 % BFS
 BINI322_1_BFS6 = [ 9000 9000 9000 1 12203 ;  9500 9500 9500 1 14234 ;  10000 10000 10000 1 17044.4 ;  10500 10500 10500 1 19208.3 ;  11000 11000 11000 1 21866.9 ;  11500 11500 11500 1 25170.1 ;  12000 12000 12000 1 28512 ;  12500 12500 12500 1 32160.4 ;  13000 13000 13000 1 36012 ; ];
@@ -134,6 +137,10 @@ SMIRNOV633_40_960_2_BFS6 = [ 9000 9000 9000 2 11475.6 ;  9500 9500 9500 2 14282.
 SCHONHAGE333_21_117_APPROX_1_BFS6 = [ 9000 9000 9000 1 11054.6 ;  9500 9500 9500 1 13075.1 ;  10000 10000 10000 1 15505.1 ;  10500 10500 10500 1 17372.5 ;  11000 11000 11000 1 20009.1 ;  11500 11500 11500 1 22917.3 ;  12000 12000 12000 1 25756.5 ;  12500 12500 12500 1 29216.4 ;  13000 13000 13000 1 32583.2 ; ];
 SCHONHAGE333_21_117_APPROX_2_BFS6 = [ 9000 9000 9000 2 8469.86 ;  9500 9500 9500 2 10433.5 ;  10000 10000 10000 2 11822.1 ;  10500 10500 10500 2 13913.3 ;  11000 11000 11000 2 15411.5 ;  11500 11500 11500 2 18168.6 ;  12000 12000 12000 2 19918.3 ;  12500 12500 12500 2 23071.6 ;  13000 13000 13000 2 24957.3 ; ];
 
+SMIRNOV433_29_204_1_BFS6 = [ 9000 9000 9000 1 9869.6 ;  9500 9500 9500 1 11755.6 ;  10000 10000 10000 1 13614.3 ;  10500 10500 10500 1 15855.3 ;  11000 11000 11000 1 17960.5 ;  11500 11500 11500 1 20456.1 ;  12000 12000 12000 1 23067.1 ;  12500 12500 12500 1 26768.8 ;  13000 13000 13000 1 29145 ; ];
+SMIRNOV433_29_204_2_BFS6 = [ 9000 9000 9000 2 9568.68 ;  9500 9500 9500 2 11404.8 ;  10000 10000 10000 2 12416.3 ;  10500 10500 10500 2 14132.2 ;  11000 11000 11000 2 16942 ;  11500 11500 11500 2 19105.2 ;  12000 12000 12000 2 20609.2 ;  12500 12500 12500 2 23634.4 ;  13000 13000 13000 2 26807.6 ; ];
+
+
 MKL = perf(MKL_0_6) / 6;
 BINI = perf6(BINI322_1_HYBRID6, BINI322_2_HYBRID6, BINI322_3_HYBRID6, BINI322_1_BFS6, BINI322_2_BFS6, BINI322_3_BFS6) / 6;
 STRASSEN = perf6(STRASSEN_1_HYBRID6, STRASSEN_2_HYBRID6, STRASSEN_3_HYBRID6, STRASSEN_1_BFS6, STRASSEN_2_BFS6, STRASSEN_3_BFS6) / 6;
@@ -156,6 +163,8 @@ SMIRNOV336 = perf4(SMIRNOV336_40_960_1_HYBRID6, SMIRNOV336_40_960_2_HYBRID6, SMI
 SMIRNOV363 = perf4(SMIRNOV363_40_960_1_HYBRID6, SMIRNOV363_40_960_2_HYBRID6, SMIRNOV363_40_960_1_BFS6, SMIRNOV363_40_960_2_BFS6) / 6;
 SMIRNOV633 = perf4(SMIRNOV633_40_960_1_HYBRID6, SMIRNOV633_40_960_2_HYBRID6, SMIRNOV633_40_960_1_BFS6, SMIRNOV633_40_960_2_BFS6) / 6;
 SCHONHAGE = perf4(SCHONHAGE333_21_117_APPROX_1_HYBRID6, SCHONHAGE333_21_117_APPROX_2_HYBRID6, SCHONHAGE333_21_117_APPROX_1_BFS6, SCHONHAGE333_21_117_APPROX_2_BFS6) / 6;
+SMIRNOV433 = perf4(SMIRNOV433_29_204_1_BFS6, SMIRNOV433_29_204_2_BFS6, SMIRNOV433_29_204_1_HYBRID6, SMIRNOV433_29_204_2_HYBRID6) / 6;
+
 
 
 dims = MKL_0_6(:, 1);
@@ -165,12 +174,14 @@ close all;
 
 width = 8; height = 4;
 curtick = [9000, 10000, 11000, 12000, 13000];
+out_dir = 'fast-matmul_paper_figs';
 
 make_plot_pre(width, height);
 plot(dims, MKL, 'k*-', ...
      dims, STRASSEN, 'k^--', ...
-     dims, BINI, 'rx--', ...
-     dims, SCHONHAGE, 'bp--', ...
+     dims, SMIRNOV433, 'rx--', ...
+     ...%dims, BINI, 'rx--', ...
+     ...%dims, , 'bp--', ...
      dims, FAST422, 'yv--', ...
      dims, FAST323, 'mo--', ...
      dims, FAST332, 'c+--', ...
@@ -183,13 +194,13 @@ plot(dims, MKL, 'k*-', ...
  
 set(gca, 'XTickLabel', cellstr(num2str(curtick(:))));
  
- legend('MKL', 'STRASSEN', 'BINI', 'SCHONHAGE', '<4,2,2>', '<3,2,3>', '<3,3,2>', '<5,2,2>', '<2,5,2>', ...
+ legend('MKL', 'STRASSEN', 'S<4,3,3>', '<4,2,2>', '<3,2,3>', '<3,3,2>', '<5,2,2>', '<2,5,2>', ...
      'Location', 'EastOutside');
  
-  xlabel('Dimension (N)'); ylabel('Effective GFLOPS / core');
-  title('Performance (6 cores) on N x N x N');
-make_plot_post(width, height);
-print('fast-matmul_paper_figs/edison_square_par6_1','-depsc','-r300');
+xlabel('Dimension (N)'); ylabel('Effective GFLOPS / core');
+title('Performance (6 cores) on N x N x N');
+out_file = 'edison_square_par6_1';
+make_plot_post(width, height, out_dir, out_file);
  
  %%%%%%%%%
  
@@ -211,10 +222,10 @@ print('fast-matmul_paper_figs/edison_square_par6_1','-depsc','-r300');
   legend('MKL', 'STRASSEN', '<3,2,2>', '<3,2,4>', '<4,2,3>', '<3,4,2>', ...
      '<3,3,3>', '<4,2,4>', '<2,3,4>', 'Location', 'EastOutside');
   
- xlabel('Dimension (N)'); ylabel('Effective GFLOPS / core');
-  title('Performance (6 cores) on N x N x N');
-make_plot_post(width, height);
-print('fast-matmul_paper_figs/edison_square_par6_2','-depsc','-r300');
+xlabel('Dimension (N)'); ylabel('Effective GFLOPS / core');
+title('Performance (6 cores) on N x N x N');
+out_file = 'edison_square_par6_2';
+make_plot_post(width, height, out_dir, out_file);
 
 %%%%%%%%%%%%%%
 make_plot_pre(width, height);
@@ -231,10 +242,9 @@ make_plot_pre(width, height);
   ylim([18, 28]);
   set(gca, 'XTickLabel', cellstr(num2str(curtick(:))));
  
- xlabel('Dimension (N)'); ylabel('Effective GFLOPS / core');
- title('Performance (6 cores) on N x N x N');
- legend('MKL', 'STRASSEN', '<4,4,2>', '<4,3,3>', '<3,4,3>', '<3,3,6>', ...
+xlabel('Dimension (N)'); ylabel('Effective GFLOPS / core');
+title('Performance (6 cores) on N x N x N');
+legend('MKL', 'STRASSEN', '<4,4,2>', '<4,3,3>', '<3,4,3>', '<3,3,6>', ...
      '<3,6,3>', '<6,3,3>', 'Location', 'EastOutside');
-make_plot_post(width, height);
-print('fast-matmul_paper_figs/edison_square_par6_3','-depsc','-r300');
-
+out_file = 'edison_square_par6_3';
+make_plot_post(width, height, out_dir, out_file);

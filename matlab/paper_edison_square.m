@@ -86,35 +86,47 @@ SCHONHAGE333_21_117_APPROX_1 = [ 1000 1000 1000 1 118.277 ;  1500 1500 1500 1 29
 SCHONHAGE333_21_117_APPROX_2 = [ 1000 1000 1000 2 121.027 ;  1500 1500 1500 2 376.379 ;  2000 2000 2000 2 843.365 ;  2500 2500 2500 2 1686.7 ;  3000 3000 3000 2 2630.89 ;  3500 3500 3500 2 4005.21 ;  4000 4000 4000 2 5621.61 ;  4500 4500 4500 2 7295.92 ;  5000 5000 5000 2 10437.7 ;  5500 5500 5500 2 12981.6 ;  6000 6000 6000 2 16784.4 ;  6500 6500 6500 2 20466.8 ;  7000 7000 7000 2 26462.3 ;  7500 7500 7500 2 31066.2 ; ];
 SCHONHAGE333_21_117_APPROX_3 = [ 1000 1000 1000 3 228.743 ;  1500 1500 1500 3 721.627 ;  2000 2000 2000 3 1408.51 ;  2500 2500 2500 3 2511.87 ;  3000 3000 3000 3 3760.53 ;  3500 3500 3500 3 5668.66 ;  4000 4000 4000 3 7463.05 ;  4500 4500 4500 3 9813.52 ;  5000 5000 5000 3 12923.4 ;  5500 5500 5500 3 16677.3 ;  6000 6000 6000 3 19976.3 ;  6500 6500 6500 3 24979.8 ;  7000 7000 7000 3 31187.6 ;  7500 7500 7500 3 38030.5 ; ];
 
+SMIRNOV333_20_182_APPROX_1 = [ 1000 1000 1000 1 92.276 ;  1500 1500 1500 1 263.511 ;  2000 2000 2000 1 635.46 ;  2500 2500 2500 1 1196.16 ;  3000 3000 3000 1 1930.28 ;  3500 3500 3500 1 3153.05 ;  4000 4000 4000 1 4616.82 ;  4500 4500 4500 1 6265.92 ;  5000 5000 5000 1 8770.58 ;  5500 5500 5500 1 11601.6 ;  6000 6000 6000 1 14704.6 ;  6500 6500 6500 1 19220.8 ;  7000 7000 7000 1 23858.3 ;  7500 7500 7500 1 28591 ; ];
+SMIRNOV333_20_182_APPROX_2 = [ 1000 1000 1000 2 94.206 ;  1500 1500 1500 2 269.863 ;  2000 2000 2000 2 621.73 ;  2500 2500 2500 2 1279.18 ;  3000 3000 3000 2 1941.74 ;  3500 3500 3500 2 2983.21 ;  4000 4000 4000 2 4247.83 ;  4500 4500 4500 2 5502.61 ;  5000 5000 5000 2 8359.17 ;  5500 5500 5500 2 10368.2 ;  6000 6000 6000 2 13728.1 ;  6500 6500 6500 2 16850.6 ;  7000 7000 7000 2 21566 ;  7500 7500 7500 2 25522.3 ; ];
+
+SMIRNOV433_29_204_1 = [ 1000 1000 1000 1 94.515 ;  1500 1500 1500 1 285.756 ;  2000 2000 2000 1 659.912 ;  2500 2500 2500 1 1248.18 ;  3000 3000 3000 1 2093.36 ;  3500 3500 3500 1 3334.54 ;  4000 4000 4000 1 4842.79 ;  4500 4500 4500 1 6875.52 ;  5000 5000 5000 1 9268.54 ;  5500 5500 5500 1 12363.1 ;  6000 6000 6000 1 15694.5 ;  6500 6500 6500 1 20291.5 ;  7000 7000 7000 1 25061.8 ;  7500 7500 7500 1 31270.3 ; ];
+SMIRNOV433_29_204_2 = [ 1000 1000 1000 2 109.258 ;  1500 1500 1500 2 346.527 ;  2000 2000 2000 2 695.004 ;  2500 2500 2500 2 1424.52 ;  3000 3000 3000 2 2367.5 ;  3500 3500 3500 2 3479.95 ;  4000 4000 4000 2 4705 ;  4500 4500 4500 2 6885.93 ;  5000 5000 5000 2 9373.2 ;  5500 5500 5500 2 12787.9 ;  6000 6000 6000 2 15574.2 ;  6500 6500 6500 2 19814.6 ;  7000 7000 7000 2 25122.2 ;  7500 7500 7500 2 29878.9 ; ];
+
+
+
 dims = MKL_0(:, 1);
 best = @(X, Y, Z) max(max(perf(X), perf(Y)), perf(Z));
 lw = 2;      % LineWidth
 msz = 14;     % MarkerSize
 close all;
 
+out_dir = 'fast-matmul_paper_figs';
+
 width = 8; height = 4;
 
 make_plot_pre(width, height);
 plot(dims, perf(MKL_0), 'k*-', ...
      dims, best(STRASSEN_1, STRASSEN_2, STRASSEN_3), 'k^--', ...
-     dims, best(BINI322_1, BINI322_2, BINI322_3), 'rx--', ...
-     dims, best(SCHONHAGE333_21_117_APPROX_1, SCHONHAGE333_21_117_APPROX_2, SCHONHAGE333_21_117_APPROX_3), 'bp--', ...
+     ...%dims, best(BINI322_1, BINI322_2, BINI322_3), 'rx--', ...
+     ...%dims, best(SCHONHAGE333_21_117_APPROX_1, SCHONHAGE333_21_117_APPROX_2, SCHONHAGE333_21_117_APPROX_3), 'bp--', ...
      dims, best(FAST422_14_84_1, FAST422_14_84_2, FAST422_14_84_3), 'yv--', ...
      dims, best(FAST323_15_103_1, FAST323_15_103_2, FAST323_15_103_3), 'mo--', ...
      dims, best(FAST332_15_103_1, FAST332_15_103_2, FAST332_15_103_3), 'c+--', ...
      dims, best(FAST522_18_99_1, FAST522_18_99_2, FAST522_18_99_3), 'gd--', ...
-     dims, best(FAST252_18_99_1, FAST252_18_99_2, FAST252_18_99_3), 'rs--', ...     
+     dims, best(SMIRNOV433_29_204_1, SMIRNOV433_29_204_2, SMIRNOV433_29_204_2), 'bs--', ...     
      'LineWidth', lw, 'MarkerSize', msz);
  
  ylim([16, 29]);
  
- legend('MKL', 'STRASSEN', 'BINI', 'SCHONHAGE', '<4,2,2>', '<3,2,3>', ...
-     '<3,3,2>', '<5,2,2>', '<2,5,2>', ...
+ legend('MKL', 'STRASSEN', '<4,2,2>', '<3,2,3>', ...
+     '<3,3,2>', '<5,2,2>', 'S<4,3,3>', ...
      'Location', 'EastOutside');
   xlabel('Dimension (N)'); ylabel('Effective GFLOPS');
   title('Sequential performance on N x N x N');
-make_plot_post(width, height);
-print('fast-matmul_paper_figs/edison_square_seq1','-depsc','-r300');
+
+out_file = 'edison_square_seq1';
+make_plot_post(width, height, out_dir, out_file);
+
  
  %%%%%%%%%
  
@@ -136,8 +148,10 @@ print('fast-matmul_paper_figs/edison_square_seq1','-depsc','-r300');
  
  xlabel('Dimension (N)'); ylabel('Effective GFLOPS');
   title('Sequential performance on N x N x N');
-make_plot_post(width, height);
-print('fast-matmul_paper_figs/edison_square_seq2','-depsc','-r300');
+
+out_file = 'edison_square_seq2';
+make_plot_post(width, height, out_dir, out_file);
+
 
 %%%%%%%%%%%%%%
 make_plot_pre(width, height);
@@ -149,6 +163,7 @@ make_plot_pre(width, height);
      dims, best(SMIRNOV336_40_960_1, SMIRNOV336_40_960_2, SMIRNOV336_40_960_3), 'mo--', ...
      dims, best(SMIRNOV363_40_960_1, SMIRNOV363_40_960_2, SMIRNOV363_40_960_3), 'c+--', ...
      dims, best(SMIRNOV633_40_960_1, SMIRNOV633_40_960_2, SMIRNOV633_40_960_3), 'gd--', ...
+     dims, best(FAST252_18_99_1, FAST252_18_99_2, FAST252_18_99_3), 'rs--', ... 
      'LineWidth', lw, 'MarkerSize', msz);
  
  ylim([16, 29]);
@@ -157,6 +172,8 @@ make_plot_pre(width, height);
  title('Sequential performance on N x N x N');
  legend('MKL', 'STRASSEN', '<4,4,2>', '<4,3,3>', '<3,4,3>', ...
      '<3,3,6>', '<3,6,3>', '<6,3,3>', 'Location', 'EastOutside');
-make_plot_post(width, height);
-print('fast-matmul_paper_figs/edison_square_seq3','-depsc','-r300');
+
+out_file = 'edison_square_seq3';
+make_plot_post(width, height, out_dir, out_file);
+
 
