@@ -20,7 +20,6 @@ stability vector as described by Bini and Lotti in their 1980 paper
     python stability_vector.py algorithms/grey333-23-221 3,3,3
 '''
 
-
 def max_norm(coeffs):
     ''' return maximum absolute value from matrix coefficients. '''
     return np.max([np.abs(float(x)) for row in coeffs for x in row])
@@ -32,62 +31,43 @@ def main():
     except:
         raise Exception('USAGE: python stability_vector.py coeff_file m,k,n')
 
+    full_stab_mat = 0
+    if len(sys.argv) > 3:
+        full_stab_mat = sys.argv[3]
+
     coeffs = read_coeffs(coeff_file)
 
-    # Using the notation of the Bini and Lotti and Demmel et al.
-    a_vec = [num_nonzero(row) for row in transpose(coeffs[0])]
-    b_vec = [num_nonzero(row) for row in transpose(coeffs[1])]
-    c_vec = [num_nonzero(row) for row in coeffs[2]]
+    # Using the notation from our paper
+    a_vec = np.array([sum(np.abs([float(x) for x in row])) for row in transpose(coeffs[0])])
+    b_vec = np.array([sum(np.abs([float(x) for x in row])) for row in transpose(coeffs[1])])
 
-    
-    # Max norms of the coefficient matrices.
-    U_max_norm = max_norm(coeffs[0])
-    V_max_norm = max_norm(coeffs[1])
-    W_max_norm = max_norm(coeffs[2])
-    print '|| U || = ', U_max_norm
-    print '|| V || = ', V_max_norm
-    print '|| W || = ', W_max_norm
-    nu = U_max_norm * V_max_norm * W_max_norm
-    print 'nu     := || U || || V || || W ||'
-    print 'nu      = ', nu
-    print ''
+    e_vec = [np.dot(np.abs([float(x) for x in row]), a_vec * b_vec) for row in coeffs[2]]
 
-    alphas = np.ceil(np.log2(a_vec))
-    betas  = np.ceil(np.log2(b_vec))
-    gammas = np.ceil(np.log2(c_vec))
+    alpha_vec = np.array([num_nonzero(row) for row in transpose(coeffs[0])])
+    beta_vec  = np.array([num_nonzero(row) for row in transpose(coeffs[1])])
+    ab_vec = alpha_vec + beta_vec
+    gamma_vec = [num_nonzero(row) for row in coeffs[2]]
 
-    eta = 3 + int(np.max(alphas + betas) + np.max(gammas))
-    print 'eta := 3 + max_{r, s} alpha_s + beta_s + gamma_r'
-    print 'eta  =', eta 
+    W_ind = np.array([[float(val) for val in row] for row in coeffs[2]])
+    W_ind[np.nonzero(W_ind)] = 1
+    q_vec = [gamma_vec[k] + np.max(np.dot(ab_vec, W_ind[k,:])) \
+                 for k in range(W_ind.shape[0])]
 
+    # Number of additions
+    nnz = sum([val for val in ab_vec]) + sum([val for val in gamma_vec])
 
-    def stability(row):
-        val = 0
-        for i, coeff in enumerate(row):
-            if is_nonzero(coeff):
-                val += a_vec[i] * b_vec[i]
-        return val
+    # print as q_vec emax
+    rank = len(coeffs[0][0])
+    mkn = dims[0] * dims[1] * dims[2]
+    print mkn, rank, nnz, int(np.max(q_vec)), int(np.max(e_vec))
 
-    e_vec = [stability(row) for row in coeffs[2]]
-    # emax is the same as omega in Bini and Lotti
-    emax = max(e_vec)
-    print 'emax =', emax
-    print ''
+    if full_stab_mat:
+        # Print in the same style as D'Alberto presents in his 2014 paper.
+        print 'stability vector:'
+        for i in range(dims[0]):
+            out_format = '\t' + ' '.join(['%4d' for _ in range(dims[2])])
+            vals = e_vec[(i * dims[2]):(i * dims[2] + dims[2])]
+            print out_format % tuple(vals)
 
-    print '|| C_{comp} - C || \le mu(n) * ||A|| || B|| epsilon + O(epsilon^2)'
-    print 'mu(n) = (n ./ (%d .^ L) + %d * L) .* (%d) .^ L' % (dims[1], eta, emax * nu)
-    print '(n is inner dimension)'
-    print ''
-
-    # Print in the same style as D'Alberto presents in his 2014 paper.
-    print 'stability vector:'
-    for i in range(dims[0]):
-        out_format = '\t' + ' '.join(['%4d' for _ in range(dims[2])])
-        vals = e_vec[(i * dims[2]):(i * dims[2] + dims[2])]
-        print out_format % tuple(vals)
-
-    print ''
-    print 'params = %d %d %d' % (nu, eta, emax)
-    
 if __name__ == '__main__':
     main()
