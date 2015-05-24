@@ -249,7 +249,7 @@ template <typename Scalar>
 std::ostream& operator<<(std::ostream& os, Matrix<Scalar>& mat) {
   for (int i = 0; i < mat.m(); ++i) {
     for (int j = 0; j < mat.n(); ++j) {
-      os << C(i, j) << " ";
+      os << mat(i, j) << " ";
     }
     os << std::endl;
   }
@@ -292,6 +292,25 @@ double MaxRelativeDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
     }
   }
   return max_rel_diff;
+}
+
+
+// max_ij |a_ij - b_ij|
+template<typename Scalar>
+double MaxAbsDiff(Matrix<Scalar>& A, Matrix<Scalar>& B) {
+  assert(A.m() == B.m() && A.n() == B.n());
+  double max_diff = 0;
+  for (int j = 0; j < A.n(); ++j) {
+    for (int i = 0; i < A.m(); ++i) {
+      Scalar a = A(i, j);
+      Scalar b = B(i, j);
+      Scalar curr_rel_diff = std::abs(a - b);
+      if (curr_rel_diff > max_diff) {
+        max_diff = curr_rel_diff;
+      }
+    }
+  }
+  return max_diff;
 }
 
 
