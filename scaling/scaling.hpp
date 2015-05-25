@@ -17,10 +17,10 @@
 #include <stdexcept>
 
 enum {
-  OUTER_INNER = 0,
-  INNER_OUTER,
-  INNER,
-  OUTER,
+  OUTSIDE_INSIDE = 0,
+  INSIDE_OUTSIDE,
+  INSIDE,
+  OUTSIDE,
 };
 
 // Scale the rows of A by the vector specified in scales.
@@ -152,15 +152,15 @@ void PostProcessScaling(Matrix<Scalar>& C, std::vector<Scalar>& r_vals,
 // sequence of alternating steps, where each step each consists of an outer
 // scaling followed by an inner scaling.
 template<typename Scalar>
-void Scaling(Matrix<Scalar>& A, Matrix<Scalar>& B, int max_steps,
+void Scaling(Matrix<Scalar>& A, Matrix<Scalar>& B, int num_steps,
              std::vector<Scalar>& r_vals, std::vector<Scalar>& s_vals,
              int scaling_type) {
   r_vals.resize(A.height(), 1.0);
   s_vals.resize(B.width(), 1.0);
 
   switch (scaling_type) {
-  case OUTER_INNER:
-    for (int i = 0; i < max_steps; ++i) {
+  case OUTSIDE_INSIDE:
+    for (int i = 0; i < num_steps; ++i) {
       std::vector<Scalar> x_vals, y_vals;
       OuterScaling(A, B, x_vals, y_vals);
       UpdateVals(r_vals, x_vals);
@@ -168,8 +168,8 @@ void Scaling(Matrix<Scalar>& A, Matrix<Scalar>& B, int max_steps,
       InnerScaling(A, B);
     }
     break;
-  case INNER_OUTER:
-    for (int i = 0; i < max_steps; ++i) {
+  case INSIDE_OUTSIDE:
+    for (int i = 0; i < num_steps; ++i) {
       InnerScaling(A, B);
       std::vector<Scalar> x_vals, y_vals;
       OuterScaling(A, B, x_vals, y_vals);
@@ -177,13 +177,13 @@ void Scaling(Matrix<Scalar>& A, Matrix<Scalar>& B, int max_steps,
       UpdateVals(s_vals, y_vals);
     }
     break;
-  case INNER:
-    for (int i = 0; i < max_steps; ++i) {
+  case INSIDE:
+    for (int i = 0; i < num_steps; ++i) {
       InnerScaling(A, B);
     }
     break;
-  case OUTER:
-    for (int i = 0; i < max_steps; ++i) {
+  case OUTSIDE:
+    for (int i = 0; i < num_steps; ++i) {
       std::vector<Scalar> x_vals, y_vals;
       OuterScaling(A, B, x_vals, y_vals);
       UpdateVals(r_vals, x_vals);

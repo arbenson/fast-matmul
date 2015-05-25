@@ -17,6 +17,8 @@
 #include "fast423_20_135.hpp"
 #include "strassen.hpp"
 
+#include "random_matrices.hpp"
+
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
@@ -40,8 +42,13 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
   std::vector<double> errors134(num_steps.size());
   std::vector<double> errors135(num_steps.size());
 
-  Matrix<double> A = RandomMatrix<double>(m, k);
-  Matrix<double> B = RandomMatrix<double>(k, n);
+  Matrix<double> A = UniformRandomMatrix<double>(m, k, -1, 1);
+  Matrix<double> B = UniformRandomMatrix<double>(k, n, -1, 1);
+
+  std::cout << "||A|| = "   << A.MaxNorm()
+	    << ", ||B|| = " << B.MaxNorm()
+	    << std::endl;
+
   Matrix<double> C1(m, n);
 
   for (int i = 0; i < num_steps.size(); ++i) {
@@ -53,6 +60,8 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
 
     fast423_135::FastMatmul(A, B, C1, num_steps[i]);
     errors135[i] = Error(A, B, C1);
+
+    std::cout << "step " << i << std::endl;
   }
  
   std::cout << "errors130 = [ ";
@@ -77,10 +86,10 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
 int main(int argc, char **argv) {
   auto opts = GetOpts(argc, argv);
 
-  int m = 5000;
-  int k = 5000;
-  int n = 5000;
-  std::vector<int> num_steps = {1, 2, 3, 4, 5, 6, 7};
+  int m = 4096;
+  int k = 2048;
+  int n = 3645;
+  std::vector<int> num_steps = {1, 2, 3, 4, 5, 6};
   
   Benchmark(m, k, n, num_steps);
 

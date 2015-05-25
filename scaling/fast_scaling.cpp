@@ -15,13 +15,13 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  int m = 256;
-  int k = 256;
-  int n = 256;
-  int numsteps = 3;
+  int m = 2048;
+  int k = 2048;
+  int n = 2048;
+  int numsteps = 4;
 
-  Matrix<double> A = UniformRandomMatrix<double>(m, k, 0.0, 1.0);
-  Matrix<double> B = SkewedUniformRandomMatrix1<double>(k, n, 0.0, 1.0);
+  Matrix<double> A = KernelMatrix2<double>(m);
+  Matrix<double> B = UniformRandomMatrix<double>(k, n, 0.0, 1);
   Matrix<double> C(m, n);
   // Compute "ground truth".
   MatMul(A, B, C);
@@ -41,9 +41,9 @@ int main(int argc, char **argv) {
   strassen::FastMatmul(A_flt, B_flt, C_fast, numsteps);
 
   // Fast matrix multiplication without scaling.
-  int max_steps = 5;
+  int max_steps = 10;
   std::vector<float> r_vals, s_vals;
-  int scaling_type = INNER_OUTER;
+  int scaling_type = OUTER;
   Scaling<float>(A_flt, B_flt, max_steps, r_vals, s_vals, scaling_type);
 
   // Norm information
@@ -60,8 +60,8 @@ int main(int argc, char **argv) {
   Matrix<double> C_fast_dbl = FloatToDouble(C_fast);
   Matrix<double> C_fast_scale_dbl = FloatToDouble(C_fast_scale);
 
-  Matrix<double> Diff_scale = Diff(C, C_fast_scale_dbl);
   Matrix<double> Diff_no_scale = Diff(C, C_fast_dbl);
+  Matrix<double> Diff_scale = Diff(C, C_fast_scale_dbl);
 
   NormType norm = NormType::MAX;
   
