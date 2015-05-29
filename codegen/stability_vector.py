@@ -14,8 +14,15 @@ from subexpr_elim import transpose
 
 '''
 This script takes a coefficient file (not eliminated) and computes the
-stability vector as described by Bini and Lotti in their 1980 paper
-"Stability of Fast Algorithms for Matrix Multiplication".  Example usage:
+stability parameters.  The output looks like
+
+M*K*N R nnz qmax emax
+
+Example usage:
+
+    python stability_vector.py algorithms/grey333-23-221 3,3,3
+
+Add an extra flag to print the full q and e vectors:
 
     python stability_vector.py algorithms/grey333-23-221 3,3,3
 '''
