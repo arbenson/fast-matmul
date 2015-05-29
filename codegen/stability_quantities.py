@@ -20,11 +20,11 @@ M*K*N R nnz qmax emax
 
 Example usage:
 
-    python stability_vector.py algorithms/grey333-23-221 3,3,3
+    python stability_quantities.py algorithms/grey333-23-221 3,3,3
 
 Add an extra flag to print the full q and e vectors:
 
-    python stability_vector.py algorithms/grey333-23-221 3,3,3
+    python stability_quantities.py algorithms/grey333-23-221 3,3,3
 '''
 
 def max_norm(coeffs):
