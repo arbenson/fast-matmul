@@ -1,29 +1,13 @@
-#ifndef _fast423_135_HPP_
-#define _fast423_135_HPP_
+#ifndef _fast423_138_HPP_
+#define _fast423_138_HPP_
 
 // This is an automatically generated file from gen.py.
 #include "common.hpp"
 
-namespace fast423_135 {
+namespace fast423_138 {
 
 template <typename Scalar>
-void S_Add1(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideS1 = S1.stride();
-    const int strideC = C.stride();
-    const Scalar *dataS1 = S1.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataS1[i + j * strideS1];
-        }
-    }
-}
-
-template <typename Scalar>
-void S_Add2(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
+void S_Add1(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideS1 = S1.stride();
     const int strideS2 = S2.stride();
     const int strideC = C.stride();
@@ -41,37 +25,65 @@ void S_Add2(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x,
 }
 
 template <typename Scalar>
-void S_Add3(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
+void S_Add2(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& S4, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideS1 = S1.stride();
     const int strideS2 = S2.stride();
+    const int strideS3 = S3.stride();
+    const int strideS4 = S4.stride();
     const int strideC = C.stride();
     const Scalar *dataS1 = S1.data();
     const Scalar *dataS2 = S2.data();
+    const Scalar *dataS3 = S3.data();
+    const Scalar *dataS4 = S4.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
 # pragma omp parallel for if(!sequential)
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] -dataS2[i + j * strideS2] -dataS3[i + j * strideS3] + dataS4[i + j * strideS4];
         }
     }
 }
 
 template <typename Scalar>
-void S_Add4(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
+void S_Add3(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideS1 = S1.stride();
     const int strideS2 = S2.stride();
+    const int strideS3 = S3.stride();
     const int strideC = C.stride();
     const Scalar *dataS1 = S1.data();
     const Scalar *dataS2 = S2.data();
+    const Scalar *dataS3 = S3.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
 # pragma omp parallel for if(!sequential)
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataS1[i + j * strideS1] -dataS2[i + j * strideS2];
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1] + dataS2[i + j * strideS2] + dataS3[i + j * strideS3];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add4(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& S4, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideS3 = S3.stride();
+    const int strideS4 = S4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    const Scalar *dataS3 = S3.data();
+    const Scalar *dataS4 = S4.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] + dataS2[i + j * strideS2] -dataS3[i + j * strideS3] -dataS4[i + j * strideS4];
         }
     }
 }
@@ -95,19 +107,17 @@ void S_Add5(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x,
 }
 
 template <typename Scalar>
-void S_Add6(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
+void S_Add6(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideS1 = S1.stride();
-    const int strideS2 = S2.stride();
     const int strideC = C.stride();
     const Scalar *dataS1 = S1.data();
-    const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
 # pragma omp parallel for if(!sequential)
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataS1[i + j * strideS1] -dataS2[i + j * strideS2];
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
         }
     }
 }
@@ -129,19 +139,17 @@ void S_Add7(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x, bool sequential) {
 }
 
 template <typename Scalar>
-void S_Add8(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
+void S_Add8(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideS1 = S1.stride();
-    const int strideS2 = S2.stride();
     const int strideC = C.stride();
     const Scalar *dataS1 = S1.data();
-    const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
 # pragma omp parallel for if(!sequential)
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1];
         }
     }
 }
@@ -165,7 +173,25 @@ void S_Add9(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x,
 }
 
 template <typename Scalar>
-void S_Add10(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& C, double x, bool sequential) {
+void S_Add10(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add11(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideS1 = S1.stride();
     const int strideS2 = S2.stride();
     const int strideS3 = S3.stride();
@@ -185,79 +211,7 @@ void S_Add10(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<
 }
 
 template <typename Scalar>
-void S_Add11(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideS1 = S1.stride();
-    const int strideC = C.stride();
-    const Scalar *dataS1 = S1.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataS1[i + j * strideS1];
-        }
-    }
-}
-
-template <typename Scalar>
-void S_Add12(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& S4, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideS1 = S1.stride();
-    const int strideS2 = S2.stride();
-    const int strideS3 = S3.stride();
-    const int strideS4 = S4.stride();
-    const int strideC = C.stride();
-    const Scalar *dataS1 = S1.data();
-    const Scalar *dataS2 = S2.data();
-    const Scalar *dataS3 = S3.data();
-    const Scalar *dataS4 = S4.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataS1[i + j * strideS1] + dataS2[i + j * strideS2] + dataS3[i + j * strideS3] -dataS4[i + j * strideS4];
-        }
-    }
-}
-
-template <typename Scalar>
-void S_Add13(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideS1 = S1.stride();
-    const int strideC = C.stride();
-    const Scalar *dataS1 = S1.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataS1[i + j * strideS1];
-        }
-    }
-}
-
-template <typename Scalar>
-void S_Add14(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideS1 = S1.stride();
-    const int strideS2 = S2.stride();
-    const int strideC = C.stride();
-    const Scalar *dataS1 = S1.data();
-    const Scalar *dataS2 = S2.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataS1[i + j * strideS1] -dataS2[i + j * strideS2];
-        }
-    }
-}
-
-template <typename Scalar>
-void S_Add15(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
+void S_Add12(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideS1 = S1.stride();
     const int strideS2 = S2.stride();
     const int strideC = C.stride();
@@ -275,25 +229,7 @@ void S_Add15(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x
 }
 
 template <typename Scalar>
-void S_Add16(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideS1 = S1.stride();
-    const int strideS2 = S2.stride();
-    const int strideC = C.stride();
-    const Scalar *dataS1 = S1.data();
-    const Scalar *dataS2 = S2.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
-        }
-    }
-}
-
-template <typename Scalar>
-void S_Add17(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& C, double x, bool sequential) {
+void S_Add13(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideS1 = S1.stride();
     const int strideS2 = S2.stride();
     const int strideS3 = S3.stride();
@@ -307,7 +243,83 @@ void S_Add17(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataS1[i + j * strideS1] -dataS2[i + j * strideS2] + dataS3[i + j * strideS3];
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] -dataS2[i + j * strideS2] + dataS3[i + j * strideS3];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add14(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideS3 = S3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    const Scalar *dataS3 = S3.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1] + dataS2[i + j * strideS2] + dataS3[i + j * strideS3];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add15(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideS1 = S1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add16(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<Scalar>& S4, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideS3 = S3.stride();
+    const int strideS4 = S4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    const Scalar *dataS3 = S3.data();
+    const Scalar *dataS4 = S4.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] + dataS2[i + j * strideS2] -dataS3[i + j * strideS3] -dataS4[i + j * strideS4];
+        }
+    }
+}
+
+template <typename Scalar>
+void S_Add17(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideS1 = S1.stride();
+    const int strideS2 = S2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataS1 = S1.data();
+    const Scalar *dataS2 = S2.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataS1[i + j * strideS1] + dataS2[i + j * strideS2];
         }
     }
 }
@@ -345,25 +357,23 @@ void S_Add19(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& S3, Matrix<
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataS1[i + j * strideS1] + dataS2[i + j * strideS2] -dataS3[i + j * strideS3] + dataS4[i + j * strideS4];
+            dataC[i + j * strideC] = dataS1[i + j * strideS1] -dataS2[i + j * strideS2] + dataS3[i + j * strideS3] -dataS4[i + j * strideS4];
         }
     }
 }
 
 template <typename Scalar>
-void S_Add20(Matrix<Scalar>& S1, Matrix<Scalar>& S2, Matrix<Scalar>& C, double x, bool sequential) {
+void S_Add20(Matrix<Scalar>& S1, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideS1 = S1.stride();
-    const int strideS2 = S2.stride();
     const int strideC = C.stride();
     const Scalar *dataS1 = S1.data();
-    const Scalar *dataS2 = S2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
 # pragma omp parallel for if(!sequential)
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataS1[i + j * strideS1] -dataS2[i + j * strideS2];
+            dataC[i + j * strideC] = dataS1[i + j * strideS1];
         }
     }
 }
@@ -381,7 +391,7 @@ void T_Add1(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x,
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1] -dataT2[i + j * strideT2];
         }
     }
 }
@@ -397,13 +407,33 @@ void T_Add2(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataT1[i + j * strideT1];
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
         }
     }
 }
 
 template <typename Scalar>
-void T_Add3(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
+void T_Add3(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideT3 = T3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    const Scalar *dataT3 = T3.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] -dataT2[i + j * strideT2] + dataT3[i + j * strideT3];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add4(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideT1 = T1.stride();
     const int strideC = C.stride();
     const Scalar *dataT1 = T1.data();
@@ -413,13 +443,13 @@ void T_Add3(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataT1[i + j * strideT1];
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
         }
     }
 }
 
 template <typename Scalar>
-void T_Add4(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
+void T_Add5(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideT1 = T1.stride();
     const int strideT2 = T2.stride();
     const int strideC = C.stride();
@@ -437,47 +467,7 @@ void T_Add4(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x,
 }
 
 template <typename Scalar>
-void T_Add5(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& T4, Matrix<Scalar>& T5, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideT1 = T1.stride();
-    const int strideT2 = T2.stride();
-    const int strideT3 = T3.stride();
-    const int strideT4 = T4.stride();
-    const int strideT5 = T5.stride();
-    const int strideC = C.stride();
-    const Scalar *dataT1 = T1.data();
-    const Scalar *dataT2 = T2.data();
-    const Scalar *dataT3 = T3.data();
-    const Scalar *dataT4 = T4.data();
-    const Scalar *dataT5 = T5.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2] -dataT3[i + j * strideT3] + dataT4[i + j * strideT4] -dataT5[i + j * strideT5];
-        }
-    }
-}
-
-template <typename Scalar>
-void T_Add6(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideT1 = T1.stride();
-    const int strideC = C.stride();
-    const Scalar *dataT1 = T1.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataT1[i + j * strideT1];
-        }
-    }
-}
-
-template <typename Scalar>
-void T_Add7(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& T4, Matrix<Scalar>& C, double x, bool sequential) {
+void T_Add6(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& T4, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideT1 = T1.stride();
     const int strideT2 = T2.stride();
     const int strideT3 = T3.stride();
@@ -499,7 +489,139 @@ void T_Add7(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<S
 }
 
 template <typename Scalar>
-void T_Add8(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& C, double x, bool sequential) {
+void T_Add7(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideT1 = T1.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add8(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& T4, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideT3 = T3.stride();
+    const int strideT4 = T4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    const Scalar *dataT3 = T3.data();
+    const Scalar *dataT4 = T4.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] -dataT2[i + j * strideT2] -dataT3[i + j * strideT3] + dataT4[i + j * strideT4];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add9(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add10(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add11(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideT3 = T3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    const Scalar *dataT3 = T3.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] -dataT2[i + j * strideT2] -dataT3[i + j * strideT3];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add12(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add13(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideT3 = T3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    const Scalar *dataT3 = T3.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = dataT1[i + j * strideT1] -dataT2[i + j * strideT2] + dataT3[i + j * strideT3];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add14(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideT1 = T1.stride();
     const int strideT2 = T2.stride();
     const int strideT3 = T3.stride();
@@ -519,7 +641,27 @@ void T_Add8(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<S
 }
 
 template <typename Scalar>
-void T_Add9(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
+void T_Add15(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& C, double x, bool sequential) {
+    const int strideT1 = T1.stride();
+    const int strideT2 = T2.stride();
+    const int strideT3 = T3.stride();
+    const int strideC = C.stride();
+    const Scalar *dataT1 = T1.data();
+    const Scalar *dataT2 = T2.data();
+    const Scalar *dataT3 = T3.data();
+    Scalar *dataC = C.data();
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+    for (int j = 0; j < C.n(); ++j) {
+        for (int i = 0; i < C.m(); ++i) {
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1] + dataT2[i + j * strideT2] + dataT3[i + j * strideT3];
+        }
+    }
+}
+
+template <typename Scalar>
+void T_Add16(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideT1 = T1.stride();
     const int strideC = C.stride();
     const Scalar *dataT1 = T1.data();
@@ -535,7 +677,7 @@ void T_Add9(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
 }
 
 template <typename Scalar>
-void T_Add10(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
+void T_Add17(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideT1 = T1.stride();
     const int strideT2 = T2.stride();
     const int strideC = C.stride();
@@ -553,83 +695,7 @@ void T_Add10(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x
 }
 
 template <typename Scalar>
-void T_Add11(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideT1 = T1.stride();
-    const int strideT2 = T2.stride();
-    const int strideC = C.stride();
-    const Scalar *dataT1 = T1.data();
-    const Scalar *dataT2 = T2.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
-        }
-    }
-}
-
-template <typename Scalar>
-void T_Add12(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideT1 = T1.stride();
-    const int strideC = C.stride();
-    const Scalar *dataT1 = T1.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataT1[i + j * strideT1];
-        }
-    }
-}
-
-template <typename Scalar>
-void T_Add13(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& T4, Matrix<Scalar>& T5, Matrix<Scalar>& T6, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideT1 = T1.stride();
-    const int strideT2 = T2.stride();
-    const int strideT3 = T3.stride();
-    const int strideT4 = T4.stride();
-    const int strideT5 = T5.stride();
-    const int strideT6 = T6.stride();
-    const int strideC = C.stride();
-    const Scalar *dataT1 = T1.data();
-    const Scalar *dataT2 = T2.data();
-    const Scalar *dataT3 = T3.data();
-    const Scalar *dataT4 = T4.data();
-    const Scalar *dataT5 = T5.data();
-    const Scalar *dataT6 = T6.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataT1[i + j * strideT1] -dataT2[i + j * strideT2] + dataT3[i + j * strideT3] -dataT4[i + j * strideT4] -dataT5[i + j * strideT5] + dataT6[i + j * strideT6];
-        }
-    }
-}
-
-template <typename Scalar>
-void T_Add14(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideT1 = T1.stride();
-    const int strideC = C.stride();
-    const Scalar *dataT1 = T1.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataT1[i + j * strideT1];
-        }
-    }
-}
-
-template <typename Scalar>
-void T_Add15(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& C, double x, bool sequential) {
+void T_Add18(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideT1 = T1.stride();
     const int strideT2 = T2.stride();
     const int strideT3 = T3.stride();
@@ -643,65 +709,7 @@ void T_Add15(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataT1[i + j * strideT1] -dataT2[i + j * strideT2] + dataT3[i + j * strideT3];
-        }
-    }
-}
-
-template <typename Scalar>
-void T_Add16(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideT1 = T1.stride();
-    const int strideT2 = T2.stride();
-    const int strideC = C.stride();
-    const Scalar *dataT1 = T1.data();
-    const Scalar *dataT2 = T2.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
-        }
-    }
-}
-
-template <typename Scalar>
-void T_Add17(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& T3, Matrix<Scalar>& T4, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideT1 = T1.stride();
-    const int strideT2 = T2.stride();
-    const int strideT3 = T3.stride();
-    const int strideT4 = T4.stride();
-    const int strideC = C.stride();
-    const Scalar *dataT1 = T1.data();
-    const Scalar *dataT2 = T2.data();
-    const Scalar *dataT3 = T3.data();
-    const Scalar *dataT4 = T4.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataT1[i + j * strideT1] -dataT2[i + j * strideT2] + dataT3[i + j * strideT3] + dataT4[i + j * strideT4];
-        }
-    }
-}
-
-template <typename Scalar>
-void T_Add18(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
-    const int strideT1 = T1.stride();
-    const int strideT2 = T2.stride();
-    const int strideC = C.stride();
-    const Scalar *dataT1 = T1.data();
-    const Scalar *dataT2 = T2.data();
-    Scalar *dataC = C.data();
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-    for (int j = 0; j < C.n(); ++j) {
-        for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = -dataT1[i + j * strideT1] -dataT2[i + j * strideT2];
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1] + dataT2[i + j * strideT2] + dataT3[i + j * strideT3];
         }
     }
 }
@@ -717,25 +725,23 @@ void T_Add19(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataT1[i + j * strideT1];
+            dataC[i + j * strideC] = -dataT1[i + j * strideT1];
         }
     }
 }
 
 template <typename Scalar>
-void T_Add20(Matrix<Scalar>& T1, Matrix<Scalar>& T2, Matrix<Scalar>& C, double x, bool sequential) {
+void T_Add20(Matrix<Scalar>& T1, Matrix<Scalar>& C, double x, bool sequential) {
     const int strideT1 = T1.stride();
-    const int strideT2 = T2.stride();
     const int strideC = C.stride();
     const Scalar *dataT1 = T1.data();
-    const Scalar *dataT2 = T2.data();
     Scalar *dataC = C.data();
 #ifdef _PARALLEL_
 # pragma omp parallel for if(!sequential)
 #endif
     for (int j = 0; j < C.n(); ++j) {
         for (int i = 0; i < C.m(); ++i) {
-            dataC[i + j * strideC] = dataT1[i + j * strideT1] + dataT2[i + j * strideT2];
+            dataC[i + j * strideC] = dataT1[i + j * strideT1];
         }
     }
 }
@@ -758,7 +764,7 @@ void M_Add1(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
             }
         }
     } else {
@@ -767,7 +773,7 @@ void M_Add1(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
             }
         }
     }
@@ -775,6 +781,237 @@ void M_Add1(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 
 template <typename Scalar>
 void M_Add2(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] -dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] -dataM3[i + j * strideM3] -dataM4[i + j * strideM4];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add5(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add6(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add7(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& M6, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideM5 = M5.stride();
+    const int strideM6 = M6.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    const Scalar *dataM5 = M5.data();
+    const Scalar *dataM6 = M6.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add8(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
+    const int strideM1 = M1.stride();
+    const int strideM2 = M2.stride();
+    const int strideM3 = M3.stride();
+    const int strideM4 = M4.stride();
+    const int strideC = C.stride();
+    const Scalar *dataM1 = M1.data();
+    const Scalar *dataM2 = M2.data();
+    const Scalar *dataM3 = M3.data();
+    const Scalar *dataM4 = M4.data();
+    Scalar *dataC = C.data();
+    if (beta != Scalar(0.0)) {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+            }
+        }
+    } else {
+#ifdef _PARALLEL_
+# pragma omp parallel for if(!sequential)
+#endif
+        for (int j = 0; j < C.n(); ++j) {
+            for (int i = 0; i < C.m(); ++i) {
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+            }
+        }
+    }
+}
+
+template <typename Scalar>
+void M_Add9(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideM3 = M3.stride();
@@ -807,7 +1044,7 @@ void M_Add2(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 }
 
 template <typename Scalar>
-void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
+void M_Add10(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideM3 = M3.stride();
@@ -824,7 +1061,7 @@ void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+                dataC[i + j * strideC] = -dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
             }
         }
     } else {
@@ -833,14 +1070,14 @@ void M_Add3(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+                dataC[i + j * strideC] = -dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
             }
         }
     }
 }
 
 template <typename Scalar>
-void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
+void M_Add11(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
     const int strideM3 = M3.stride();
@@ -873,237 +1110,6 @@ void M_Add4(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<S
 }
 
 template <typename Scalar>
-void M_Add5(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    Scalar *dataC = C.data();
-    if (beta != Scalar(0.0)) {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + beta * dataC[i + j * strideC];
-            }
-        }
-    } else {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] + dataM2[i + j * strideM2];
-            }
-        }
-    }
-}
-
-template <typename Scalar>
-void M_Add6(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideM3 = M3.stride();
-    const int strideM4 = M4.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    const Scalar *dataM3 = M3.data();
-    const Scalar *dataM4 = M4.data();
-    Scalar *dataC = C.data();
-    if (beta != Scalar(0.0)) {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
-            }
-        }
-    } else {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
-            }
-        }
-    }
-}
-
-template <typename Scalar>
-void M_Add7(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideM3 = M3.stride();
-    const int strideM4 = M4.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    const Scalar *dataM3 = M3.data();
-    const Scalar *dataM4 = M4.data();
-    Scalar *dataC = C.data();
-    if (beta != Scalar(0.0)) {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
-            }
-        }
-    } else {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4];
-            }
-        }
-    }
-}
-
-template <typename Scalar>
-void M_Add8(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideM3 = M3.stride();
-    const int strideM4 = M4.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    const Scalar *dataM3 = M3.data();
-    const Scalar *dataM4 = M4.data();
-    Scalar *dataC = C.data();
-    if (beta != Scalar(0.0)) {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
-            }
-        }
-    } else {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4];
-            }
-        }
-    }
-}
-
-template <typename Scalar>
-void M_Add9(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideM3 = M3.stride();
-    const int strideM4 = M4.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    const Scalar *dataM3 = M3.data();
-    const Scalar *dataM4 = M4.data();
-    Scalar *dataC = C.data();
-    if (beta != Scalar(0.0)) {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
-            }
-        }
-    } else {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] -dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
-            }
-        }
-    }
-}
-
-template <typename Scalar>
-void M_Add10(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideM3 = M3.stride();
-    const int strideM4 = M4.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    const Scalar *dataM3 = M3.data();
-    const Scalar *dataM4 = M4.data();
-    Scalar *dataC = C.data();
-    if (beta != Scalar(0.0)) {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
-            }
-        }
-    } else {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4];
-            }
-        }
-    }
-}
-
-template <typename Scalar>
-void M_Add11(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& M5, Matrix<Scalar>& M6, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
-    const int strideM1 = M1.stride();
-    const int strideM2 = M2.stride();
-    const int strideM3 = M3.stride();
-    const int strideM4 = M4.stride();
-    const int strideM5 = M5.stride();
-    const int strideM6 = M6.stride();
-    const int strideC = C.stride();
-    const Scalar *dataM1 = M1.data();
-    const Scalar *dataM2 = M2.data();
-    const Scalar *dataM3 = M3.data();
-    const Scalar *dataM4 = M4.data();
-    const Scalar *dataM5 = M5.data();
-    const Scalar *dataM6 = M6.data();
-    Scalar *dataC = C.data();
-    if (beta != Scalar(0.0)) {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6] + beta * dataC[i + j * strideC];
-            }
-        }
-    } else {
-#ifdef _PARALLEL_
-# pragma omp parallel for if(!sequential)
-#endif
-        for (int j = 0; j < C.n(); ++j) {
-            for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] -dataM4[i + j * strideM4] + dataM5[i + j * strideM5] + dataM6[i + j * strideM6];
-            }
-        }
-    }
-}
-
-template <typename Scalar>
 void M_Add12(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<Scalar>& M4, Matrix<Scalar>& C, double x, bool sequential, Scalar beta) {
     const int strideM1 = M1.stride();
     const int strideM2 = M2.stride();
@@ -1121,7 +1127,7 @@ void M_Add12(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4] + beta * dataC[i + j * strideC];
             }
         }
     } else {
@@ -1130,7 +1136,7 @@ void M_Add12(Matrix<Scalar>& M1, Matrix<Scalar>& M2, Matrix<Scalar>& M3, Matrix<
 #endif
         for (int j = 0; j < C.n(); ++j) {
             for (int i = 0; i < C.m(); ++i) {
-                dataC[i + j * strideC] = -dataM1[i + j * strideM1] + dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
+                dataC[i + j * strideC] = dataM1[i + j * strideM1] -dataM2[i + j * strideM2] + dataM3[i + j * strideM3] + dataM4[i + j * strideM4];
             }
         }
     }
@@ -1267,20 +1273,26 @@ void FastMatmulRecursive(LockAndCounter& locker, MemoryManager<Scalar>& mem_mngr
 
 
 
-    // M1 = (1 * A31) * (1 * B11 + 1 * B12)
+    // M1 = (-1 * A11 + -1 * A31) * (-1 * B12 + -1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential1) shared(mem_mngr, locker) untied
     {
 #endif
 #ifdef _PARALLEL_
+    Matrix<Scalar> S1(mem_mngr.GetMem(start_index, 1, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S1(A11.m(), A11.n());
+#endif
+    S_Add1(A11, A31, S1, x, sequential1);
+#ifdef _PARALLEL_
     Matrix<Scalar> T1(mem_mngr.GetMem(start_index, 1, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
 #else
     Matrix<Scalar> T1(B11.m(), B11.n());
 #endif
-    T_Add1(B11, B12, T1, x, sequential1);
-    M1.UpdateMultiplier(Scalar(1));
-    FastMatmulRecursive(locker, mem_mngr, A31, T1, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 20, x, num_threads, Scalar(0.0));
+    T_Add1(B12, B22, T1, x, sequential1);
+    FastMatmulRecursive(locker, mem_mngr, S1, T1, M1, total_steps, steps_left - 1, (start_index + 1 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
+    S1.deallocate();
     T1.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
@@ -1294,7 +1306,7 @@ locker.Decrement();
     }
 #endif
 
-    // M2 = (-1 * A11 + -1 * A41) * (-1 * B11)
+    // M2 = (1 * A11 + -1 * A12 + -1 * A21 + 1 * A22) * (1 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential2) shared(mem_mngr, locker) untied
     {
@@ -1304,9 +1316,9 @@ locker.Decrement();
 #else
     Matrix<Scalar> S2(A11.m(), A11.n());
 #endif
-    S_Add2(A11, A41, S2, x, sequential2);
-    M2.UpdateMultiplier(Scalar(-1));
-    FastMatmulRecursive(locker, mem_mngr, S2, B11, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 20, x, num_threads, Scalar(0.0));
+    S_Add2(A11, A12, A21, A22, S2, x, sequential2);
+    M2.UpdateMultiplier(Scalar(1));
+    FastMatmulRecursive(locker, mem_mngr, S2, B23, M2, total_steps, steps_left - 1, (start_index + 2 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S2.deallocate();
 #endif
@@ -1321,7 +1333,7 @@ locker.Decrement();
     }
 #endif
 
-    // M3 = (1 * A12 + 1 * A42) * (-1 * B21)
+    // M3 = (-1 * A32 + 1 * A41 + 1 * A42) * (1 * B13 + -1 * B21 + 1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential3) shared(mem_mngr, locker) untied
     {
@@ -1331,11 +1343,17 @@ locker.Decrement();
 #else
     Matrix<Scalar> S3(A11.m(), A11.n());
 #endif
-    S_Add3(A12, A42, S3, x, sequential3);
-    M3.UpdateMultiplier(Scalar(-1));
-    FastMatmulRecursive(locker, mem_mngr, S3, B21, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 20, x, num_threads, Scalar(0.0));
+    S_Add3(A32, A41, A42, S3, x, sequential3);
+#ifdef _PARALLEL_
+    Matrix<Scalar> T3(mem_mngr.GetMem(start_index, 3, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T3(B11.m(), B11.n());
+#endif
+    T_Add3(B13, B21, B22, T3, x, sequential3);
+    FastMatmulRecursive(locker, mem_mngr, S3, T3, M3, total_steps, steps_left - 1, (start_index + 3 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S3.deallocate();
+    T3.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
@@ -1348,7 +1366,7 @@ locker.Decrement();
     }
 #endif
 
-    // M4 = (1 * A11 + -1 * A12) * (-1 * B22 + 1 * B23)
+    // M4 = (1 * A31 + 1 * A32 + -1 * A41 + -1 * A42) * (1 * B13)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential4) shared(mem_mngr, locker) untied
     {
@@ -1358,17 +1376,11 @@ locker.Decrement();
 #else
     Matrix<Scalar> S4(A11.m(), A11.n());
 #endif
-    S_Add4(A11, A12, S4, x, sequential4);
-#ifdef _PARALLEL_
-    Matrix<Scalar> T4(mem_mngr.GetMem(start_index, 4, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
-#else
-    Matrix<Scalar> T4(B11.m(), B11.n());
-#endif
-    T_Add4(B22, B23, T4, x, sequential4);
-    FastMatmulRecursive(locker, mem_mngr, S4, T4, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 20, x, num_threads, Scalar(0.0));
+    S_Add4(A31, A32, A41, A42, S4, x, sequential4);
+    M4.UpdateMultiplier(Scalar(1));
+    FastMatmulRecursive(locker, mem_mngr, S4, B13, M4, total_steps, steps_left - 1, (start_index + 4 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S4.deallocate();
-    T4.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
@@ -1381,7 +1393,7 @@ locker.Decrement();
     }
 #endif
 
-    // M5 = (1 * A11 + 1 * A42) * (1 * B11 + 1 * B12 + -1 * B13 + 1 * B22 + -1 * B23)
+    // M5 = (1 * A41 + 1 * A42) * (-1 * B21 + 1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential5) shared(mem_mngr, locker) untied
     {
@@ -1391,13 +1403,13 @@ locker.Decrement();
 #else
     Matrix<Scalar> S5(A11.m(), A11.n());
 #endif
-    S_Add5(A11, A42, S5, x, sequential5);
+    S_Add5(A41, A42, S5, x, sequential5);
 #ifdef _PARALLEL_
     Matrix<Scalar> T5(mem_mngr.GetMem(start_index, 5, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
 #else
     Matrix<Scalar> T5(B11.m(), B11.n());
 #endif
-    T_Add5(B11, B12, B13, B22, B23, T5, x, sequential5);
+    T_Add5(B21, B22, T5, x, sequential5);
     FastMatmulRecursive(locker, mem_mngr, S5, T5, M5, total_steps, steps_left - 1, (start_index + 5 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S5.deallocate();
@@ -1414,21 +1426,21 @@ locker.Decrement();
     }
 #endif
 
-    // M6 = (-1 * A11 + -1 * A21) * (1 * B13)
+    // M6 = (1 * A12) * (1 * B11 + -1 * B13 + 1 * B21 + -1 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential6) shared(mem_mngr, locker) untied
     {
 #endif
 #ifdef _PARALLEL_
-    Matrix<Scalar> S6(mem_mngr.GetMem(start_index, 6, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+    Matrix<Scalar> T6(mem_mngr.GetMem(start_index, 6, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
 #else
-    Matrix<Scalar> S6(A11.m(), A11.n());
+    Matrix<Scalar> T6(B11.m(), B11.n());
 #endif
-    S_Add6(A11, A21, S6, x, sequential6);
+    T_Add6(B11, B13, B21, B23, T6, x, sequential6);
     M6.UpdateMultiplier(Scalar(1));
-    FastMatmulRecursive(locker, mem_mngr, S6, B13, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 20, x, num_threads, Scalar(0.0));
+    FastMatmulRecursive(locker, mem_mngr, A12, T6, M6, total_steps, steps_left - 1, (start_index + 6 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
-    S6.deallocate();
+    T6.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
@@ -1441,21 +1453,15 @@ locker.Decrement();
     }
 #endif
 
-    // M7 = (1 * A11) * (1 * B12 + -1 * B13 + 1 * B22 + -1 * B23)
+    // M7 = (1 * A21) * (1 * B11)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential7) shared(mem_mngr, locker) untied
     {
 #endif
-#ifdef _PARALLEL_
-    Matrix<Scalar> T7(mem_mngr.GetMem(start_index, 7, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
-#else
-    Matrix<Scalar> T7(B11.m(), B11.n());
-#endif
-    T_Add7(B12, B13, B22, B23, T7, x, sequential7);
     M7.UpdateMultiplier(Scalar(1));
-    FastMatmulRecursive(locker, mem_mngr, A11, T7, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 20, x, num_threads, Scalar(0.0));
+    M7.UpdateMultiplier(Scalar(1));
+    FastMatmulRecursive(locker, mem_mngr, A21, B11, M7, total_steps, steps_left - 1, (start_index + 7 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
-    T7.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
@@ -1468,26 +1474,20 @@ locker.Decrement();
     }
 #endif
 
-    // M8 = (1 * A11 + 1 * A22) * (1 * B12 + 1 * B22 + -1 * B23)
+    // M8 = (-1 * A41) * (1 * B11 + -1 * B12 + -1 * B21 + 1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential8) shared(mem_mngr, locker) untied
     {
 #endif
 #ifdef _PARALLEL_
-    Matrix<Scalar> S8(mem_mngr.GetMem(start_index, 8, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
-#else
-    Matrix<Scalar> S8(A11.m(), A11.n());
-#endif
-    S_Add8(A11, A22, S8, x, sequential8);
-#ifdef _PARALLEL_
     Matrix<Scalar> T8(mem_mngr.GetMem(start_index, 8, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
 #else
     Matrix<Scalar> T8(B11.m(), B11.n());
 #endif
-    T_Add8(B12, B22, B23, T8, x, sequential8);
-    FastMatmulRecursive(locker, mem_mngr, S8, T8, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 20, x, num_threads, Scalar(0.0));
+    T_Add8(B11, B12, B21, B22, T8, x, sequential8);
+    M8.UpdateMultiplier(Scalar(-1));
+    FastMatmulRecursive(locker, mem_mngr, A41, T8, M8, total_steps, steps_left - 1, (start_index + 8 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
-    S8.deallocate();
     T8.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
@@ -1501,7 +1501,7 @@ locker.Decrement();
     }
 #endif
 
-    // M9 = (1 * A21 + -1 * A22) * (1 * B12)
+    // M9 = (1 * A11 + -1 * A21) * (1 * B13 + 1 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential9) shared(mem_mngr, locker) untied
     {
@@ -1511,11 +1511,17 @@ locker.Decrement();
 #else
     Matrix<Scalar> S9(A11.m(), A11.n());
 #endif
-    S_Add9(A21, A22, S9, x, sequential9);
-    M9.UpdateMultiplier(Scalar(1));
-    FastMatmulRecursive(locker, mem_mngr, S9, B12, M9, total_steps, steps_left - 1, (start_index + 9 - 1) * 20, x, num_threads, Scalar(0.0));
+    S_Add9(A11, A21, S9, x, sequential9);
+#ifdef _PARALLEL_
+    Matrix<Scalar> T9(mem_mngr.GetMem(start_index, 9, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T9(B11.m(), B11.n());
+#endif
+    T_Add9(B13, B23, T9, x, sequential9);
+    FastMatmulRecursive(locker, mem_mngr, S9, T9, M9, total_steps, steps_left - 1, (start_index + 9 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S9.deallocate();
+    T9.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
@@ -1528,7 +1534,7 @@ locker.Decrement();
     }
 #endif
 
-    // M10 = (1 * A21 + -1 * A22 + -1 * A31) * (1 * B12 + -1 * B21)
+    // M10 = (-1 * A32 + 1 * A42) * (-1 * B13 + 1 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential10) shared(mem_mngr, locker) untied
     {
@@ -1538,13 +1544,13 @@ locker.Decrement();
 #else
     Matrix<Scalar> S10(A11.m(), A11.n());
 #endif
-    S_Add10(A21, A22, A31, S10, x, sequential10);
+    S_Add10(A32, A42, S10, x, sequential10);
 #ifdef _PARALLEL_
     Matrix<Scalar> T10(mem_mngr.GetMem(start_index, 10, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
 #else
     Matrix<Scalar> T10(B11.m(), B11.n());
 #endif
-    T_Add10(B12, B21, T10, x, sequential10);
+    T_Add10(B13, B23, T10, x, sequential10);
     FastMatmulRecursive(locker, mem_mngr, S10, T10, M10, total_steps, steps_left - 1, (start_index + 10 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S10.deallocate();
@@ -1561,20 +1567,26 @@ locker.Decrement();
     }
 #endif
 
-    // M11 = (1 * A22) * (1 * B12 + 1 * B22)
+    // M11 = (1 * A11 + -1 * A12 + -1 * A21) * (1 * B11 + -1 * B13 + -1 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential11) shared(mem_mngr, locker) untied
     {
 #endif
 #ifdef _PARALLEL_
+    Matrix<Scalar> S11(mem_mngr.GetMem(start_index, 11, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S11(A11.m(), A11.n());
+#endif
+    S_Add11(A11, A12, A21, S11, x, sequential11);
+#ifdef _PARALLEL_
     Matrix<Scalar> T11(mem_mngr.GetMem(start_index, 11, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
 #else
     Matrix<Scalar> T11(B11.m(), B11.n());
 #endif
-    T_Add11(B12, B22, T11, x, sequential11);
-    M11.UpdateMultiplier(Scalar(1));
-    FastMatmulRecursive(locker, mem_mngr, A22, T11, M11, total_steps, steps_left - 1, (start_index + 11 - 1) * 20, x, num_threads, Scalar(0.0));
+    T_Add11(B11, B13, B23, T11, x, sequential11);
+    FastMatmulRecursive(locker, mem_mngr, S11, T11, M11, total_steps, steps_left - 1, (start_index + 11 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
+    S11.deallocate();
     T11.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
@@ -1588,7 +1600,7 @@ locker.Decrement();
     }
 #endif
 
-    // M12 = (-1 * A21 + 1 * A22 + 1 * A31 + -1 * A32) * (1 * B21)
+    // M12 = (1 * A22 + -1 * A42) * (-1 * B12 + 1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential12) shared(mem_mngr, locker) untied
     {
@@ -1598,11 +1610,17 @@ locker.Decrement();
 #else
     Matrix<Scalar> S12(A11.m(), A11.n());
 #endif
-    S_Add12(A21, A22, A31, A32, S12, x, sequential12);
-    M12.UpdateMultiplier(Scalar(1));
-    FastMatmulRecursive(locker, mem_mngr, S12, B21, M12, total_steps, steps_left - 1, (start_index + 12 - 1) * 20, x, num_threads, Scalar(0.0));
+    S_Add12(A22, A42, S12, x, sequential12);
+#ifdef _PARALLEL_
+    Matrix<Scalar> T12(mem_mngr.GetMem(start_index, 12, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T12(B11.m(), B11.n());
+#endif
+    T_Add12(B12, B22, T12, x, sequential12);
+    FastMatmulRecursive(locker, mem_mngr, S12, T12, M12, total_steps, steps_left - 1, (start_index + 12 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S12.deallocate();
+    T12.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
@@ -1615,20 +1633,26 @@ locker.Decrement();
     }
 #endif
 
-    // M13 = (1 * A42) * (-1 * B11 + -1 * B12 + 1 * B13 + -1 * B21 + -1 * B22 + 1 * B23)
+    // M13 = (1 * A11 + -1 * A12 + 1 * A31) * (1 * B11 + -1 * B13 + 1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential13) shared(mem_mngr, locker) untied
     {
 #endif
 #ifdef _PARALLEL_
+    Matrix<Scalar> S13(mem_mngr.GetMem(start_index, 13, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
+#else
+    Matrix<Scalar> S13(A11.m(), A11.n());
+#endif
+    S_Add13(A11, A12, A31, S13, x, sequential13);
+#ifdef _PARALLEL_
     Matrix<Scalar> T13(mem_mngr.GetMem(start_index, 13, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
 #else
     Matrix<Scalar> T13(B11.m(), B11.n());
 #endif
-    T_Add13(B11, B12, B13, B21, B22, B23, T13, x, sequential13);
-    M13.UpdateMultiplier(Scalar(1));
-    FastMatmulRecursive(locker, mem_mngr, A42, T13, M13, total_steps, steps_left - 1, (start_index + 13 - 1) * 20, x, num_threads, Scalar(0.0));
+    T_Add13(B11, B13, B22, T13, x, sequential13);
+    FastMatmulRecursive(locker, mem_mngr, S13, T13, M13, total_steps, steps_left - 1, (start_index + 13 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
+    S13.deallocate();
     T13.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
@@ -1642,7 +1666,7 @@ locker.Decrement();
     }
 #endif
 
-    // M14 = (-1 * A12 + -1 * A22) * (-1 * B23)
+    // M14 = (-1 * A22 + 1 * A41 + 1 * A42) * (1 * B12 + 1 * B21 + -1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential14) shared(mem_mngr, locker) untied
     {
@@ -1652,11 +1676,17 @@ locker.Decrement();
 #else
     Matrix<Scalar> S14(A11.m(), A11.n());
 #endif
-    S_Add14(A12, A22, S14, x, sequential14);
-    M14.UpdateMultiplier(Scalar(-1));
-    FastMatmulRecursive(locker, mem_mngr, S14, B23, M14, total_steps, steps_left - 1, (start_index + 14 - 1) * 20, x, num_threads, Scalar(0.0));
+    S_Add14(A22, A41, A42, S14, x, sequential14);
+#ifdef _PARALLEL_
+    Matrix<Scalar> T14(mem_mngr.GetMem(start_index, 14, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
+#else
+    Matrix<Scalar> T14(B11.m(), B11.n());
+#endif
+    T_Add14(B12, B21, B22, T14, x, sequential14);
+    FastMatmulRecursive(locker, mem_mngr, S14, T14, M14, total_steps, steps_left - 1, (start_index + 14 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S14.deallocate();
+    T14.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
@@ -1669,26 +1699,20 @@ locker.Decrement();
     }
 #endif
 
-    // M15 = (1 * A41 + -1 * A42) * (-1 * B11 + -1 * B12 + 1 * B13)
+    // M15 = (1 * A31) * (-1 * B11 + 1 * B12 + 1 * B13)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential15) shared(mem_mngr, locker) untied
     {
 #endif
-#ifdef _PARALLEL_
-    Matrix<Scalar> S15(mem_mngr.GetMem(start_index, 15, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
-#else
-    Matrix<Scalar> S15(A11.m(), A11.n());
-#endif
-    S_Add15(A41, A42, S15, x, sequential15);
 #ifdef _PARALLEL_
     Matrix<Scalar> T15(mem_mngr.GetMem(start_index, 15, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
 #else
     Matrix<Scalar> T15(B11.m(), B11.n());
 #endif
     T_Add15(B11, B12, B13, T15, x, sequential15);
-    FastMatmulRecursive(locker, mem_mngr, S15, T15, M15, total_steps, steps_left - 1, (start_index + 15 - 1) * 20, x, num_threads, Scalar(0.0));
+    M15.UpdateMultiplier(Scalar(1));
+    FastMatmulRecursive(locker, mem_mngr, A31, T15, M15, total_steps, steps_left - 1, (start_index + 15 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
-    S15.deallocate();
     T15.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
@@ -1702,7 +1726,7 @@ locker.Decrement();
     }
 #endif
 
-    // M16 = (1 * A31 + 1 * A41) * (1 * B13 + 1 * B23)
+    // M16 = (1 * A21 + 1 * A22 + -1 * A41 + -1 * A42) * (1 * B12)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential16) shared(mem_mngr, locker) untied
     {
@@ -1712,17 +1736,11 @@ locker.Decrement();
 #else
     Matrix<Scalar> S16(A11.m(), A11.n());
 #endif
-    S_Add16(A31, A41, S16, x, sequential16);
-#ifdef _PARALLEL_
-    Matrix<Scalar> T16(mem_mngr.GetMem(start_index, 16, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
-#else
-    Matrix<Scalar> T16(B11.m(), B11.n());
-#endif
-    T_Add16(B13, B23, T16, x, sequential16);
-    FastMatmulRecursive(locker, mem_mngr, S16, T16, M16, total_steps, steps_left - 1, (start_index + 16 - 1) * 20, x, num_threads, Scalar(0.0));
+    S_Add16(A21, A22, A41, A42, S16, x, sequential16);
+    M16.UpdateMultiplier(Scalar(1));
+    FastMatmulRecursive(locker, mem_mngr, S16, B12, M16, total_steps, steps_left - 1, (start_index + 16 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S16.deallocate();
-    T16.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
@@ -1735,7 +1753,7 @@ locker.Decrement();
     }
 #endif
 
-    // M17 = (-1 * A31 + -1 * A41 + 1 * A42) * (-1 * B11 + -1 * B12 + 1 * B13 + 1 * B23)
+    // M17 = (-1 * A11 + 1 * A12) * (1 * B11 + -1 * B13)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential17) shared(mem_mngr, locker) untied
     {
@@ -1745,13 +1763,13 @@ locker.Decrement();
 #else
     Matrix<Scalar> S17(A11.m(), A11.n());
 #endif
-    S_Add17(A31, A41, A42, S17, x, sequential17);
+    S_Add17(A11, A12, S17, x, sequential17);
 #ifdef _PARALLEL_
     Matrix<Scalar> T17(mem_mngr.GetMem(start_index, 17, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
 #else
     Matrix<Scalar> T17(B11.m(), B11.n());
 #endif
-    T_Add17(B11, B12, B13, B23, T17, x, sequential17);
+    T_Add17(B11, B13, T17, x, sequential17);
     FastMatmulRecursive(locker, mem_mngr, S17, T17, M17, total_steps, steps_left - 1, (start_index + 17 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S17.deallocate();
@@ -1768,7 +1786,7 @@ locker.Decrement();
     }
 #endif
 
-    // M18 = (1 * A32) * (-1 * B21 + -1 * B22)
+    // M18 = (1 * A32) * (-1 * B21 + 1 * B22 + 1 * B23)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential18) shared(mem_mngr, locker) untied
     {
@@ -1778,7 +1796,7 @@ locker.Decrement();
 #else
     Matrix<Scalar> T18(B11.m(), B11.n());
 #endif
-    T_Add18(B21, B22, T18, x, sequential18);
+    T_Add18(B21, B22, B23, T18, x, sequential18);
     M18.UpdateMultiplier(Scalar(1));
     FastMatmulRecursive(locker, mem_mngr, A32, T18, M18, total_steps, steps_left - 1, (start_index + 18 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
@@ -1795,7 +1813,7 @@ locker.Decrement();
     }
 #endif
 
-    // M19 = (-1 * A31 + 1 * A32 + -1 * A41 + 1 * A42) * (1 * B23)
+    // M19 = (1 * A11 + -1 * A12 + 1 * A31 + -1 * A32) * (-1 * B22)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential19) shared(mem_mngr, locker) untied
     {
@@ -1805,9 +1823,9 @@ locker.Decrement();
 #else
     Matrix<Scalar> S19(A11.m(), A11.n());
 #endif
-    S_Add19(A31, A32, A41, A42, S19, x, sequential19);
-    M19.UpdateMultiplier(Scalar(1));
-    FastMatmulRecursive(locker, mem_mngr, S19, B23, M19, total_steps, steps_left - 1, (start_index + 19 - 1) * 20, x, num_threads, Scalar(0.0));
+    S_Add19(A11, A12, A31, A32, S19, x, sequential19);
+    M19.UpdateMultiplier(Scalar(-1));
+    FastMatmulRecursive(locker, mem_mngr, S19, B22, M19, total_steps, steps_left - 1, (start_index + 19 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
     S19.deallocate();
 #endif
@@ -1822,27 +1840,15 @@ locker.Decrement();
     }
 #endif
 
-    // M20 = (1 * A21 + -1 * A31) * (1 * B11 + 1 * B21)
+    // M20 = (1 * A22) * (1 * B21)
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 # pragma omp task if(sequential20) shared(mem_mngr, locker) untied
     {
 #endif
-#ifdef _PARALLEL_
-    Matrix<Scalar> S20(mem_mngr.GetMem(start_index, 20, total_steps - steps_left, S), A11.m(), A11.m(), A11.n());
-#else
-    Matrix<Scalar> S20(A11.m(), A11.n());
-#endif
-    S_Add20(A21, A31, S20, x, sequential20);
-#ifdef _PARALLEL_
-    Matrix<Scalar> T20(mem_mngr.GetMem(start_index, 20, total_steps - steps_left, T), B11.m(), B11.m(), B11.n());
-#else
-    Matrix<Scalar> T20(B11.m(), B11.n());
-#endif
-    T_Add20(B11, B21, T20, x, sequential20);
-    FastMatmulRecursive(locker, mem_mngr, S20, T20, M20, total_steps, steps_left - 1, (start_index + 20 - 1) * 20, x, num_threads, Scalar(0.0));
+    M20.UpdateMultiplier(Scalar(1));
+    M20.UpdateMultiplier(Scalar(1));
+    FastMatmulRecursive(locker, mem_mngr, A22, B21, M20, total_steps, steps_left - 1, (start_index + 20 - 1) * 20, x, num_threads, Scalar(0.0));
 #ifndef _PARALLEL_
-    S20.deallocate();
-    T20.deallocate();
 #endif
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
 locker.Decrement();
@@ -1852,18 +1858,18 @@ locker.Decrement();
     }
 #endif
 
-    M_Add1(M3, M5, M7, M13, C11, x, false, beta);
-    M_Add2(M4, M8, M11, M14, C12, x, false, beta);
-    M_Add3(M7, M8, M11, M14, C13, x, false, beta);
-    M_Add4(M1, M9, M10, M20, C21, x, false, beta);
-    M_Add5(M9, M11, C22, x, false, beta);
-    M_Add6(M6, M7, M8, M11, C23, x, false, beta);
-    M_Add7(M1, M9, M10, M12, C31, x, false, beta);
-    M_Add8(M9, M10, M12, M18, C32, x, false, beta);
-    M_Add9(M1, M15, M17, M19, C33, x, false, beta);
-    M_Add10(M2, M5, M7, M13, C41, x, false, beta);
-    M_Add11(M1, M2, M5, M7, M16, M17, C42, x, false, beta);
-    M_Add12(M1, M15, M16, M17, C43, x, false, beta);
+    M_Add1(M6, M7, M9, M11, C11, x, false, beta);
+    M_Add2(M1, M13, M15, M17, C12, x, false, beta);
+    M_Add3(M7, M9, M11, M17, C13, x, false, beta);
+    M_Add4(M7, M20, C21, x, false, beta);
+    M_Add5(M5, M14, M16, M20, C22, x, false, beta);
+    M_Add6(M2, M7, M11, M17, C23, x, false, beta);
+    M_Add7(M3, M4, M5, M13, M17, M19, C31, x, false, beta);
+    M_Add8(M13, M15, M17, M19, C32, x, false, beta);
+    M_Add9(M3, M4, M5, M18, C33, x, false, beta);
+    M_Add10(M8, M12, M14, M20, C41, x, false, beta);
+    M_Add11(M5, M12, M14, M20, C42, x, false, beta);
+    M_Add12(M3, M5, M10, M18, C43, x, false, beta);
 
     // Handle edge cases with dynamic peeling
 #if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)
@@ -1938,6 +1944,6 @@ double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, Matrix<Scalar>& C,
     return FpMilliseconds(t2 - t1).count();
 }
 
-}  // namespace fast423_135
+}  // namespace fast423_138
 
-#endif  // _fast423_135_HPP_
+#endif  // _fast423_138_HPP_
