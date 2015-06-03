@@ -14,7 +14,7 @@
 
 #include "fast423_20_130.hpp"
 #include "fast423_20_134.hpp"
-#include "fast423_20_135.hpp"
+#include "fast423_20_138.hpp"
 #include "fast423_20_156.hpp"
 #include "strassen.hpp"
 
@@ -25,28 +25,20 @@
 #include <stdexcept>
 #include <vector>
 
-// Return the error in the computed matrix C_comp = A * B.
-// Specifically, returns
-//      max_{ij} 
-double Error(Matrix<double>& A, Matrix<double>& B, Matrix<double>& Ccomp) {
-  // No error (0 steps of recursion)
-  std::cout << "Quad matmul..." << std::endl;
-  Matrix<__float128> C(A.m(), B.n());
-  QuadMatmul(A.data(), B.data(), C.data(), A.m(), A.n(), B.n());
-  std::cout << "Done...";
-  Matrix<double> C2(A.m(), B.n());
-  strassen::FastMatmul(A, B, C2, 0);
-  return MaxAbsDiff(Ccomp, C2);
+void PrintData(std::vector<double>& data, std::string msg) {
+  std::cout << msg << " = [ ";
+  for (double point : data) {
+    std::cout << point << " ";
+  }
+  std::cout << " ];" << std::endl;
 }
 
-// Run a benchmark for multiplying m x k x n with num_steps of recursion.
-// To just call GEMM, set num_steps to zero.
-// The median of five trials is printed to std::cout.
+// Run the benchmark code for multiplying a m x k matrix by a k x n matrix.
 void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
-  // Run a set number of trials and pick the median time.
+  std::vector<double> errorscls(num_steps.size());
   std::vector<double> errors130(num_steps.size());
   std::vector<double> errors134(num_steps.size());
-  std::vector<double> errors135(num_steps.size());
+  std::vector<double> errors138(num_steps.size());
   std::vector<double> errors156(num_steps.size());
 
   Matrix<double> A = UniformRandomMatrix<double>(m, k, -1, 1);
@@ -56,52 +48,46 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
 	    << ", ||B|| = " << B.MaxNorm()
 	    << std::endl;
 
-  Matrix<double> C1(m, n);
+  std::cout << "Quad matmul..." << std::endl;
+  Matrix<__float128> C(A.m(), B.n());
+  QuadMatmul(A.data(), B.data(), C.data(), A.m(), A.n(), B.n());
+  std::cout << "Done...";
+  // Convert back to double
+  Matrix<double> C_dbl(A.m(), B.n());
+  for (int j = 0; j < C.n(); ++j) {
+    for (int i = 0; i < C.m(); ++i) {
+      C_dbl(i, j) = C(i, j);
+    }
+  }
 
+  Matrix<double> C1(m, n);
   for (int i = 0; i < num_steps.size(); ++i) {
+    fast423_130::FastMatmul(A, B, C1, 0);
+    errorscls[i] = MaxAbsDiff(C_dbl, C1);
+
     fast423_130::FastMatmul(A, B, C1, num_steps[i]);
-    errors130[i] = Error(A, B, C1);
+    errors130[i] = MaxAbsDiff(C_dbl, C1);
 
     fast423_134::FastMatmul(A, B, C1, num_steps[i]);
-    errors134[i] = Error(A, B, C1);
+    errors134[i] = MaxAbsDiff(C_dbl, C1);
 
-    fast423_135::FastMatmul(A, B, C1, num_steps[i]);
-    errors135[i] = Error(A, B, C1);
+    fast423_138::FastMatmul(A, B, C1, num_steps[i]);
+    errors138[i] = MaxAbsDiff(C_dbl, C1);
 
     fast423_156::FastMatmul(A, B, C1, num_steps[i]);
-    errors156[i] = Error(A, B, C1);
+    errors156[i] = MaxAbsDiff(C_dbl, C1);
 
     std::cout << "step " << i << std::endl;
   }
- 
-  std::cout << "errors130 = [ ";
-  for (double err : errors130) {
-    std::cout << err << " ";
-  }
-  std::cout << " ];" << std::endl;
 
-  std::cout << "errors134 = [ ";
-  for (double err : errors134) {
-    std::cout << err << " ";
-  }
-  std::cout << " ];" << std::endl;
-
-  std::cout << "errors135 = [ ";
-  for (double err : errors135) {
-    std::cout << err << " ";
-  }
-  std::cout << " ];" << std::endl;
-
-  std::cout << "errors156 = [ ";
-  for (double err : errors156) {
-    std::cout << err << " ";
-  }
-  std::cout << " ];" << std::endl;
+  PrintData(errorscls, "errorscls");
+  PrintData(errors130, "errors134");
+  PrintData(errors134, "errors134");
+  PrintData(errors138, "errors138");
+  PrintData(errors156, "errors156");
 }
 
 int main(int argc, char **argv) {
-  auto opts = GetOpts(argc, argv);
-
 #if 1
   int m = 4096;
   int k = 256;
