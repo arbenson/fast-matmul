@@ -47,7 +47,9 @@ BENCHMARKS_SRC = matmul_benchmarks.cpp \
     dgemm_curves.cpp \
     cse_add_perf_benchmarks.cpp \
     simple_dgemm.cpp \
-    square54_benchmark.cpp
+    square54_benchmark.cpp \
+    fast423_stability.cpp \
+    strassen_scaling_perf.cpp
 
 TESTS_SRC = matmul_tests.cpp \
     bini_stability.cpp \
