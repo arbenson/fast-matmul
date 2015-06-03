@@ -454,4 +454,6 @@ Matrix<double> FloatToDouble(Matrix<float>& A) {
   return A_double;
 }
 
+
+
 #endif  // _LINALG_HPP_

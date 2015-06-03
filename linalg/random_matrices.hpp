@@ -73,7 +73,7 @@ Matrix<Scalar> SkewedUniformRandomMatrix1(int m, int n, double a, double b) {
 
 // Generate a m x n matrix with entries A_{ij} ~ i * j * Uniform(a, b)
 template <typename Scalar>
-Matrix<Scalar> SkewedUniformRandomMatrix3(int m, int n, double a, double b) {
+Matrix<Scalar> SkewedUniformRandomMatrix2(int m, int n, double a, double b) {
   std::random_device rdev;
   std::default_random_engine generator(rdev());
   std::uniform_real_distribution<double> distribution(a, b);
@@ -85,6 +85,85 @@ Matrix<Scalar> SkewedUniformRandomMatrix3(int m, int n, double a, double b) {
       A(i, j) = distribution(generator) * (i + 1) * (j + 1);
     }
   }  
+  return A;
+}
+
+
+// Generate a m x n matrix with entries A_{ij} ~ i^2 * j^2 * Uniform(a, b)
+template <typename Scalar>
+Matrix<Scalar> SkewedUniformRandomMatrix3(int m, int n, double a, double b) {
+  std::random_device rdev;
+  std::default_random_engine generator(rdev());
+  std::uniform_real_distribution<double> distribution(a, b);
+  Matrix<Scalar> A(m, n);
+  // We can use fancier C++11 random number generators, but they are
+  // still slow on some systems.
+  for (int j = 0; j < A.n(); ++j) {
+    for (int i = 0; i < A.m(); ++i) {
+      double val = distribution(generator);
+      A(i, j) = val * (i + 1) * (i + 1) * (j + 1) * (j + 1);
+    }
+  }  
+  return A;
+}
+
+// Generate a m x n matrix with entries A_{ij} ~ i^2 * j^2 * Uniform(a, b)
+template <typename Scalar>
+Matrix<Scalar> SkewedUniformRandomMatrix4(int m, int n, double a, double b) {
+  Matrix<Scalar> A = SkewedUniformRandomMatrix3<Scalar>(m, n, a, b);
+  Scalar max_norm = A.MaxNorm();
+
+  // We can use fancier C++11 random number generators, but they are
+  // still slow on some systems.
+  for (int j = 0; j < A.n(); ++j) {
+    for (int i = 0; i < A.m(); ++i) {
+      A(i, j) = A(i, j) / max_norm;
+    }
+  }  
+  return A;
+}
+
+
+// Generate a m x n matrix with entries A_{ij} ~ i^2 * j^2 * Uniform(a, b)
+template <typename Scalar>
+Matrix<Scalar> SkewedUniformRandomMatrix5(int m, int n, double a, double b) {
+  std::random_device rdev;
+  std::default_random_engine generator(rdev());
+  std::uniform_real_distribution<double> distribution(a, b);
+  Matrix<Scalar> A(m, n);
+  // We can use fancier C++11 random number generators, but they are
+  // still slow on some systems.
+  for (int j = 0; j < A.n(); ++j) {
+    for (int i = 0; i < A.m(); ++i) {
+      double val = distribution(generator);
+      A(i, j) = val;
+      if ((i < n / 2) && (j > n / 2)) {
+	A(i, j) = A(i, j) * n * n;
+      }
+    }
+  }
+  return A;
+}
+
+
+// Generate a m x n matrix with entries A_{ij} ~ i^2 * j^2 * Uniform(a, b)
+template <typename Scalar>
+Matrix<Scalar> SkewedUniformRandomMatrix6(int m, int n, double a, double b) {
+  std::random_device rdev;
+  std::default_random_engine generator(rdev());
+  std::uniform_real_distribution<double> distribution(a, b);
+  Matrix<Scalar> A(m, n);
+  // We can use fancier C++11 random number generators, but they are
+  // still slow on some systems.
+  for (int j = 0; j < A.n(); ++j) {
+    for (int i = 0; i < A.m(); ++i) {
+      double val = distribution(generator);
+      A(i, j) = val;
+      if ((j < n / 2)) {
+	A(i, j) = A(i, j) / n / n;
+      }
+    }
+  }
   return A;
 }
 

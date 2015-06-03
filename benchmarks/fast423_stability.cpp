@@ -15,9 +15,11 @@
 #include "fast423_20_130.hpp"
 #include "fast423_20_134.hpp"
 #include "fast423_20_135.hpp"
+#include "fast423_20_156.hpp"
 #include "strassen.hpp"
 
 #include "random_matrices.hpp"
+#include "quadmatmul.hpp"
 
 #include <algorithm>
 #include <stdexcept>
@@ -28,9 +30,13 @@
 //      max_{ij} 
 double Error(Matrix<double>& A, Matrix<double>& B, Matrix<double>& Ccomp) {
   // No error (0 steps of recursion)
-  Matrix<double> C(A.m(), B.n());
-  strassen::FastMatmul(A, B, C, 0);
-  return MaxAbsDiff(Ccomp, C);
+  std::cout << "Quad matmul..." << std::endl;
+  Matrix<__float128> C(A.m(), B.n());
+  QuadMatmul(A.data(), B.data(), C.data(), A.m(), A.n(), B.n());
+  std::cout << "Done...";
+  Matrix<double> C2(A.m(), B.n());
+  strassen::FastMatmul(A, B, C2, 0);
+  return MaxAbsDiff(Ccomp, C2);
 }
 
 // Run a benchmark for multiplying m x k x n with num_steps of recursion.
@@ -41,6 +47,7 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
   std::vector<double> errors130(num_steps.size());
   std::vector<double> errors134(num_steps.size());
   std::vector<double> errors135(num_steps.size());
+  std::vector<double> errors156(num_steps.size());
 
   Matrix<double> A = UniformRandomMatrix<double>(m, k, -1, 1);
   Matrix<double> B = UniformRandomMatrix<double>(k, n, -1, 1);
@@ -60,6 +67,9 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
 
     fast423_135::FastMatmul(A, B, C1, num_steps[i]);
     errors135[i] = Error(A, B, C1);
+
+    fast423_156::FastMatmul(A, B, C1, num_steps[i]);
+    errors156[i] = Error(A, B, C1);
 
     std::cout << "step " << i << std::endl;
   }
@@ -81,14 +91,26 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
     std::cout << err << " ";
   }
   std::cout << " ];" << std::endl;
+
+  std::cout << "errors156 = [ ";
+  for (double err : errors156) {
+    std::cout << err << " ";
+  }
+  std::cout << " ];" << std::endl;
 }
 
 int main(int argc, char **argv) {
   auto opts = GetOpts(argc, argv);
 
+#if 1
+  int m = 4096;
+  int k = 256;
+  int n = 2187;
+#else
   int m = 4096;
   int k = 2048;
   int n = 3645;
+#endif
   std::vector<int> num_steps = {1, 2, 3, 4, 5, 6};
   
   Benchmark(m, k, n, num_steps);
