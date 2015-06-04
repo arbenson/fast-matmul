@@ -17,21 +17,12 @@
 
 #include "linalg.hpp"
 #include "random_matrices.hpp"
+#include "quadmatmul.hpp"
 #include "scaling.hpp"
 
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
-
-// Return the error in the computed matrix C_comp = A * B.
-// Specifically, returns
-//      max_{ij} 
-double Error(Matrix<double>& A, Matrix<double>& B, Matrix<double>& Ccomp) {
-  // No error (0 steps of recursion)
-  Matrix<double> C(A.m(), B.n());
-  strassen::FastMatmul(A, B, C, 0);
-  return MaxRelativeDiff(C, Ccomp);
-}
 
 void WriteErrorVec(std::vector<double>& err_vec, std::string name) {
   std::cout << name << " = [ ";
@@ -41,9 +32,6 @@ void WriteErrorVec(std::vector<double>& err_vec, std::string name) {
   std::cout << " ];" << std::endl;
 }
 
-// Run a benchmark for multiplying m x k x n with num_steps of recursion.
-// To just call GEMM, set num_steps to zero.
-// The median of five trials is printed to std::cout.
 void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
   Matrix<double> A = UniformRandomMatrix<double>(m, k, 0, 1);
   Matrix<double> B = UniformRandomMatrix<double>(m, k, 0, 1);
@@ -78,43 +66,60 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
   Matrix<double> A_roi = A;
   Matrix<double> B_roi = B;
   std::vector<double> r_roi, s_roi;
-  Scaling(A_roi, B_roi, 10, r_roi, s_roi, OUTSIDE_INSIDE);
+  Scaling(A_roi, B_roi, 5, r_roi, s_roi, OUTSIDE_INSIDE);
 
-  std::vector<double> err(num_steps.size());
-  std::vector<double> err_i(num_steps.size());
-  std::vector<double> err_o(num_steps.size());
-  std::vector<double> err_io(num_steps.size());
-  std::vector<double> err_oi(num_steps.size());
-  std::vector<double> err_roi(num_steps.size());
+  std::vector<double> err_c(num_steps.size());    // classical
+  std::vector<double> err_s(num_steps.size());    // strassen
+  std::vector<double> err_i(num_steps.size());    // strassen inside
+  std::vector<double> err_o(num_steps.size());    // strassen outside
+  std::vector<double> err_io(num_steps.size());   // strassen inside-outside
+  std::vector<double> err_oi(num_steps.size());   // strassen outside-inside
+  std::vector<double> err_roi(num_steps.size());  // strassen repeated outside-inside
+
+  std::cout << "Quad matmul..." << std::endl;
+  Matrix<__float128> C(A.m(), B.n());
+  QuadMatmul(A.data(), B.data(), C.data(), A.m(), A.n(), B.n());
+  std::cout << "Done...";
+  // Convert back to double
+  Matrix<double> C_dbl(A.m(), B.n());
+  for (int j = 0; j < C.n(); ++j) {
+    for (int i = 0; i < C.m(); ++i) {
+      C_dbl(i, j) = C(i, j);
+    }
+  }
 
   Matrix<double> C1(m, n);
   for (int i = 0; i < num_steps.size(); ++i) {
     std::cout << "step " << i << std::endl;
 
+    MatMul(A, B, C1);
+    err_c[i] = MaxRelativeDiff(C_dbl, C1);
+
     strassen::FastMatmul(A, B, C1, num_steps[i]);
-    err[i] = Error(A, B, C1);
+    err_s[i] = MaxRelativeDiff(C_dbl, C1);
 
     strassen::FastMatmul(A_i, B_i, C1, num_steps[i]);
-    err_i[i] = Error(A, B, C1);
+    err_i[i] = MaxRelativeDiff(C_dbl, C1);
 
     strassen::FastMatmul(A_o, B_o, C1, num_steps[i]);
     PostProcessScaling(C1, r_o, s_o);
-    err_o[i] = Error(A, B, C1);
+    err_o[i] = MaxRelativeDiff(C_dbl, C1);
 
     strassen::FastMatmul(A_io, B_io, C1, num_steps[i]);
     PostProcessScaling(C1, r_io, s_io);
-    err_io[i] = Error(A, B, C1);
+    err_io[i] = MaxRelativeDiff(C_dbl, C1);
 
     strassen::FastMatmul(A_oi, B_oi, C1, num_steps[i]);
     PostProcessScaling(C1, r_oi, s_oi);
-    err_oi[i] = Error(A, B, C1);
+    err_oi[i] = MaxRelativeDiff(C_dbl, C1);
 
     strassen::FastMatmul(A_roi, B_roi, C1, num_steps[i]);
     PostProcessScaling(C1, r_roi, s_roi);
-    err_roi[i] = Error(A, B, C1);
+    err_roi[i] = MaxRelativeDiff(C_dbl, C1);
   }
  
-  WriteErrorVec(err, "err");
+  WriteErrorVec(err_c, "err_c");
+  WriteErrorVec(err_s, "err_n");
   WriteErrorVec(err_i, "err_i");
   WriteErrorVec(err_o, "err_o");
   WriteErrorVec(err_io, "err_io");
@@ -123,8 +128,6 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
 }
 
 int main(int argc, char **argv) {
-  auto opts = GetOpts(argc, argv);
-
   int m = 4000;
   int k = 4000;
   int n = 4000;
