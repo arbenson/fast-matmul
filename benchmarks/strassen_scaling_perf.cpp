@@ -25,6 +25,9 @@ enum Algorithm {
   STRASSEN_SCALED,
 };
 
+const int kNumScalingSteps = 5;
+const int kNumTrials = 5;
+
 // Run a single benchmark for multiplying m x k x n with num_steps of recursion.
 // To just call GEMM, set num_steps to zero.
 // The median of five trials is printed to std::cout.
@@ -33,7 +36,7 @@ void SingleBenchmark(int m, int k, int n, int alg) {
   // Run a set number of trials and pick the median time.
   int num_trials = 5;
   std::vector<double> times(num_trials);
-  for (int trial = 0; trial < num_trials; ++trial) {
+  for (int trial = 0; trial < kNumTrials; ++trial) {
     Matrix<double> A = RandomMatrix<double>(m, k);
     Matrix<double> B = RandomMatrix<double>(k, n);
     Matrix<double> C(m, n);
@@ -46,7 +49,7 @@ void SingleBenchmark(int m, int k, int n, int alg) {
 	  Matrix<double> A_roi = A;
 	  Matrix<double> B_roi = B;
 	  std::vector<double> r_roi, s_roi;
-	  Scaling(A_roi, B_roi, 3, r_roi, s_roi, OUTSIDE_INSIDE);
+	  Scaling(A_roi, B_roi, kNumScalingSteps, r_roi, s_roi, OUTSIDE_INSIDE);
 	  strassen::FastMatmul(A, B, C, 1);
 	  PostProcessScaling(C, r_roi, s_roi);
 	});
