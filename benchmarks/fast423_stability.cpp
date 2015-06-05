@@ -56,7 +56,7 @@ void Benchmark(int m, int k, int n, std::vector<int>& num_steps) {
   Matrix<double> C_dbl(A.m(), B.n());
   for (int j = 0; j < C.n(); ++j) {
     for (int i = 0; i < C.m(); ++i) {
-      C_dbl(i, j) = C(i, j);
+      C_dbl(i, j) = (double) C(i, j);
     }
   }
 
