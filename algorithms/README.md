@@ -13,6 +13,10 @@ We also include:
 
     Smirnov, A. V. "The bilinear complexity and practical algorithms for matrix multiplication." Computational Mathematics and Mathematical Physics 53.12 (2013): 1781-1795.
 
+*  A \<3, 3, 6\> algorithm based on Smirnov's from Tichavský et al.:
+
+    Tichavský, Petr, Anh-Huy Phan, and Andrzej Cichocki. "Numerical CP decomposition of some difficult tensors." Journal of Computational and Applied Mathematics 317 (2017): 362-370.
+
 *  Strassen's algorithm: `strassen222.hpp`:
 
     Strassen, Volker. "Gaussian elimination is not optimal." Numerische Mathematik 13.4 (1969): 354-356.

@@ -31,6 +31,8 @@ SCRIPT=gen.py
 python ${SCRIPT} ${ALGS_DIR}/smirnov336-40-960 3,3,6 ${OUT_DIR}/smirnov336_40_960.hpp ${OPTIONS}
 python ${SCRIPT} ${ALGS_DIR}/smirnov363-40-960 3,6,3 ${OUT_DIR}/smirnov363_40_960.hpp ${OPTIONS}
 python ${SCRIPT} ${ALGS_DIR}/smirnov633-40-960 6,3,3 ${OUT_DIR}/smirnov633_40_960.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/tichavsky_kovac336-40-960 3,3,6 ${OUT_DIR}/tichavsky_kovac336_40_960.hpp ${OPTIONS}
+python ${SCRIPT} ${ALGS_DIR}/tichavsky_kovac363-40-960 3,6,3 ${OUT_DIR}/tichavsky_kovac363_40_960.hpp ${OPTIONS}
 
 # 5,2,2
 python ${SCRIPT} ${ALGS_DIR}/grey522-18-99 5,2,2 ${OUT_DIR}/fast522_18_99.hpp ${OPTIONS}
