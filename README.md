@@ -11,6 +11,9 @@ Austin R. Benson and Grey Ballard.  "A framework for practical parallel fast mat
 
 An extended version of the paper is available on [arxiv](http://arxiv.org/pdf/1409.2908v1.pdf).
 
+For references to APA algorithms, see
+
+Grey Ballard, Jack Weissenberger, and Luoping Zhang.  "Accelerating Neural Network Training using Arbitrary Precision Approximating Matrix Multiplication Algorithms".  In Proceedings of the 50th International Conference on Parallel Processing Workshops (ICPP-W), 2021.
 
 License
 --------

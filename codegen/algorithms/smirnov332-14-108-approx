@@ -1,0 +1,24 @@
+# (0, 2, 1) permutation of algorithms/smirnov323-14-108-approx
+0 x -x2 0 0 0 x 0 0 0 0 (x2+x3) 0 0
+-1 0 0 0 0 0 0 0 0 x2 0 0 1 0
+1 -x2 x2 0 x2 0 0 0 0 1 1 0 0 0
+-1 0 0 1 0 0 0 1 0 0 0 1 0 0
+1 0 0 0 0 0 0 -1 0 0 0 -1 0 -1
+-xi xi 0 xi 0 -xi 0 xi -xi 0 0 xi 0 xi
+x xi 0 -x 0 0 xi -x 0 0 0 0 0 0
+-xi -1 0 -1 0 1 0 0 0 0 0 0 xi 0
+xi -xi xi 0 xi 0 0 0 0 xi xi 0 0 0
+#
+0 xi xi 1 -xi -xi xi 0 0 0 0 0 0 0
+0 0 0 0 0 0 x xi 0 0 0 xi 0 -1
+xi 0 0 1 0 0 0 -xi 0 xi -xi 0 xi 0
+0 0 0 0 0 1 0 0 1 0 0 0 x -1
+0 0 x x 0 0 0 0 0 x 0 0 0 0
+0 0 -x 0 x 0 0 0 0 -x x 0 0 x
+#
+0 0 -xi 0 -xi 0 0 0 0 xi xi 0 0 0
+xi xi 0 0 -xi -xi -xi -xi xi 0 xi xi xi 0
+x 0 0 1 0 -x x3 0 x 0 x 0 (x+x2) 0
+0 0 0 0 0 0 0 0 -1 0 0 x 0 1
+0 x2 (1+x2) 0 1 -x2 0 0 x2 0 0 0 x2 0
+0 -1 0 0 1 1 1 0 -1 0 0 0 0 0
