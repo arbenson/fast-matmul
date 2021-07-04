@@ -1,4 +1,4 @@
-# rank 26 4x4x2 algorithm with 1/27 nonzeros (and 1/2 coefficients)
+# rank 26 4x4x2 algorithm with 257 nonzeros (and 1/2 coefficients)
 1 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 -1 0 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 1 0 0 -1 0 0 0 0 1 1 1 -1 0 0 0 0 0 0 -1 0 0 1 0 0
