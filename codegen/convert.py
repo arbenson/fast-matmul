@@ -122,8 +122,8 @@ def main():
         coeff_file = sys.argv[1]
         dims = tuple([int(d) for d in sys.argv[2].split(',')])
         perm = tuple([int(d) for d in sys.argv[4].split(',')])
-        print 'Reading coefficients for %d x %d x %d matrix' % dims
-        print 'Converting to %d x %d x %d matrix' % (dims[perm[0]], dims[perm[1]], dims[perm[2]])
+        print('Reading coefficients for %d x %d x %d matrix' % dims)
+        print('Converting to %d x %d x %d matrix' % (dims[perm[0]], dims[perm[1]], dims[perm[2]]))
     except:
         raise Exception('USAGE: python convert.py coeff_file m,k,n out_file s1,s2,s3')
 

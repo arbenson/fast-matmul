@@ -7,6 +7,7 @@
 
 import sys
 import subexpr_elim
+from fractions import Fraction
 
 '''
 This is the main code generation script.  How to use this program:
@@ -63,7 +64,7 @@ def is_nonzero(x):
 
 def num_nonzero(arr):
     ''' Returns number of non-zero entries in the array arr. '''
-    return len(filter(is_nonzero, arr))
+    return len(list(filter(is_nonzero, arr)))
 
 
 def need_tmp_mat(coeffs):
@@ -111,8 +112,8 @@ def parse_coeff(coeff):
     coeff = coeff.strip()
     # First try to convert to float
     try:
-        val = float(coeff)
-        return coeff
+        val = float(Fraction(coeff))
+        return str(val)
     except:
         pass
     
@@ -127,20 +128,21 @@ def parse_coeff(coeff):
         return '(' + ' + '.join([parse_coeff(e) for e in expr]) + ')'
     elif coeff[0] == '-':
         return '-(%s)' % parse_coeff(coeff[1:])
-    elif coeff[-1] == 'i':
-        return '1.0 / (%s)' % parse_coeff(coeff[:-1])
     else:
         # Test for a multiplier out in front
         try:
-            mult = float(coeff[0])
-            return '%s * (%s)' % (mult, parse_coeff(coeff[1:]))
+            mult = float(Fraction(coeff[:coeff.find('x')]))
+            # mult = float(coeff[0])
+            return '%s * (%s)' % (mult, parse_coeff(coeff[coeff.find('x'):]))
         except:
             pass
 
         # Test for an exponent
+        if coeff[-1] == 'i':
+            return '1.0 / (%s)' % parse_coeff(coeff[:-1])
         try:
             exp = int(coeff[-1])
-            return ' * '.join([parse_coeff(coeff[:-1]) for i in xrange(exp)])
+            return ' * '.join([parse_coeff(coeff[:-1]) for i in range(exp)])
         except:
             raise Exception('Cannot parse coefficient: %s' % coeff)
 
@@ -183,8 +185,8 @@ def write_subblocks(header, mat_name, dim1, dim2):
     mat_name is the name of the matrix, e.g., 'A' or 'B'
     header is file to write to.
     '''
-    for i in xrange(dim1):
-        for j in xrange(dim2):
+    for i in range(dim1):
+        for j in range(dim2):
             write_line(header, 1, 'Matrix<Scalar> %s%d%d = %s.Subblock(%d, %d, %d, %d);' %
                        (mat_name, i + 1, j + 1, mat_name, dim1, dim2, i + 1, j + 1))
 
@@ -304,7 +306,7 @@ def streaming_additions(header, coeff_set, mat_name, tmp_name, mat_dims, is_outp
 
     # Data for the temporary matrices
     if is_output:
-        for i in xrange(num_multiplies):
+        for i in range(num_multiplies):
             tmp_mat = tmp_mat_name(i)
             write_line(header, 1, stride_call(tmp_mat))
             write_line(header, 1, data_call(tmp_mat))
@@ -581,7 +583,7 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
 
     # Shared memory wrappers (start)
     write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
-    task = '# pragma omp task if(sequential%d) shared(mem_mngr, locker) untied' % index
+    task = '# pragma omp task if(sequential%d) shared(mem_mngr, locker) untied default(shared)' % index
     write_line(header, 0, task)
     write_line(header, 1, '{')
     write_line(header, 0, '#endif')
@@ -606,10 +608,12 @@ def write_multiply(header, index, a_coeffs, b_coeffs, dims, streaming_adds, num_
 
     # Handle the case where there is one non-zero coefficient and it is
     # not equal to one.  We need to propagate the multiplier information.
-    a_nonzero_coeffs = filter(is_nonzero, a_coeffs)
-    b_nonzero_coeffs = filter(is_nonzero, b_coeffs)
-    if len(a_nonzero_coeffs) == 1 and a_nonzero_coeffs[0] != 1:
-        write_line(header, 1, '%s.UpdateMultiplier(Scalar(%s));' % (res_mat,
+    a_nonzero_coeffs = list(filter(is_nonzero, a_coeffs))
+    b_nonzero_coeffs = list(filter(is_nonzero, b_coeffs))
+    #a_nz_coef_list = list(a_nonzero_coeffs)
+    if len(a_nonzero_coeffs) == 1:
+        if a_nonzero_coeffs[0] != 1:
+            write_line(header, 1, '%s.UpdateMultiplier(Scalar(%s));' % (res_mat,
                                                                     a_nonzero_coeffs[0]))
 
     if len(b_nonzero_coeffs) == 1 and b_nonzero_coeffs[0] != 1:
@@ -697,7 +701,7 @@ def create_multiplications(header, coeffs, dims, streaming_adds, num_multiplies)
     streaming_adds inidicates whether or not we are using the streaming version
                    of matrix additions
     '''
-    for i in xrange(len(coeffs[0][0])):
+    for i in range(len(coeffs[0][0])):
         a_coeffs = [c[i] for c in coeffs[0]]
         b_coeffs = [c[i] for c in coeffs[1]]
         write_multiply(header, i + 1, a_coeffs, b_coeffs, dims, streaming_adds, num_multiplies)
@@ -799,7 +803,7 @@ def create_wrapper_func(header, num_multiplies, dims):
     write_line(header, 0, 'template <typename Scalar>')
     write_line(header, 0, 'double FastMatmul(Matrix<Scalar>& A, Matrix<Scalar>& B, ' +
                'Matrix<Scalar>& C,')
-    write_line(header, 1, 'int num_steps, double x=1e-8, Scalar alpha=Scalar(1.0), ' +
+    write_line(header, 1, 'int num_steps, double x=1e-8, int num_threads=1, Scalar alpha=Scalar(1.0), ' +
                'Scalar beta=Scalar(0.0)) {')
     write_line(header, 1, 'MemoryManager<Scalar> mem_mngr;')
     write_line(header, 0, '#ifdef _PARALLEL_')
@@ -813,13 +817,14 @@ def create_wrapper_func(header, num_multiplies, dims):
     write_line(header, 0, '')
 
     write_line(header, 1, '// Set parameters needed for all types of parallelism.')
-    write_line(header, 1, 'int num_threads = 0;')
+    write_line(header, 1, '// int num_threads = 0;')
+    write_line(header, 1, 'omp_set_num_threads(num_threads);')
     write_line(header, 0, '#ifdef _PARALLEL_')
     write_line(header, 0, '# pragma omp parallel')
     write_line(header, 1,  '{')
     write_line(header, 2, 'if (omp_get_thread_num() == 0) { num_threads = omp_get_num_threads(); }')
     write_line(header, 1,  '}')
-    write_line(header, 1, 'omp_set_nested(1);')
+    write_line(header, 1, 'omp_set_max_active_levels(2);')
     write_line(header, 0, '#endif')
     write_line(header, 0, '')
 
@@ -900,7 +905,7 @@ def main():
         if len(sys.argv) > 5:
             namespace_name = sys.argv[5]
 
-        print 'Generating code for %d x %d x %d' % dims
+        print('Generating code for %d x %d x %d' % dims)
     except:
         raise Exception('USAGE: python gen.py coeff_file m,n,p out_file')
 
@@ -951,28 +956,28 @@ def main():
     
 
         num_multiplies = len(coeffs[0][0])
-        print '%d matrix multiplications...' % num_multiplies
+        print('%d matrix multiplications...' % num_multiplies)
 
         # Declaration of all of the intermediate multiplication results.
         write_break(header)
         write_line(header, 1, '// Matrices to store the results of multiplications.')
             
         write_line(header, 0, '#ifdef _PARALLEL_')
-        for i in xrange(num_multiplies):
+        for i in range(num_multiplies):
             write_line(header, 1,
                        'Matrix<Scalar> M%d(mem_mngr.GetMem(start_index, %d, total_steps - steps_left, M), C11.m(), C11.m(), C11.n(), C.multiplier());' % (i + 1, i + 1))
         write_line(header, 0, '#else')
-        for i in xrange(num_multiplies):
+        for i in range(num_multiplies):
             write_line(header, 1, 'Matrix<Scalar> M%d(C11.m(), C11.n(), C.multiplier());' % (i + 1))
         write_line(header, 0, '#endif')
 
         write_line(header, 0, '#if defined(_PARALLEL_) && (_PARALLEL_ == _BFS_PAR_ || _PARALLEL_ == _HYBRID_PAR_)')
-        for i in xrange(num_multiplies):
+        for i in range(num_multiplies):
             write_line(header, 1,
                        'bool sequential%d = should_launch_task(%d, total_steps, steps_left, start_index, %d, num_threads);' % (
                     i + 1, num_multiplies, i + 1))
         write_line(header, 0, '#else')
-        for i in xrange(num_multiplies):
+        for i in range(num_multiplies):
             write_line(header, 1, 'bool sequential%d = false;' % (i + 1))
         write_line(header, 0, '#endif')
 

@@ -34,10 +34,11 @@ def compute_phi(coeffs):
     def smallest_exponent(u, v, w):
         def min_exp(num):
             # num.val is a dictionary of (exponent, coefficient)
-            all_viable = filter(lambda keyval: keyval[1] != 0, num.val.items()) 
-            if len(all_viable) == 0:
+            all_viable = filter(lambda keyval: keyval[1] != 0, num.val.items())
+            listViable = list(all_viable)
+            if len(listViable) == 0:
                 return 0
-            return min([key for key, val in all_viable])
+            return min([key for key, val in listViable])
 
         all_nums = [Number(x1) * Number(x2) * Number(x3) \
                     for x1 in u for x2 in v for x3 in w]
@@ -66,24 +67,25 @@ def compute_sigma(coeffs, dims):
     q = len(U[0])
 
     curr_smallest = None
-    for a in xrange(m):
-        for b in xrange(n):
+    for a in range(m):
+        for b in range(n):
             # a and b describe row of U
             rU = a * n + b
-            for c in xrange(n):
-                for d in xrange(k):
+            for c in range(n):
+                for d in range(k):
                     rV = c * k + d
-                    for e in xrange(m):
-                        for f in xrange(k):
+                    for e in range(m):
+                        for f in range(k):
                             rW = e * k + f
                             # compute the contribution
                             sum = Number("0")
-                            for i in xrange(q):
+                            for i in range(q):
                                 sum += Number(U[rU][i]) * Number(V[rV][i]) * Number(W[rW][i])
                             errors = filter(lambda keyval: keyval[0] > 0 and keyval[1] != 0,
                                             sum.val.items())
-                            if len(errors) > 0:
-                                smallest = min([keyval[0] for keyval in errors])
+                            listError = list(errors)
+                            if len(listError) > 0:
+                                smallest = min([keyval[0] for keyval in listError])
                                 if curr_smallest == None or smallest < curr_smallest:
                                     curr_smallest = smallest
 
@@ -100,24 +102,32 @@ def main():
     coeffs = read_coeffs(coeff_file)
 
     phi = compute_phi(coeffs)
-    print 'phi   =', phi
+    print('phi   =', phi)
 
     sigma = compute_sigma(coeffs, dims)
-    print 'sigma =', sigma
+    print('sigma =', sigma)
 
     omega = 1.0 + float(phi) / sigma
-    print 'omega =', omega
+    print('omega =', omega)
 
+    # set bits of precision
+    d = 24 # float
+    prec = 'single'
+    #d = 53 # double
+    #prec = 'double'
+    
     # One recursive step
-    print 'optimal lambda (1 recursive step)  = ', 2.0 ** -(53 / (float(phi + sigma)))
-    print 'error (1 recursive step)           = ', 2.0 ** -(53 / omega)
+    print('optimal lambda (1 recursive step)  = ', 2.0 ** -(d / (float(phi + sigma))))
+    print('error (1 recursive step)           = ', 2.0 ** -(d / omega))
 
     # Two recursive steps
     phi *= 2
     omega = 1.0 + float(phi) / sigma
-    print 'optimal lambda (2 recursive steps) = ', 2.0 ** -(53 / (float(phi + sigma)))
-    print 'error (2 recursive steps)          = ', 2.0 ** -(53 / omega)
+    print('optimal lambda (2 recursive steps) = ', 2.0 ** -(d / (float(phi + sigma))))
+    print('error (2 recursive steps)          = ', 2.0 ** -(d / omega))
     
-    
+    # Note precision 
+    print('\t\t....................... assuming ', prec, ' precision')
+
 if __name__ == '__main__':
     main()
